@@ -1,0 +1,15 @@
+package com.liming.service;
+
+import java.util.List;
+
+import com.liming.domain.ApscPaperAnalyseExt;
+
+public interface ApscPaperAnalyseExtService {
+
+	int getCount(String id);
+
+	void insertPaperAnalyseExtList(List<ApscPaperAnalyseExt> paperAnalyseExtlist);
+
+	void deletePaperAnalyseExt(String id);
+
+}

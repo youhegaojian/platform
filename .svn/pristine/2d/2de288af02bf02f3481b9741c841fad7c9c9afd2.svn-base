@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liming.mapper.ApscKgoLinkMapper">
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscKgoLink">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="download_time" jdbcType="TIMESTAMP" property="downloadTime" />
+    <result column="search_id" jdbcType="VARCHAR" property="searchId" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="pl_type" jdbcType="VARCHAR" property="plType" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="is_parse" jdbcType="VARCHAR" property="isParse" />
+    <result column="clean_time" jdbcType="TIMESTAMP" property="cleanTime" />
+    <result column="last_view_time" jdbcType="TIMESTAMP" property="lastViewTime" />
+    <result column="record" jdbcType="VARCHAR" property="record" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="search_word" jdbcType="LONGVARCHAR" property="searchWord" />
+  </resultMap>
+  
+  <select id="getKgoListLemma" parameterType="com.liming.domain.ApscKgoLink" resultType="com.liming.domain.ApscKgoLink">
+		select 
+			id,user_id 
+		from 
+			apsc_kgo_link a 
+		where 
+			pl_type 
+		in 
+			('WOS', '英文期刊论文')  
+		and 
+			exists ( select 1 from apsc_paper_analyse b where a.id = b.uploadlogid ) 
+		and 
+			not exists ( select 1 from apsc_task_detail_schedule b ,apsc_task_schedule c where b.task_id = c.task_id and a.id = b.file_id and b.type='004' and c.type='004' and c.state='4' )
+		<if test="id != null and id !=''">
+			and a.id = #{id}
+		</if>
+		
+	</select>
+	
+	<select id="getKgoListNaction" parameterType="com.liming.domain.ApscKgoLink" resultType="com.liming.domain.ApscKgoLink">
+		select 
+			id,user_id 
+		from 
+			apsc_kgo_link a 
+		where 
+			pl_type = '英文期刊论文'  		
+		and 
+			exists ( select 1 from apsc_paper_analyse_organ b where a.id = b.uploadlog_id ) 
+		and 
+			not exists ( select 1 from apsc_task_detail_schedule b ,apsc_task_schedule c where b.task_id = c.task_id and a.id = b.file_id and b.type='006' and c.type='006' and c.state='4' )
+		<if test="id != null and id !=''">
+			and a.id = #{id}
+		</if>
+			
+		
+	</select>
+  
+</mapper>

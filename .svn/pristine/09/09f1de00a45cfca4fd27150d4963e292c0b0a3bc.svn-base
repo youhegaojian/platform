@@ -1,0 +1,46 @@
+package com.liming.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.liming.domain.ApscPaperAnalyseExt;
+import com.liming.mapper.ApscPaperAnalyseExtMapper;
+import com.liming.service.ApscPaperAnalyseExtService;
+
+import tk.mybatis.mapper.entity.Example;
+
+@Service
+public class ApscPaperAnalyseExtServiceImpl implements ApscPaperAnalyseExtService {
+	
+	@Autowired
+    private  ApscPaperAnalyseExtMapper mapper;
+
+	@Override
+	public int getCount(String id) {
+		Example example = new Example(ApscPaperAnalyseExt.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("uploadlogid", id);
+		criteria.andEqualTo("extName", "title_keywords");
+		List<ApscPaperAnalyseExt> list = mapper.selectByExample(example);
+		return list.size();
+	}
+
+	@Override
+	public void delete(String id) {
+		Example example = new Example(ApscPaperAnalyseExt.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("uploadlogid", id);
+		criteria.andEqualTo("extName", "title_keywords");
+		criteria.andEqualTo("extName", "abstract_keywords");
+		mapper.deleteByExample(example); 
+	}
+
+	@Override
+	public void insertPaperAnalyseExtList(List<ApscPaperAnalyseExt> paperAnalyseExtlist) {
+		
+		mapper.insertPaperAnalyseExtList(paperAnalyseExtlist);
+
+	}
+}

@@ -1,0 +1,324 @@
+package com.liming.keyword;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.liming.domain.ApscPaperAnalyse;
+import com.liming.domain.ApscResearchProjectData;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.domain.ConfDomain;
+import com.liming.service.ApscResearchProjectDataService;
+import com.liming.service.ApscTaskDetailScheduleService;
+import com.liming.service.ApscTaskScheduleService;
+import com.liming.utils.*;
+
+/**
+ *	要执行的任务
+ * @author lcb
+ */
+public class InsertKeywordOfProtect {
+	
+	Calendar c = Calendar.getInstance();
+	
+	private ApscTaskScheduleService apscScheduleService = SpringUtils.getBean(ApscTaskScheduleService.class);
+	
+	private ApscTaskDetailScheduleService apscTaskDetailScheduleService = SpringUtils.getBean(ApscTaskDetailScheduleService.class);
+	
+	private ApscResearchProjectDataService researchProjectDataService = SpringUtils.getBean(ApscResearchProjectDataService.class);
+
+	ApscTaskSchedule apscTaskSchedule = null;
+	
+	ApscTaskDetailSchedule apscTaskDetailSchedule=null;
+	
+	ApscResearchProjectData arpData = null;
+	
+	TextRankProcess trprocess_tit_cn = null;
+	
+	TextRankProcess trprocess_tit_en = null;
+	
+	
+	public InsertKeywordOfProtect(ApscTaskSchedule taskSchedule) {
+		trprocess_tit_cn = new TextRankProcess(Constants.LANGUAGE.CN, 2, 10, 0);
+		trprocess_tit_en = new TextRankProcess(Constants.LANGUAGE.EN, 2, 10, 0);
+		apscTaskSchedule=taskSchedule;
+		apscTaskDetailSchedule = new ApscTaskDetailSchedule(apscTaskSchedule.getTaskId(), apscTaskSchedule.getBeginTime(), "003");
+	}
+
+	@SuppressWarnings({"unchecked" })
+	public boolean insertKeyword() throws IOException {
+		try {			
+			ConfDomain ConfDomain=new ConfDomain();
+			
+			//查出基金表数据	        
+	        List<ApscResearchProjectData> researchProjectDataList = researchProjectDataService.getResearchProjectDataList();
+	        	 
+	        apscTaskSchedule.setState("2");
+	        apscScheduleService.update(apscTaskSchedule);
+	        
+	        if (researchProjectDataList.size() > 0) {
+		        apscTaskDetailSchedule.setSumRec(researchProjectDataList.size());
+				apscTaskDetailSchedule.setFileId("0");
+				apscTaskDetailSchedule.setTabName("apsc_research_project_data");
+				apscTaskDetailSchedule.setUserId("");
+				apscTaskDetailSchedule.setBeginTime(DateUtils.getCurrDateTimeStr());
+				if (apscTaskDetailSchedule.getFinishRec() > 0) {
+					apscTaskDetailSchedule.setFinishRec(0);
+				}
+				apscTaskDetailScheduleService.insert(apscTaskDetailSchedule);
+				
+				if (researchProjectDataList != null && researchProjectDataList.size()>0) {
+					int length = researchProjectDataList.size();
+					int offset = 1000;//1000
+					int n = length/offset;
+					int y = length%offset;
+					if(y != 0) {
+						n = n + 1;
+					}
+					if(length > offset) {
+						List<ApscResearchProjectData> _list = null;
+						for(int i = 0; i < n; i++) {
+							int end = ((i + 1) * offset) > length ? length : ((i + 1) * offset);
+							_list = researchProjectDataList.subList(i * offset, end);
+							add(_list);	
+							apscTaskDetailSchedule.setFinishRec(end);
+							apscTaskDetailScheduleService.update(apscTaskDetailSchedule);
+							System.out.println("---------插入 >> "+i*offset+"----"+end+"<< ------------");
+						}
+					}else {
+						add(researchProjectDataList);
+						apscTaskDetailSchedule.setFinishRec(length);
+						apscTaskDetailScheduleService.update(apscTaskDetailSchedule);
+						System.out.println("---------插入 >> "+0+"----"+length+"<< ------------");						
+					}
+				}		        		        
+				
+				apscTaskDetailSchedule.setEndTime(apscTaskSchedule.getEndTime());
+			    apscTaskDetailScheduleService.update(apscTaskDetailSchedule);
+			    
+	        }
+	        
+	        setTaskState("4");
+	        
+		    return true;
+			} catch (Exception e) {
+				setTaskState("3");
+				
+				e.printStackTrace();
+				return false;
+			}
+        }
+	
+	public void setTaskState(String state) {
+		apscTaskSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+		apscTaskSchedule.setState(state);
+		apscTaskSchedule.setTaskId(apscTaskDetailSchedule.getTaskId());
+		apscScheduleService.update(apscTaskSchedule);
+	}
+	
+	@SuppressWarnings({ "rawtypes" })
+	public void add(List<ApscResearchProjectData> list) throws IOException {
+		 if (list.size()>0) {
+	        	List<ApscResearchProjectData> projectList=new ArrayList<>();
+	            //更新数据
+	            for (ApscResearchProjectData map : list) {
+	    			String pro_name=map.getProName();//调用取值方法,得到的数据赋给其他字段
+	    			String ab_cn=map.getAbCn();
+	    			String ab_en=map.getAbEn();
+	    			String final_ab=map.getFinalAb();
+	    			String keywords_cn=map.getKeywordsCn().toString().replace("。", "").replace(".", "").replace("；", ";").replace("'", "").replace("’", "").trim().replaceAll("\\\\","");;
+	    			String keywords_en=map.getKeywordsEn().toString().replace("。", "").replace(".", "").replace("；", ";").replace("'", "").replace("’", "").trim().replaceAll("\\\\","");;
+	    			//获取英文摘要关键字
+	    			String final_ab2="";
+	    	        String ab_en2="";
+	    	        String ab_cn2="";
+	    	        String pro_name2="";
+	    	        
+	    	        //生成停止词
+	    	        String[] cnarray= keywords_cn.split(";");
+	    	        String[] enarray= keywords_en.split(";");
+	    	        
+	    			Set<String> stopwords=new HashSet<>();
+	    			
+    		        for (String string : cnarray) {
+    		        	if (!"".equals(string.trim())) {
+    		        		stopwords.add(string.toLowerCase());
+    		        	}
+    				}
+    		        
+    		        for (String string : enarray) {
+    		        	if (!"".equals(string.trim())) {
+    		        		stopwords.add(string.toLowerCase());
+    		        	}
+    		        }
+    		        
+    		        List<String> documents_tit = new ArrayList<>();//存放被提取的对象
+    		        documents_tit.add(pro_name);
+		   	        List<String> documents_ab_en = new ArrayList<>();//存放被提取的对象
+		   	        documents_ab_en.add(ab_en);
+		   	        List<String> documents_ab_cn = new ArrayList<>();//存放被提取的对象
+		   	        documents_ab_cn.add(ab_cn);
+		   	        List<String> documents_final_ab = new ArrayList<>();//存放被提取的对象
+		   	        documents_final_ab.add(final_ab);
+    		        List<Set<String>> final_keywords_tit_cn = null;//存放提取结果
+    		        
+	    	       //获取项目名称/标题-中文关键字;必须先中文后英文
+	    			if (!"".equals(pro_name.trim())) {
+	    				final_keywords_tit_cn = trprocess_tit_cn.calculateTextRank2(documents_tit, stopwords);	    				
+	    				for(String b : final_keywords_tit_cn.get(0)) {
+	    					pro_name2+=b+";";
+			   	        }
+	    				
+	    				if (!"".equals(pro_name2)) {
+	    					pro_name2=pro_name2.substring(0, pro_name2.length()-1);
+	    				}
+	    			}
+	    			//去除存在的中文关键字
+	    			String[] a_cnarray= pro_name2.split(";");
+    		        for (String string : a_cnarray) {
+    		        	if (!"".equals(string.trim())) {
+    		        		stopwords.add(string.toLowerCase());
+    		        	}
+    				}
+	    			//获取项目名称/标题-英文关键字
+	    			if (!"".equals(pro_name.trim())) {
+	    				String pro_name3="";
+	    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_tit, stopwords);	    				
+	    				for(String b : final_keywords_tit_cn.get(0)) {
+	    					pro_name3+=b+";";
+			   	        }
+	    				
+	    				if (!"".equals(pro_name3)) {
+	    					pro_name3=pro_name3.substring(0, pro_name3.length()-1);
+	    				}
+
+	    				pro_name2="".equals(pro_name2)?pro_name2:pro_name2+";";
+	    				
+	    				if (!"".equals(pro_name2)&&"".equals(pro_name3)) {//有无数据？有2加,：若3有/无-1;无2"":若3有/无
+	    					pro_name2=pro_name2.substring(0, pro_name2.length()-1);
+						} 
+	    				
+	    				pro_name2+=pro_name3;
+	    			}
+	    			
+	    			if (pro_name2.length()>1000) {
+	    				pro_name2=pro_name2.substring(0, 1000);
+	    				pro_name2=pro_name2.substring(0, pro_name2.lastIndexOf(";"));
+					}
+	    			
+	    			//去除标题中存在的关键字
+	    			String[] proarray= pro_name2.split(";");
+    		        for (String string : proarray) {
+    		        	if (!"".equals(string.trim())) {
+    		        		stopwords.add(string.toLowerCase());
+    		        	}
+    				}
+    		        
+    		        //获取英文摘要关键字
+	    			if (!"".equals(ab_en.trim())) {
+	    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_ab_en, stopwords);
+	    				for(String b : final_keywords_tit_cn.get(0)) {
+	    					ab_en2+=b+";";
+			   	        }
+	    				
+	    				if (!"".equals(ab_en2)) {
+	    					ab_en2=ab_en2.substring(0, ab_en2.length()-1);
+	    				}
+	    			}
+	    			
+	    			if (ab_en2.length()>400) {
+						ab_en2=ab_en2.substring(0, 400);
+						ab_en2=ab_en2.substring(0, ab_en2.lastIndexOf(";")+1);
+					}
+	    			
+	    			//去除英文摘要中存在的关键字
+	    			String[] ab_enarray= ab_en2.split(";");
+    		        for (String string : ab_enarray) {
+    		        	if (!"".equals(string.trim())) {
+    		        		stopwords.add(string.toLowerCase());
+    		        	}
+    				}
+    		        
+	    			//获取中文摘要关键字
+	    			if (!"".equals(ab_cn.trim())) {
+	    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_ab_cn, stopwords);
+	    				for(String b : final_keywords_tit_cn.get(0)) {
+	    					ab_cn2+=b+";";
+			   	        }
+	    				
+	    				if (!"".equals(ab_cn2)) {
+	    					ab_cn2=ab_cn2.substring(0, ab_cn2.length()-1);
+	    				}
+	    			}
+	    			if (ab_cn2.length()>300) {
+	    				ab_cn2=ab_cn2.substring(0, 300);
+	    				ab_cn2=ab_cn2.substring(0, ab_cn2.lastIndexOf(";")+1);
+					}
+	    			
+	    			//去除中文摘要中存在的关键字
+	    			String[] ab_cnarray= ab_cn2.split(";");
+    		        for (String string : ab_cnarray) {
+    		        	if (!"".equals(string.trim())) {
+    		        		stopwords.add(string.toLowerCase());
+    		        	}
+    				}
+    		        
+	    			//获取结题摘要关键字
+	    			if (!"".equals(final_ab.trim())) {
+	    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_final_ab, stopwords);
+	    				for(String b : final_keywords_tit_cn.get(0)) {
+	    					final_ab2+=b+";";
+			   	        }
+	    				
+	    				if (!"".equals(final_ab2)) {
+	    					final_ab2=final_ab2.substring(0, final_ab2.length()-1);
+	    				}
+	    			}
+	    			
+	    			if (final_ab2.length()>300) {
+	    				final_ab2=final_ab2.substring(0, 300);
+	    				final_ab2=final_ab2.substring(0, final_ab2.lastIndexOf(";"));
+					}
+	    			
+	    			map.setProName(map.getProName().toString().replace("'", "''")) ;
+	    			map.setAppName(map.getAppName().toString().replace("'", "''"));
+	    			map.setProLeader(map.getProLeader().toString().replace("'", "''").replaceAll("\\\\","/"));
+	    			map.setLeaderProfession(map.getLeaderProfession().toString().replace("'", "''"));
+	    			map.setSupportInst(map.getSupportInst().toString().replace("'", "''"));
+	    			map.setAbCn(map.getAbCn().toString().replace("'", "''"));
+	    			map.setKeywordsCn(map.getKeywordsCn().toString().replace("'", "''"));
+	    			map.setAbEn( map.getAbEn().toString().replace("'", "''"));
+	    			map.setKeywordsEn( map.getKeywordsEn().toString().replace("'", "''"));
+	    			map.setFinalAb( map.getFinalAb().toString().replace("'", "''"));
+	    			map.setTxtname(map.getTxtname().toString().replace("'", "''"));
+	    			map.setFundInst(map.getFundInst().toString().replace("'", "''"));
+	    			map.setAppIdOne(map.getAppIdOne().toString().replace("'", "''"));
+	    			map.setAppIdTwo(map.getAppIdTwo().toString().replace("'", "''"));
+	    			map.setAppIdThree( map.getAppIdThree().toString().replace("'", "''"));
+	    			map.setAppNameOne( map.getAppNameOne().toString().replace("'", "''"));
+	    			map.setAppNameTwo( map.getAppNameTwo().toString().replace("'", "''"));
+	    			map.setAppNameThree( map.getAppNameThree().toString().replace("'", "''")); 
+	    			map.setTitleKeywords(pro_name2);
+	    			
+	    			if ((ab_cn.trim().equals("")||ab_cn.trim()==null)&&(ab_en.trim().equals("")||ab_en.trim()==null)&&(final_ab.trim().equals("")||final_ab.trim()==null)) {
+	    				map.setAbstractKeywords("");
+	    			}else {
+	    				map.setAbstractKeywords(ab_en2+ab_cn2+final_ab2);
+	    			}
+	    			
+	    			projectList.add(map);
+	    		}
+	            //插入数据库
+	            researchProjectDataService.insertList(projectList);
+			}
+	}
+	
+
+}

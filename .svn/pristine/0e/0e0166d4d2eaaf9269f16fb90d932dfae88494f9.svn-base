@@ -1,0 +1,18 @@
+package com.example.demo.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+/**
+ * @author hao
+ *2019年5月6日
+ * 显示task三表的mapper接口
+ */
+@Component
+public interface ListApsc {
+	List<Map> defineScheList();
+	List<Map> ScheList(String temp);
+	List<Map> ScheDetailList(String task_id);
+}

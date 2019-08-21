@@ -1,0 +1,227 @@
+package com.liming.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.liming.domain.ApscKgoLink;
+import com.liming.domain.ApscPaperAnalyseOrgan;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.domain.NationsDomain;
+import com.liming.mapper.ApscKgoLinkMapper;
+import com.liming.mapper.ApscPaperAnalyseOrganMapper;
+import com.liming.mapper.ApscTaskDetailScheduleMapper;
+import com.liming.mapper.ApscTaskScheduleMapper;
+import com.liming.service.NationExtractService;
+import com.liming.utils.DateUtils;
+import com.liming.utils.KeywordProcess;
+
+@Service
+public class NationExtractServiceImpl implements NationExtractService {
+	
+	@Autowired
+	private ApscTaskScheduleMapper mapper;
+	
+	@Autowired
+	private ApscTaskDetailScheduleMapper detailMapper;
+	
+	@Autowired
+	private ApscKgoLinkMapper kgoMapper;
+	
+	@Autowired
+	private ApscPaperAnalyseOrganMapper organMapper;
+	
+	private KeywordProcess kp_en = null;
+	
+	private NationsDomain naMap = null;
+	
+	private ApscTaskSchedule apscTaskSchedule = null;
+	
+	private ApscTaskDetailSchedule apscTaskDetailSchedule = null;
+	
+	int result = 0;
+	
+	@Override
+	public boolean updateNation(ApscTaskSchedule taskSchedule) {
+		try {
+			kp_en = new KeywordProcess("en","ner");
+			naMap = new NationsDomain();
+			apscTaskSchedule = taskSchedule;
+			apscTaskSchedule.setState("2");
+			result = mapper.updateByPrimaryKeySelective(apscTaskSchedule);
+			apscTaskDetailSchedule = new ApscTaskDetailSchedule(apscTaskSchedule.getTaskId(), apscTaskSchedule.getBeginTime(), "006");
+			
+			if (result > 0) {
+				System.out.println("-----调度任务表插入数据成功....");
+			
+				System.out.println("-----nlp jar包加载完成，开始组织数据....");
+				
+				ApscKgoLink kgo = new ApscKgoLink();
+				kgo.setId(apscTaskSchedule.getTaskid());
+				
+				List<ApscKgoLink> kgoList = kgoMapper.getKgoListNaction(kgo);
+				
+				for (int i = 0, len = kgoList.size(); i < len; i++) {
+					System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+					System.out.println("-----开始组织 id:" + kgoList.get(i).getId() + " 的数据....");
+					
+					List<ApscPaperAnalyseOrgan> list = organMapper.getApscPaperAnalyseOrganList(kgoList.get(i).getId());
+					
+					if (list != null && list.size()>0) {
+						apscTaskDetailSchedule.setFileId(kgoList.get(i).getId());
+						apscTaskDetailSchedule.setSumRec(list.size());
+						apscTaskDetailSchedule.setTabName("apsc_paper_analyse_organ");
+						apscTaskDetailSchedule.setUserId(kgoList.get(i).getUserId());
+						result = detailMapper.insert(apscTaskDetailSchedule);
+						if (result > 0) {
+							System.out.println("-----------调度任务明细表插入数据成功...");
+						}
+						
+						System.out.println("-----当前任务的数据量为：" + list.size());
+						
+						getPaperAnalyseOrganList(list, kgoList, i);
+						
+					}
+				}
+				
+				result = setTaskState("4");
+				if (result > 0) {
+					System.out.println("--------更新完成时间成功！");
+				}				
+				System.out.println("---插入数据 全部完成！");
+				System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+				
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			setTaskState("3");
+			
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public void getPaperAnalyseOrganList(List<ApscPaperAnalyseOrgan> list, List<ApscKgoLink> kgoList, int i) {
+		int leng = list.size();
+		int offset = 1000;
+		int n = leng / offset;
+		int y = leng % offset;
+		if (y != 0) {
+			n = n + 1;
+		}
+		
+		if (leng > offset) {					
+			List<ApscPaperAnalyseOrgan> _list = null;
+			
+			for (int j = 0; j < n; j++) {
+				int end = ((j + 1) * offset) > leng ? leng : ((j + 1) * offset);
+				_list = list.subList(j * offset, end);
+
+				//国家提取
+				_list = getExtractNation(_list);
+		
+				result = organMapper.insertList(_list);
+				if (result > 0) {
+					apscTaskDetailSchedule.setFinishRec(end);
+					result = detailMapper.updateByKey(apscTaskDetailSchedule);
+					if (result > 0) {
+						System.out.println("----id:" + apscTaskDetailSchedule.getTaskId()
+								+ "更新已完成记录数成功...");
+					}
+					
+					System.out.println("---id:" + kgoList.get(i).getId() + "插入数据 前" + end + "条成功！");
+				}
+			}
+			
+			apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+			result = detailMapper.updateByKey(apscTaskDetailSchedule);
+			if (result > 0) {
+				System.out.println("-------更新完成时间成功...");
+			}
+		} else {
+			//国家提取
+			list = getExtractNation(list);
+			result = organMapper.insertList(list);
+			if (result > 0) {
+				apscTaskDetailSchedule.setFinishRec(leng);
+				apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+				result = detailMapper.updateByKey(apscTaskDetailSchedule);
+				if (result > 0) {
+					System.out.println(
+							"----id:" + apscTaskDetailSchedule.getTaskId() + "更新已完成记录数成功...");
+				}
+				
+				System.out.println("---id:" + kgoList.get(i).getId() + " 插入数据完成！");
+			}
+		}
+	}
+	
+	public List<ApscPaperAnalyseOrgan> getExtractNation(List<ApscPaperAnalyseOrgan> _list) {
+		//list分组
+		 Map<String, List<ApscPaperAnalyseOrgan>> resultMap = _list.stream().collect(
+	                Collectors.groupingBy(ApscPaperAnalyseOrgan::getOrgan));
+		 List<ApscPaperAnalyseOrgan> resultList = new ArrayList<ApscPaperAnalyseOrgan>();
+		 for (String str : resultMap.keySet()) {
+//				System.out.println("-------开始时间: " + DateUtils.getCurrDateTimeStr());
+				List<String> nations = kp_en.NationExtract(str);
+				String nation = "US";
+				if (nations.size() > 0) {
+					nation = nations.get(0);
+					if(naMap.getList_cn().contains(nation.toLowerCase())) {
+						nation = naMap.getCHINA();
+					}else if(naMap.getList_us().contains(nation.toLowerCase())){
+						nation = naMap.getUS();
+					}
+					
+					if(nations.containsAll(naMap.getList_africa())) {
+						nation = naMap.getAFRICA();
+					}else if(nations.containsAll(naMap.getList_arab())) {
+						nation = naMap.getARAB();
+					}else if(nations.containsAll(naMap.getList_britain())) {
+						nation = naMap.getBRITAIN();
+					}else if(nations.containsAll(naMap.get_list_cn())) {
+						nation = naMap.getCHINA();
+					}else if(nations.containsAll(naMap.getList_ire())) {
+						nation = naMap.getIRE();
+					}else if(nations.containsAll(naMap.getList_kingdom())) {
+						nation = naMap.getBRITAIN();
+					}else if(nations.containsAll(naMap.getList_korea())) {
+						nation = naMap.getKOREA();
+					}else if(nations.containsAll(naMap.getList_macedonia())) {
+						nation = naMap.getMACEDONIA();
+					}else if(nations.containsAll(naMap.getList_new())) {
+						nation = naMap.getNEWZEALAND();
+					}else if(nations.containsAll(naMap.getList_serbia())) {
+						nation = naMap.getSERBIA();
+					}else if(nations.containsAll(naMap.getList_south_korea())) {
+						nation = naMap.getSOUTHKOREA();
+					}else if(nations.containsAll(naMap.getList_turkey())) {
+						nation = naMap.getTURKEY();
+					}else if(nations.containsAll(naMap.getList_us())) {
+						nation = naMap.getUS();
+					}
+					
+				}
+				List<ApscPaperAnalyseOrgan> organList = resultMap.get(str);
+				for (ApscPaperAnalyseOrgan organ : organList) {
+					organ.setNationRegion(nation);
+				}
+				resultList.addAll(organList);
+//				System.out.println("-----结束时间: " + DateUtils.getCurrDateTimeStr());
+			}
+			return resultList;
+		}
+
+	public int setTaskState(String state) {
+		apscTaskSchedule.setState(state);
+		apscTaskSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+		return mapper.updateByPrimaryKeySelective(apscTaskSchedule);
+	}
+}

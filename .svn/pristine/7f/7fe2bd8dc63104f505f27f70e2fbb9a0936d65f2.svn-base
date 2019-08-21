@@ -1,0 +1,42 @@
+package com.liming.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.liming.domain.ApscPaperAnalyse;
+import com.liming.mapper.ApscPaperAnalyseMapper;
+import com.liming.service.ApscPaperAnalyseService;
+
+import tk.mybatis.mapper.entity.Example;
+
+@Service
+public class ApscPaperAnalyseServiceImpl implements ApscPaperAnalyseService {
+	
+	@Autowired
+    private  ApscPaperAnalyseMapper mapper;
+
+	@Override
+	public int getCount(String id) {
+		Example example = new Example(ApscPaperAnalyse.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("uploadlogid", id);
+		List<ApscPaperAnalyse> list = mapper.selectByExample(example);
+		return list.size();
+	}
+
+	@Override
+	public List<ApscPaperAnalyse> getPaperList(String id) {
+		
+		List<ApscPaperAnalyse> list = mapper.getPaperList(id);
+		return list;
+	}
+
+	@Override
+	public void updateSpecialChars(String id) {
+		mapper.updateSpecialChars(id);
+		
+	}
+
+}

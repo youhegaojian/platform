@@ -1,0 +1,17 @@
+package com.liming.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.liming.domain.ApscAnalysisPatent;
+
+public interface ApscAnalysisPatentService {
+	
+	void insertAapByListAndHeader(List<ApscAnalysisPatent> list);
+
+	void insertPatentList(List<ApscAnalysisPatent> patentlist);
+
+	List<ApscAnalysisPatent> getPatentList(String id, int offset);
+	
+	int getPatentListCount(String id);
+}

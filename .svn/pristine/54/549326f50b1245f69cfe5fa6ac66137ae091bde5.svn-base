@@ -1,0 +1,68 @@
+$(function() {
+	tableinit();
+})
+function tableinit(){
+	layui.use(['layer', 'table'], function(){
+		var layer = layui.layer //弹层
+		,table = layui.table //表格
+		  //执行一个 table 实例
+		table.render({
+		    elem : '#demo'
+		    //,height: 500
+		    //,url: ' ' //数据接口
+		    ,title : '任务表'
+		    ,url : '/sche/defineScheList/'
+		    ,page : true //开启分页
+		   //,toolbar: 'default' //开启工具栏
+		   //,totalRow: true //开启合计行
+		    ,cols: [
+		    	[ //表头
+		    	{type: 'numbers',title:'序号',},
+		    	{field: 'task_name', title: '任务类型', sort : true,
+		    	  templet:function(row){
+		    		 return '<a style="cursor:pointer;" onclick="openWin(\''+row.type+'\')" >'+row.task_name+'</a>'
+		    	  }},
+		    	{field: 'class_name', title: '调用的类名称',sort : true},
+		    	{field: 'method_name', title: '类方法名称', sort : true},
+		    	{field: 'period', title: '周期', sort : true,hide:true },
+		    	{fixed: 'right', title: '操作', align:'center', 
+		    		templet:function(row){
+		    			return '<a style="cursor:pointer;color:#93BB28;" onclick="immiexecute(\''+row.type+'\')" >执行批次</a>'
+		    		}
+		    	}
+		    ]
+		]
+
+		});
+		  
+	})
+}
+		
+function immiexecute(type) {
+	$.ajax({
+		type : 'post',
+		url : '/job/addTask',
+		dataType : 'json',
+		data : {'type':type},
+		success : function(data) {
+			if(data.succ){
+				openWin(data.type);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			console.info(XMLHttpRequest.status);
+			console.info(XMLHttpRequest.readyStat);
+			console.info(textStatus);
+		}
+	});
+}
+
+var openWin = function(type){
+
+	var url = "/sche/sche_list?type="+type;
+	var index = Math.ceil(Math.random()*1000);
+	var title = '作业列表';
+
+	parent.x_admin_add_to_tab(title,url,true);
+
+}

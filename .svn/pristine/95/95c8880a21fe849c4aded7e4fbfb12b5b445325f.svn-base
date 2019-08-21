@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PaperMapper">
+	<select id="selectPaperByDate">
+		select 
+			id,user_id 
+		from 
+			apsc_kgo_link 
+		where 
+			pl_type in 
+				('WOS','中文期刊论文','学位论文','会议论文','英文期刊论文','endnote','noteexpress','refworks') 
+				and download_time >= '"+date+"'";
+	</select>
+	<select id="selectPaperByTaskid">
+		select 
+			id,user_id 
+		from 
+			apsc_kgo_link 
+		where 
+			id='"+taskid+"' ";
+	</select>
+	
+	<select id="selectAnCouByUpid">
+		SELECT 
+			count(*) count 
+		from 
+			apsc_paper_analyse 
+		WHERE 
+			uploadlogid='"+id+"'" ;
+	</select>
+	<select id="selectExCouByUpid">
+		SELECT 
+			count(*) count 
+		from 
+			apsc_paper_analyse_ext 
+		WHERE 
+			ext_name='title_keywords' 
+			and 
+			uploadlogid='"+id+"'"
+	</select>
+	<select id="selectRowByTaskid">
+		SELECT 
+			title,summary,uploadlogid,ID,wosid,main_heading 
+		from 
+			apsc_paper_analyse 
+		WHERE 
+			uploadlogid='"+id+"'" ;
+	</select>
+	<delete id="deleteExByUpid">
+		delete 
+		from 
+			apsc_paper_analyse_ext 
+		where 
+			uploadlogid='"+id+"' and 
+			(ext_name='title_keywords' 
+			or ext_name='abstract_keywords') ";
+	</delete>
+	
+</mapper>

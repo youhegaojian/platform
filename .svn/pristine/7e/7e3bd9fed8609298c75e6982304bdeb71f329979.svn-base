@@ -1,0 +1,561 @@
+package com.liming.utils;
+
+import edu.stanford.nlp.io.IOUtils;
+import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.util.CoreMap;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.liming.utils.Constants.LANGUAGE;
+
+public class KeywordProcess {
+
+    // 语言类型
+    private Constants.LANGUAGE lang = Constants.LANGUAGE.EN;
+    // 停用词
+    private Set<String> stopwords = null;
+    // 分词最小、最大长度
+    private int wordMin = 2;
+    // （0为不限制最大长度）
+    private int wordMax = 0;
+    // 每篇文章展示前topN个关键词（0为所有）
+    private int topN = 0;
+    // 打印日志
+    private boolean isDebug = false;
+    private Pattern wordpattern = Pattern.compile(Constants.WORD_REGULAR);
+    private Pattern notlastpattern = Pattern.compile(Constants.NOTLAST_REGULAR);
+
+    private Pattern enpattern = Pattern.compile(Constants.EN_REGULAR);
+    private Pattern cnpattern = Pattern.compile(Constants.CN_REGULAR);
+
+    private StanfordCoreNLP pipeline = null;
+
+    public KeywordProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, int topN, boolean isDebug) {
+        this.lang = lang;
+        this.wordMin = wordMin;
+        this.wordMax = wordMax;
+        this.topN = topN;
+        this.isDebug = isDebug;
+        try {
+            Properties props = new Properties();
+            if(Constants.LANGUAGE.CN == lang) {
+                props.load(IOUtils.readerFromString(Constants.CN_NLP_CONFIG));
+            } else {
+                props.load(IOUtils.readerFromString(Constants.EN_NLP_CONFIG));
+            }
+            this.pipeline = new StanfordCoreNLP(props);
+        } catch (IOException e) {
+            System.err.println("加载" + (Constants.LANGUAGE.CN == this.lang ? "中文" : "英文") + "语言模型失败！\n" + e.getMessage());
+        }
+//        loadStopwords(Constants.STOPWORDS);
+    }
+
+	public KeywordProcess(String lang,String ner) {
+		try {
+			Properties props = new Properties();
+			props.load(IOUtils.readerFromString("CoreNLP-english-ner.properties"));
+			this.pipeline = new StanfordCoreNLP(props);
+		} catch (IOException e) {
+			System.err.println("加载 ner-英文语言模型失败！\n" + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+    /**
+     * 加载停用词字典
+     * @param file 停用词字典URL
+     */
+    private void loadStopwords(String file) {
+        this.stopwords = new HashSet<>();
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(IOUtils.readerFromString(file));
+            String line = null;
+            while((line = bufferedReader.readLine()) != null) {
+                this.stopwords.add(line.trim());
+            }
+        } catch (Exception e) {
+            System.err.println("加载停用词字典失败！\n" + e.getMessage());
+        } finally {
+            try {
+                if(bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 把给定的文本按照完整句子进行分割
+     * 对于每个句子，进行分词和词性标注，并过滤掉停用词
+     * @param documents 原始文本
+     * @return 关键词
+     */
+    public List<Keyword> documentsHandler(String documents,Set<String> stops) {
+    	this.stopwords = stops;
+
+        List<Keyword> keywords_single = new ArrayList<>();
+        Annotation document = new Annotation(documents);
+        this.pipeline.annotate(document);
+        for (CoreMap sentence : document.get(SentencesAnnotation.class)) {
+            for (CoreLabel token : sentence.get(TokensAnnotation.class)) {
+                Keyword word = new Keyword();
+                word.setWord(token.get(LemmaAnnotation.class));
+                word.setPos(token.get(PartOfSpeechAnnotation.class).toLowerCase());
+                word.setStop(true);
+                if (this.stopwords == null || !this.stopwords.contains(word.getWord().toLowerCase())) {
+                    Matcher wordmacher = this.wordpattern.matcher(word.getPos());
+                    if (wordmacher.matches()) {
+                        word.setStop(false);
+                    }
+                }
+                if(Constants.LANGUAGE.EN == this.lang) {
+                    Matcher cnmacher = this.cnpattern.matcher(word.getWord());
+                    if (cnmacher.matches()) {
+                        word.setStop(true);
+                    }
+                }
+                if(Constants.LANGUAGE.CN == this.lang) {
+                    Matcher enmacher = this.enpattern.matcher(word.getWord());
+                    if (enmacher.matches()) {
+                        word.setStop(true);
+                    }
+                }
+                keywords_single.add(word);
+            }
+        }
+        return keywords_single;
+
+    }
+
+    /**
+     * 计算关键词组
+     * @param keywords_all
+     * @return
+     */
+    public List<List<Keyword>> keywordsGroupHandler(List<List<Keyword>> keywords_all) {
+
+        List<List<Keyword>> keywords_group_all = new ArrayList<>();
+
+        for(List<Keyword> keywords_single : keywords_all) {
+            boolean previous = false;
+            List<Keyword> keywords_group = null;
+            List<Keyword> keywords_group_single = new ArrayList<>();
+            for(Keyword keyword : keywords_single) {
+                if(previous) {
+                    if(keyword.isStop()) {
+                        previous = false;
+                    } else {
+                        Keyword word = new Keyword();
+                        word.setWord(keyword.getWord());
+                        word.setPos(keyword.getPos());
+                        keywords_group.add(word);
+                        if(keywords_group.size() < this.wordMax) {
+                            previous = true;
+                        } else {
+                            previous = false;
+                        }
+                    }
+                } else {
+                    if(keyword.isStop()) {
+                        previous = false;
+                    } else {
+                        if(keywords_group != null) {
+                            if (keywords_group.size() >= this.wordMin) {
+                                for(int i = keywords_group.size() - 1; i >= 0; i--) {
+                                    Matcher notlastmacher = this.notlastpattern.matcher(keywords_group.get(i).getPos());
+                                    if (notlastmacher.matches()) {
+                                        keywords_group.remove(i);
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                if(keywords_group.size() >= this.wordMin) {
+                                    String keywords_group_str = "";
+                                    for (int i = 0, len = keywords_group.size(); i < len; i++) {
+                                        keywords_group_str += keywords_group.get(i).getWord();
+                                        if (Constants.LANGUAGE.EN == this.lang) {
+                                            keywords_group_str += " ";
+                                        }
+                                    }
+                                    // 去重并统计频率
+                                    boolean is_exit = false;
+                                    for(Keyword words_group : keywords_group_single) {
+                                        if(words_group.getWord().equals(keywords_group_str.trim())) {
+                                            words_group.setFrequency(words_group.getFrequency() + 1);
+                                            is_exit = true;
+                                        }
+                                    }
+                                    if(!is_exit) {
+                                        Keyword keywords_group_in_single = new Keyword();
+                                        keywords_group_in_single.setWord(keywords_group_str.trim());
+                                        keywords_group_in_single.setStop(false);
+                                        keywords_group_single.add(keywords_group_in_single);
+                                    }
+                                }
+                            }
+                        }
+                        Keyword word = new Keyword();
+                        keywords_group = new ArrayList<>();
+                        word.setWord(keyword.getWord());
+                        word.setPos(keyword.getPos());
+                        keywords_group.add(word);
+                        previous = true;
+                    }
+                }
+            }
+            if(this.isDebug) {
+                for(Keyword keywords_group_in_single : keywords_group_single) {
+                    System.out.print(keywords_group_in_single.getWord() + "(" + keywords_group_in_single.getFrequency() + ")");
+                }
+                System.out.println();
+            }
+            keywords_group_all.add(keywords_group_single);
+        }
+
+        return keywords_group_all;
+
+    }
+
+    /**
+     * 根据指标计算关键词组
+     * @param keywords_all
+     * @param indicator
+     * @return
+     */
+    public List<List<Keyword>> keywordsGroupHandlerWithIndicator(List<List<Keyword>> keywords_all, Constants.INDICATOR indicator) {
+
+        List<List<Keyword>> keywords_group_all = new ArrayList<>();
+        // 在原始分词结果上标记关键词组, 并计算关键词组的权值
+        for(List<Keyword> keywords_single : keywords_all) {
+            boolean previous = false;
+            List<Keyword> keywords_group = null;
+            double indicator_group = 0.0;
+            List<Keyword> keywords_group_single = new ArrayList<>();
+            for(Keyword keyword : keywords_single) {
+                if(previous) {
+                    if(keyword.isStop()) {
+                        previous = false;
+                    } else {
+                        Keyword word = new Keyword();
+                        word.setWord(keyword.getWord());
+                        word.setPos(keyword.getPos());
+                        keywords_group.add(word);
+                        if(Constants.INDICATOR.TFIDF == indicator) {
+                            indicator_group += keyword.getTfidf();
+                        } else {
+                            indicator_group += keyword.getTextrank();
+                        }
+                        if(keywords_group.size() < this.wordMax) {
+                            previous = true;
+                        } else {
+                            previous = false;
+                        }
+                    }
+                } else {
+                    if(keyword.isStop()) {
+                        previous = false;
+                    } else {
+                        if(keywords_group != null) {
+                            if (keywords_group.size() >= this.wordMin) {
+                                for(int i = keywords_group.size() - 1; i >= 0; i--) {
+                                    Matcher notlastmacher = this.notlastpattern.matcher(keywords_group.get(i).getPos());
+                                    if (notlastmacher.matches()) {
+                                        keywords_group.remove(i);
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                if(keywords_group.size() >= this.wordMin) {
+                                    String keywords_group_str = "";
+                                    for (int i = 0, len = keywords_group.size(); i < len; i++) {
+                                        keywords_group_str += keywords_group.get(i).getWord();
+                                        if (Constants.LANGUAGE.EN == this.lang) {
+                                            keywords_group_str += " ";
+                                        }
+                                    }
+                                    Keyword keywords_group_in_single = new Keyword();
+                                    keywords_group_in_single.setWord(keywords_group_str.trim());
+                                    if(Constants.INDICATOR.TFIDF == indicator) {
+                                        keywords_group_in_single.setTfidf(indicator_group);
+                                    } else {
+                                        keywords_group_in_single.setTextrank(indicator_group);
+                                    }
+                                    keywords_group_in_single.setStop(false);
+                                    keywords_group_single.add(keywords_group_in_single);
+                                }
+                            }
+                        }
+                        keywords_group = new ArrayList<>();
+                        Keyword word = new Keyword();
+                        word.setWord(keyword.getWord());
+                        word.setPos(keyword.getPos());
+                        keywords_group.add(word);
+                        if(Constants.INDICATOR.TFIDF == indicator) {
+                            indicator_group += keyword.getTfidf();
+                        } else {
+                            indicator_group += keyword.getTextrank();
+                        }
+                        previous = true;
+                    }
+                }
+            }
+            if(this.isDebug) {
+                for(Keyword keywords_group_in_single : keywords_group_single) {
+                    if(Constants.INDICATOR.TFIDF == indicator) {
+                        System.out.print(keywords_group_in_single.getWord() + "(" + keywords_group_in_single.getTfidf() + ")");
+                    } else {
+                        System.out.print(keywords_group_in_single.getWord() + "(" + keywords_group_in_single.getTextrank() + ")");
+                    }
+                }
+                System.out.println();
+            }
+//            System.out.println();
+            keywords_group_all.add(keywords_group_single);
+        }
+
+        return keywords_group_all;
+
+    }
+
+    /**
+     * 根据指标选择前topN个关键词组
+     * @param keywords_all
+     * @param indicator
+     * @return
+     */
+    public List<Set<String>> topKeywordsGroupHandler(List<List<Keyword>> keywords_all, Constants.INDICATOR indicator) {
+
+        List<Set<String>> top_keywords_group_all = new ArrayList<>();
+        for(List<Keyword> keywords_single : keywords_all) {
+            if(Constants.INDICATOR.TFIDF == indicator) {
+                Collections.sort(keywords_single, new Comparator<Keyword>() {
+                    @Override
+                    public int compare(Keyword o1, Keyword o2) {
+                        double diff = o1.getTfidf() - o2.getTfidf();
+                        if(diff > 0) {
+                            return -1;
+                        } else if(diff < 0) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                });
+            } else {
+                Collections.sort(keywords_single, new Comparator<Keyword>() {
+                    @Override
+                    public int compare(Keyword o1, Keyword o2) {
+                        double diff = o1.getTextrank() - o2.getTextrank();
+                        if(diff > 0) {
+                            return -1;
+                        } else if(diff < 0) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                });
+            }
+            Set<String> top_keywords_group_single = new HashSet<>();
+            for(Keyword keyword : keywords_single) {
+                if(this.topN > 0 && top_keywords_group_single.size() >= this.topN) {
+                    break;
+                } else {
+                    top_keywords_group_single.add(keyword.getWord());
+                    if(this.isDebug) {
+                        if(Constants.INDICATOR.TFIDF == indicator) {
+                            System.out.print(keyword.getWord() + "(" + keyword.getTfidf() + ")");
+                        } else {
+                            System.out.print(keyword.getWord() + "(" + keyword.getTextrank() + ")");
+                        }
+                    }
+                }
+            }
+            if(this.isDebug) {
+//                System.out.println();
+            }
+            top_keywords_group_all.add(top_keywords_group_single);
+        }
+        return top_keywords_group_all;
+
+    }
+        
+	public KeywordProcess(Constants.LANGUAGE lang) {		
+		this.lang = lang;
+		
+		try {
+			Properties props = new Properties();
+			if(Constants.LANGUAGE.CN == lang) {
+                props.load(IOUtils.readerFromString(Constants.CN_NLP_CONFIG));
+            } else {
+                props.load(IOUtils.readerFromString(Constants.EN_NLP_CONFIG));
+            }			
+			this.pipeline = new StanfordCoreNLP(props);
+		} catch (IOException e) {
+			System.err.println("加载" + (Constants.LANGUAGE.CN == this.lang ? "中文" : "英文") + "语言模型失败！\n" + e.getMessage());
+			e.printStackTrace();
+		}
+	}			
+
+	/**
+	 * 提取关键词
+	 * 
+	 * @param documents        ：要提取关键词的文本
+	 * @param lang             ：sentences的语言类型 cn - 中文 en - 英文
+	 * @param wordsMin         ：最小单词长度
+	 * @param wordsMax         ：最大单词长度
+	 * @param stopwords        ：停用词
+	 * @param alias_dictionary ：关联词
+	 * @return 关键词列表
+	 * @throws IOException
+	 */
+	public Map<String, Integer> analyseKeywords(String documents, int wordsMin, int wordsMax, Set<String> stopwords,
+			Map<String, String> alias_dictionary) throws IOException {
+		// 关键词
+		Map<String, Integer> keywords = new HashMap<>();
+
+		Annotation document = new Annotation(documents);
+		this.pipeline.annotate(document);
+
+		// 句子
+		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
+		// 词形
+		List<String> lemmas = new ArrayList<>();
+		// 词性
+		List<String> poss = new ArrayList<>();
+
+		String sentenceWithPos = "";
+		for (CoreMap sentence : sentences) {
+			for (CoreLabel token : sentence.get(TokensAnnotation.class)) {
+				lemmas.add(token.get(LemmaAnnotation.class));
+				poss.add(token.get(PartOfSpeechAnnotation.class));
+			}
+			sentenceWithPos = "";
+			for (int i = 0, len = lemmas.size(); i < len; i++) {
+				String key = lemmas.get(i);
+				String value = poss.get(i);
+				// 去除标点符号--注释调解决很多酸一类的字符串
+//				String punctuationReg = "[\\,\\.\\!\\?\\:\\;\\(\\)\\[\\]\\\"\\'\\/]";
+//			    Pattern punctuationPattern = Pattern.compile(punctuationReg);
+//			    Matcher punctuationMatcher = punctuationPattern.matcher(value);
+//				if(punctuationMatcher.matches() || "PU".equals(value)) {
+//					continue;
+//				}
+				// 去除停用词
+				if (stopwords != null && stopwords.contains(key.toLowerCase())) {
+					continue;
+				}
+				// 替换关联词
+				if (alias_dictionary != null && alias_dictionary.containsKey(key)) {
+					String toAlias = alias_dictionary.get(key);
+					for (int j = 0; j < len; j++) {
+						if (key.equals(lemmas.get(j))) {
+							lemmas.set(j, toAlias);
+						}
+					}
+				}
+				sentenceWithPos += key + "/" + value + " ";
+			}
+			// System.out.println(sentenceWithPos.toLowerCase());
+
+			// 提取关键词
+			String word = "(?:[\\w]+[-]*[\\w]*)";
+			String posType = "N([NRPS]?)".toLowerCase();
+			if (Constants.LANGUAGE.CN == lang) {
+				word = "(?:[\\u4E00-\\u9FA5]+)";
+			}
+			// 名词正则
+			String nounPTN = word + "/" + posType;
+			// wordsMin 到 wordsMax 个名词词组正则
+			String nounGroupPTN = "(?:" + nounPTN + "\\s+){" + wordsMin + "," + wordsMax + "}";
+			// 形容词正则
+			String adjPTN = "(?:" + word + "/(JJ([RS]?)|VB([DGNPZ]?))\\s+)";
+			// 关键词识别正则
+			String phrasePTN = "(" + adjPTN + "*" + nounGroupPTN + ")";
+			Pattern phrasePattern = Pattern.compile(phrasePTN.toLowerCase());
+			Matcher phraseMatcher = phrasePattern.matcher(sentenceWithPos.toLowerCase());
+			while (phraseMatcher.find()) {
+				String phrase = phraseMatcher.group(1).replaceAll("/" + posType + "|/JJ([RS]?)|/VB([DGNPZ]?)".toLowerCase(), "").trim();
+				if (Constants.LANGUAGE.CN == lang) {
+					phrase = phrase.replaceAll(" ", "");
+				}
+				if (keywords.containsKey(phrase)) {
+					// 存在, 在原有记录上数量 + 1
+					keywords.put(phrase, keywords.get(phrase) + 1);
+				} else {
+					// 不存在, 判断是否合并
+					boolean shouldMerge = false;
+					String shouldMergeKey = "";
+					for (String key : keywords.keySet()) {
+						if (key.contains(phrase) || phrase.contains(key)) {
+							shouldMergeKey = key;
+							shouldMerge = true;
+						}
+					}
+					// 合并重复关键词
+					if (!shouldMerge) {
+						keywords.put(phrase, 1);
+					} else {
+						if (shouldMergeKey.contains(phrase)) {
+							keywords.put(phrase, keywords.get(shouldMergeKey) + 1);
+							keywords.remove(shouldMergeKey);
+						}
+						if (phrase.contains(shouldMergeKey)) {
+							keywords.put(shouldMergeKey, keywords.get(shouldMergeKey) + 1);
+						}
+					}
+				}
+			}
+		}
+		return keywords;
+	}
+
+	public List<String> NationExtract(String txtWord) {
+		List<String> nations = new ArrayList<>();
+		Annotation document = new Annotation(txtWord);
+		this.pipeline.annotate(document);
+		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
+		for (CoreMap sentence : sentences) {
+			for (CoreLabel token : sentence.get(TokensAnnotation.class)) {
+				String ne = token.get(NamedEntityTagAnnotation.class);
+				if ("COUNTRY".equals(ne)) {
+					String lema = token.get(TextAnnotation.class);
+					nations.add(lema);
+				}
+			}
+		}
+		return nations;
+
+	}
+
+	public List<String> lemmatize(String txtWord) {
+		List<String> lemas = new ArrayList<>();
+		Annotation document = new Annotation(txtWord);
+		this.pipeline.annotate(document);
+		List<CoreMap> sentences = document.get(SentencesAnnotation.class);
+		for (CoreMap sentence : sentences) {
+			for (CoreLabel token : sentence.get(TokensAnnotation.class)) {
+				String lema = token.get(LemmaAnnotation.class);
+				lemas.add(lema);
+			}
+		}
+		return lemas;
+	}
+    
+
+}

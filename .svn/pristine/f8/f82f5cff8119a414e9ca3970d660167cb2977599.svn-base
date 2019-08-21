@@ -1,0 +1,44 @@
+<head xmlns:th="http://www.w3.org/1999/xhtml">
+<meta charset="utf-8">
+<link th:href="@{/static/layui/css/layui.css}" rel="stylesheet" />
+<link th:href="@{/static/font-awesome/css/font-awesome.min.css}"
+	rel="stylesheet" />
+
+<script th:src="@{/static/jquery/jquery.js}" type="text/javascript"></script>
+<script th:src="@{/static/layui/layui.js}" type="text/javascript"></script>
+<script th:src="@{/static/js/sche/sche_list_unexecuted.js}" type="text/javascript"></script>
+
+<style>
+.div_country_detail_class {
+	padding: 10px;
+}
+
+.layui-table td {
+	font-family: sans-serif;
+	font-size: 14px;
+}
+
+</style>
+</head>
+<body>
+	<div class="div_country_detail_class">
+	<form class="layui-form" action="">
+		<div class="layui-inline">
+			<div class="layui-input-inline">
+        		<select id="pltype" name="modules" lay-verify="required" lay-filter="pltype">
+					<option id="pltype001">中文专利</option>
+					<option id="pltype002">英文专利</option>
+					<option id="pltype003">会议论文</option>
+					<option id="pltype004">中文期刊论文</option>
+					<option id="pltype005">英文期刊论文</option>
+					<option id="pltype006">学位论文</option>
+					<option id="pltype007">科睿唯安</option>
+					<option id="pltype008">WOS</option>
+				</select>
+			</div>
+		</div>
+		<table id="sche_list_unexecuted" lay-filter="test"></table>
+	</form>
+	</div>
+</body>
+

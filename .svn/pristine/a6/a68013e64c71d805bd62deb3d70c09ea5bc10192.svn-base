@@ -1,0 +1,7 @@
+package com.liming.service;
+
+import com.liming.utils.JSONResult;
+
+public interface ApscTaskDefineScheduleService {
+    JSONResult getList(int page,int pageSize);
+}

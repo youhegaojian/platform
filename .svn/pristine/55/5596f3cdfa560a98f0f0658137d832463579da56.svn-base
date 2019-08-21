@@ -1,0 +1,52 @@
+package com.liming.domain;
+
+import javax.persistence.*;
+
+@Table(name = "apsc_dict_chi_category")
+public class ApscDictChiCategory {
+    /**
+     * 代码
+     */
+    private String code;
+
+    /**
+     * 中文名称
+     */
+    private String name;
+
+    /**
+     * 获取代码
+     *
+     * @return code - 代码
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * 设置代码
+     *
+     * @param code 代码
+     */
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    /**
+     * 获取中文名称
+     *
+     * @return name - 中文名称
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * 设置中文名称
+     *
+     * @param name 中文名称
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+}

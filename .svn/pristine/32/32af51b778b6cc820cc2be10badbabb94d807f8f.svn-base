@@ -1,0 +1,71 @@
+package com.example.demo.service.impl;
+
+import java.util.List;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.demo.domain.JSONDomain;
+import com.example.demo.mapper.ListApsc;
+import com.example.demo.service.ListApscService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+/**
+ * 显示task三表的service接口实现
+ * 
+ */
+
+@Service
+@Transactional
+public class ListApscServiceImpl implements ListApscService {
+	@Autowired
+	private ListApsc la;
+	/**
+	 * 首页数据显示的service接口实现方法
+	 * 
+	 */
+	@Override
+	public JSONDomain defineScheList(int page, int limit) {
+		PageHelper.startPage(page, limit);
+		List<Map> lists=la.defineScheList();
+		//将结果集封装到PageInfo中
+		PageInfo<Map> pageInfo=new PageInfo<>(lists);
+		//将pageInfo中的数据封装到自定义数据类型中
+		return JSONDomain.ok(pageInfo);
+	}
+	/**
+	 * 次页数据显示的service接口实现方法
+	 * 
+	 */
+	@Override
+	public JSONDomain ScheList(int page,int limit, String type) {
+		PageHelper.startPage(page, limit);
+		List<Map> lists=la.ScheList(type);
+		//将结果集封装到PageInfo中
+		PageInfo<Map> pageInfo=new PageInfo<>(lists);
+		//将pageInfo中的数据封装到自定义数据类型中
+		return JSONDomain.ok(pageInfo);
+	}
+	/**
+	 * 第三页数据显示的service接口实现方法
+	 * 
+	 */
+	@Override
+	public JSONDomain ScheDetailList(int page,int limit, String task_id) {
+		PageHelper.startPage(page, limit);
+		List<Map> lists=la.ScheDetailList(task_id);
+		//将结果集封装到PageInfo中
+		PageInfo<Map> pageInfo=new PageInfo<>(lists);
+		//将pageInfo中的数据封装到自定义数据类型中
+		return JSONDomain.ok(pageInfo);
+	}
+	
+	
+	
+
+	
+
+}

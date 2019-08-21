@@ -1,0 +1,252 @@
+package com.liming.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.liming.domain.ApscKgoLink;
+import com.liming.domain.ApscPaperAnalyse;
+import com.liming.domain.ApscPaperAnalyseExt;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.mapper.ApscKgoLinkMapper;
+import com.liming.mapper.ApscPaperAnalyseExtMapper;
+import com.liming.mapper.ApscPaperAnalyseMapper;
+import com.liming.mapper.ApscTaskDetailScheduleMapper;
+import com.liming.mapper.ApscTaskScheduleMapper;
+import com.liming.service.LemmaBatchService;
+import com.liming.utils.Constants;
+import com.liming.utils.DateUtils;
+import com.liming.utils.KeywordProcess;
+
+import edu.stanford.nlp.util.StringUtils;
+
+@Service
+public class LemmaBatchServiceImpl implements LemmaBatchService {
+	
+	@Autowired
+	private ApscTaskScheduleMapper mapper;
+	
+	@Autowired
+	private ApscTaskDetailScheduleMapper detailMapper;
+	
+	@Autowired
+	private ApscKgoLinkMapper kgoMapper;
+	
+	@Autowired
+	private ApscPaperAnalyseMapper paperAnalyseMapper;
+	
+	@Autowired
+	private ApscPaperAnalyseExtMapper paperAnalyseExtMapper;
+	
+	private KeywordProcess kp_en = null;
+	
+	private ApscTaskSchedule apscTaskSchedule = null;
+	
+	private ApscTaskDetailSchedule apscTaskDetailSchedule = null;
+	
+	int result = 0;
+
+	@Override
+	public boolean lemmatize(ApscTaskSchedule taskSchedule) {
+		// TODO Auto-generated method stub
+		try {
+			kp_en = new KeywordProcess(Constants.LANGUAGE.EN);
+			apscTaskSchedule = taskSchedule;
+			apscTaskSchedule.setState("2");
+			
+			result = mapper.updateByPrimaryKeySelective(apscTaskSchedule);
+			apscTaskDetailSchedule = new ApscTaskDetailSchedule(apscTaskSchedule.getTaskId(),
+					apscTaskSchedule.getBeginTime(), "004");
+
+			if (result > 0) {
+				System.out.println("-----调度任务表插入数据成功....");
+
+				System.out.println("-----nlp jar包加载完成，开始组织数据....");
+				
+				ApscKgoLink kgo = new ApscKgoLink();
+				kgo.setId(apscTaskSchedule.getTaskid());
+				
+				List<ApscKgoLink> kgoList = kgoMapper.getKgoListLemma(kgo);				
+
+				for (int i = 0, len = kgoList.size(); i < len; i++) {
+					System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+					System.out.println(
+							"-----开始组织apsc_paper_analyse表 id:" + kgoList.get(i).getId().toString() + " 的数据....");
+
+					List<ApscPaperAnalyse> list = paperAnalyseMapper.getApscPaperAnalyseList(kgoList.get(i).getId().toString());
+
+					if (list != null && list.size() > 0) {
+						apscTaskDetailSchedule.setFileId(kgoList.get(i).getId());
+						apscTaskDetailSchedule.setSumRec(list.size());
+						apscTaskDetailSchedule.setTabName("apsc_paper_analyse");
+						apscTaskDetailSchedule.setUserId(kgoList.get(i).getUserId());
+						result = detailMapper.insert(apscTaskDetailSchedule);
+						if (result > 0) {
+							System.out.println("-----------调度任务明细表插入数据成功...");
+						}
+
+						System.out.println("-----当前任务的数据量为：" + list.size());
+						for (int j = 0, leng = list.size(); j < leng; j++) {
+							List<String> lemms = kp_en.lemmatize(list.get(j).getMainHeading().toString());
+							list.get(j).setMainHeading(StringUtils.join(lemms, " "));
+						}
+
+						getPaperAnalyseList(list, kgoList, i);
+						
+					}
+
+					System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+					System.out.println(
+							"-----开始组织apsc_paper_analyse_ext表 id:" + kgoList.get(i).getId().toString() + " 的数据....");
+
+					List<ApscPaperAnalyseExt> ext_list = paperAnalyseExtMapper.getApscPaperAnalyseExtList(kgoList.get(i).getId().toString());
+
+					apscTaskDetailSchedule.setFileId(kgoList.get(i).getId());
+					apscTaskDetailSchedule.setSumRec(ext_list.size());
+					apscTaskDetailSchedule.setTabName("apsc_paper_analyse_ext");
+					apscTaskDetailSchedule.setBeginTime(DateUtils.getCurrDateTimeStr());
+					result = detailMapper.insert(apscTaskDetailSchedule);
+					if (result > 0) {
+						System.out.println("-----------调度任务明细表插入数据成功...");
+					}
+
+					if (ext_list != null && ext_list.size() > 0) {
+						System.out.println("-----当前任务的数据量为：" + ext_list.size());
+						for (int j = 0, leng = ext_list.size(); j < leng; j++) {
+							List<String> lemms = kp_en.lemmatize(ext_list.get(j).getExtVal().toString());
+							ext_list.get(j).setExtVal(StringUtils.join(lemms, " "));
+						}
+
+						getPaperAnalyseExtList(list, ext_list, kgoList, i);
+					}
+
+				}
+
+				result = setTaskState("4");
+				if (result > 0) {
+					System.out.println("--------更新完成时间成功！");
+				}
+				System.out.println("---插入数据 全部完成！");
+				System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			setTaskState("3");			
+			
+			e.printStackTrace();
+
+			return false;
+		}
+	}
+	
+	public void getPaperAnalyseList(List<ApscPaperAnalyse> list, List<ApscKgoLink> kgoList, int i) {
+		int leng = list.size();
+		int offset = 1000;
+		int n = leng / offset;
+		int y = leng % offset;
+		if (y != 0) {
+			n = n + 1;
+		}
+
+		if (leng > offset) {
+			List<ApscPaperAnalyse> _list = null;
+			for (int j = 0; j < n; j++) {
+				int end = ((j + 1) * offset) > leng ? leng : ((j + 1) * offset);
+				_list = list.subList(j * offset, end);
+				result = paperAnalyseMapper.insertList(_list);
+				if (result > 0) {
+					apscTaskDetailSchedule.setFinishRec(end);
+					result = detailMapper.updateByPrimaryKeySelective(apscTaskDetailSchedule);
+					if (result > 0) {
+						System.out.println("----id:" + apscTaskDetailSchedule.getTaskId()
+								+ "更新已完成记录数成功...");
+					}
+					System.out.println(
+							"---id:" + kgoList.get(i).getId().toString() + "插入数据 前" + end + "条成功！");
+				}
+				;
+			}
+
+			apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+			result = detailMapper.updateByPrimaryKeySelective(apscTaskDetailSchedule);
+			if (result > 0) {
+				System.out.println("-------更新完成时间成功...");
+			}
+		} else {
+			result = paperAnalyseMapper.insertList(list);
+			if (result > 0) {
+				apscTaskDetailSchedule.setFinishRec(list.size());
+				apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+				result = detailMapper.updateByPrimaryKeySelective(apscTaskDetailSchedule);
+				if (result > 0) {
+					System.out.println("----id:" + apscTaskDetailSchedule.getTaskId()
+							+ "更新已完成记录数成功...");
+				}
+				System.out.println("---id:" + kgoList.get(i).getId().toString() + " 插入数据完成！");
+			}
+
+		}
+	}
+	
+	public void getPaperAnalyseExtList(List<ApscPaperAnalyse> list,List<ApscPaperAnalyseExt> ext_list, List<ApscKgoLink> kgoList, int i) {
+		int leng = ext_list.size();
+		int offset = 1000;
+		int n = leng / offset;
+		int y = leng % offset;
+		if (y != 0) {
+			n = n + 1;
+		}
+
+		if (leng > offset) {
+			List<ApscPaperAnalyseExt> _list = null;
+
+			for (int j = 0; j < n; j++) {
+				int end = ((j + 1) * offset) > leng ? leng : ((j + 1) * offset);
+				_list = ext_list.subList(j * offset, end);
+				result = paperAnalyseExtMapper.insertList(_list);
+				if (result > 0) {
+					apscTaskDetailSchedule.setFinishRec(end);
+					result = detailMapper.updateByPrimaryKeySelective(apscTaskDetailSchedule);
+					if (result > 0) {
+						System.out.println("----id:" + apscTaskDetailSchedule.getTaskId()
+								+ "更新已完成记录数成功...");
+					}
+					System.out.println(
+							"---id:" + kgoList.get(i).getId().toString() + "插入数据 前" + end + "条成功！");
+				}
+			}
+
+			apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+			result = detailMapper.updateByPrimaryKeySelective(apscTaskDetailSchedule);
+			if (result > 0) {
+				System.out.println("-------更新完成时间成功...");
+			}
+		} else {
+			result = paperAnalyseExtMapper.insertList(ext_list);
+
+			if (result > 0) {
+				apscTaskDetailSchedule.setFinishRec(list.size());
+				apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+				result = detailMapper.updateByPrimaryKeySelective(apscTaskDetailSchedule);
+				if (result > 0) {
+					System.out.println("----id:" + apscTaskDetailSchedule.getTaskId()
+							+ "更新已完成记录数成功...");
+				}
+				System.out.println("---id:" + kgoList.get(i).getId().toString() + " 插入数据完成！");
+			}
+
+		}
+	}
+	
+	public int setTaskState(String state) {
+		apscTaskSchedule.setState(state);
+		apscTaskSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+		return mapper.updateByPrimaryKeySelective(apscTaskSchedule);
+	}
+
+}

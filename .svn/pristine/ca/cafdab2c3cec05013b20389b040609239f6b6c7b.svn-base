@@ -1,0 +1,17 @@
+package com.liming.service;
+
+import java.util.List;
+
+import com.liming.domain.ApscPaperAnalyse;
+
+public interface ApscPaperAnalyseService {
+
+	int getCount(String id);
+
+	List<ApscPaperAnalyse> getPaperList(String id, int offset);
+
+	void updateSpecialChars(String id);
+
+	int getPaperListCount(String uploadlogid);
+
+}

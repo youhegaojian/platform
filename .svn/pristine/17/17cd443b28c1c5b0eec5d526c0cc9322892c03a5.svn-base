@@ -1,0 +1,220 @@
+package com.liming.keyword;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.example.demo.domain.ScheduleDomain;
+import com.example.demo.utils.DateUtils;
+import com.example.demo.utils.SqlUtils;
+import com.liming.utils.DBUtil;
+
+/**
+ * 	更新apsc_paper_analyse_ext表的ext_val字段的数据
+ *  1.查询数据库获取要匹配的数据：select * from apsc_paper_analyse_ext where ext_name = 'subject' and length(ext_val)>'2' 
+			and uploadlogid in(SELECT  id from apsc_kgo_link where pl_type in('会议论文','中文期刊论文','英文期刊论文'))
+	2.查询出字典表中的数据：SELECT code from apsc_dict_chi_category
+	3.遍历集合，
+	 	截取3位长度，与字典表数据是否匹配？
+	 	匹配，更新数据；
+	 	否则，截取2位长度，匹配？是，更新数据；否，不变。
+	4.最后将得到的新集合，替换到表中
+ * @author lcb
+ */
+public class Replace_apsc_paper_analyse_ext {
+	public static void main(String[] args) {
+		Replace_apsc_paper_analyse_ext a=new Replace_apsc_paper_analyse_ext("");
+		a.replace();
+	}
+	ScheduleDomain sche = null;
+	public Replace_apsc_paper_analyse_ext(String task_id) {
+		sche = new ScheduleDomain("005", task_id);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public boolean replace() {
+		try {
+		String papersql="select * from apsc_paper_analyse_ext where ext_name = 'subject' and length(ext_val)>'2'"
+				+ " and uploadlogid in(SELECT  id from apsc_kgo_link where pl_type in('会议论文','中文期刊论文','英文期刊论文'))";
+		List<Map> paperlist=SqlUtils.query(papersql);
+		
+		SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(), 
+    			new String[] {"state"});
+    	sche.getDetail_sche_list().get(0).put("sum_rec", paperlist.size());
+    	sche.getDetail_sche_list().get(0).put("file_id", 0);
+    	sche.getDetail_sche_list().get(0).put("tab_name", "apsc_paper_analyse_ext");
+    	sche.getDetail_sche_list().get(0).put("user_id","");
+    	SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(), sche.getDetail_table(), null);
+		
+		String dictsql="SELECT code from apsc_dict_chi_category";
+		List<Map> dictlist=SqlUtils.query(dictsql);
+		List list=new ArrayList<>();//使用contains的集合必须为顺序表集合
+		for (int i = 0; i < dictlist.size(); i++) {
+			list.add(dictlist.get(i).get("code"));
+		}
+		for (int i = 0; i < paperlist.size(); i++) {
+			String ext_val=paperlist.get(i).get("ext_val").toString();
+			String ext_val1= ext_val.substring(0, 3).toUpperCase();
+			String ext_val2= ext_val.substring(0, 2).toUpperCase();
+			if (list.contains(ext_val1)) {
+				paperlist.get(i).put("ext_val", ext_val1);
+			}else if(list.contains(ext_val2) ) {
+				paperlist.get(i).put("ext_val", ext_val2);
+			}
+		} 
+		String[] headers = new String[]{"ID","paper_id","ext_name","ext_val","uploadlogid"};
+		String insertsql=SqlUtils.sqlMake(paperlist, headers);
+        //System.out.println(insertsql);
+		SqlUtils.insert(insertsql);
+        
+		String updatesql1="update apsc_task_schedule set end_time='"+DateUtils.getCurrDateTimeStr()
+		+"',state='4' where task_id="+sche.getDetail_sche_list().get(0).get("task_id");
+		SqlUtils.UpdateOrDelete(updatesql1);//修改调度表
+		String updatesql2="update apsc_task_detail_schedule set end_time='"+DateUtils.getCurrDateTimeStr()
+		+"',finish_rec='"+paperlist.size()+"' where task_id="+sche.getDetail_sche_list().get(0).get("task_id");
+	    SqlUtils.UpdateOrDelete(updatesql2);//修改明细表
+	    if (paperlist.size()==0) {
+	    	String del1="delete from apsc_task_schedule  where task_id="+sche.getDetail_sche_list().get(0).get("task_id");
+			SqlUtils.UpdateOrDelete(del1);//删除调度表
+			String del2="delete from apsc_task_detail_schedule  where task_id="+sche.getDetail_sche_list().get(0).get("task_id");
+			SqlUtils.UpdateOrDelete(del2);//删除调度表
+		}
+	    return true;
+		} catch (Exception e) {
+			sche.getSche_list().get(0).put("state", "3");
+			SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(),
+					new String[] { "end_time" });
+			e.printStackTrace();
+			return false;
+		}
+	}
+//	@SuppressWarnings({  "rawtypes" })
+/*	public String sqlMake(List<Map<String, Object>> list, String[] headers) {
+    	StringBuffer sql = new StringBuffer();
+    	sql.append("replace into apsc_paper_analyse_ext(");//apsc_research_project_data_copy
+    	for (int i = 0; i < headers.length; i++) {
+    		if (i < headers.length - 1) {
+    			sql.append(headers[i]).append(",");
+    		} else {
+    			sql.append(headers[i]).append(") value ");
+    		}
+    	}
+    	
+    	for (int i = 0; i < list.size(); i++) {
+    		Map map = list.get(i);
+    		sql.append("(");
+    		for (int j = 0; j < headers.length; j++) {
+    			if (j < headers.length - 1) {
+    				sql.append("'");
+    				sql.append(map.get(headers[j]).toString());
+    				sql.append("',");
+    			} else {
+    				sql.append("'");
+					sql.append(map.get(headers[j]).toString());
+    				sql.append("'");
+    			}
+    		}
+    		if(i < list.size()-1) {
+    			sql.append("),");
+    		}else {
+    			sql.append(")");
+    		}
+    	}
+    	return sql.toString();
+    }
+	private List<Map<String, Object>> query(String sql) {
+		Connection conn =DBUtil.getConn(); //DBUtil.getConn("paper"); //DBUtil2.getConnection() ;
+		Object a=null;
+		List<Map<String, Object>> list=new ArrayList<>();
+		try {
+			conn.setAutoCommit(false);
+			PreparedStatement  pst = (PreparedStatement) conn.prepareStatement(" ");
+			// 添加执行SQL
+			ResultSet rs=pst.executeQuery(sql);
+			list=getListFromRs(rs);
+			// 提交事务
+			conn.commit();
+			pst.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}*/
+	 /** 
+     * 得到结果集存储到list中 
+     * @param rs 查询的结果集 
+     * @return  
+     * @throws SQLException 
+     */  
+/*    public static List<Map<String, Object>> getListFromRs(ResultSet rs) throws SQLException{  
+        ResultSetMetaData md = rs.getMetaData();//得到结果集列的属性  
+        int columns = md.getColumnCount();//得到记录有多少列  
+        int i;  
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();  
+        while(rs.next()){  
+            Map<String, Object> map = new HashMap<String, Object>();  
+            for(i = 0; i < columns; i++){  
+                map.put(md.getColumnName(i + 1), getValueByType(rs, md.getColumnType(i + 1), md.getColumnName(i + 1)));  
+            }  
+            list.add(map);  
+        }  
+        return list;  
+    }  
+    private static Object getValueByType(ResultSet rs, int type, String name) throws SQLException{  
+        switch(type){  
+            case Types.NUMERIC:  
+                    return rs.getLong(name);                  
+            case Types.VARCHAR:  
+                //if(rs.getString(name)==null){  
+                    //return "";  
+                //}  
+                return rs.getString(name);  
+            case Types.DATE:  
+                //if(rs.getDate(name)==null){  
+                    //return System.currentTimeMillis();  
+            //  }  
+                return rs.getDate(name);  
+            case Types.TIMESTAMP:  
+                return rs.getTimestamp(name).toString().substring(0,rs.getTimestamp(name).toString().length()-2);  
+            case Types.INTEGER:  
+                return rs.getInt(name);  
+            case Types.DOUBLE:  
+                return rs.getDouble(name);  
+            case Types.FLOAT:  
+                return rs.getFloat(name);  
+            case Types.BIGINT:  
+                return rs.getLong(name);  
+            default:  
+                return rs.getObject(name);  
+        }  
+    }  
+    
+	private void insert(String sql) {
+		Connection conn =DBUtil.getConn(); //DBUtil.getConn("paper"); //DBUtil2.getConnection() ;
+		try {
+			conn.setAutoCommit(false);
+			PreparedStatement  pst = (PreparedStatement) conn.prepareStatement(" ");
+			// 添加执行SQL
+			pst.addBatch(sql);
+			// 执行操作
+			int[] res = pst.executeBatch();
+			System.out.println("---------------插入成功");
+			// 提交事务
+			conn.commit();
+			pst.close();
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println("---------------插入失败");
+//			System.out.println("sql ----"+sql);
+			e.printStackTrace();
+		}
+	}*/
+}

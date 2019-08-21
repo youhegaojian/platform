@@ -1,0 +1,811 @@
+package com.liming.domain;
+
+import javax.persistence.*;
+
+@Table(name = "apsc_research_project_data")
+public class ApscResearchProjectData {
+    /**
+     * Id       
+     */
+    private Integer id;
+
+    /**
+     * 编号 
+     */
+    @Column(name = "appr_no")
+    private String apprNo;
+
+    /**
+     * 项目名称     
+     */
+    @Column(name = "pro_name")
+    private String proName;
+
+    /**
+     * 项目类别     
+     */
+    @Column(name = "pro_type")
+    private String proType;
+
+    /**
+     * 学科代码   
+     */
+    @Column(name = "app_code")
+    private String appCode;
+
+    /**
+     * 学科名称  
+     */
+    @Column(name = "app_name")
+    private String appName;
+
+    /**
+     * 项目负责人    
+     */
+    @Column(name = "pro_leader")
+    private String proLeader;
+
+    /**
+     * 负责人职称    
+     */
+    @Column(name = "leader_profession")
+    private String leaderProfession;
+
+    /**
+     * 机构
+     */
+    @Column(name = "support_inst")
+    private String supportInst;
+
+    /**
+     * 研究期限-开始日期
+     */
+    @Column(name = "begin_date")
+    private String beginDate;
+
+    /**
+     * 研究期限-开始年
+     */
+    @Column(name = "begin_year")
+    private String beginYear;
+
+    /**
+     * 研究期限-结束日期
+     */
+    @Column(name = "end_date")
+    private String endDate;
+
+    /**
+     * 研究期限-结束年
+     */
+    @Column(name = "end_year")
+    private String endYear;
+
+    /**
+     * 资助经费     
+     */
+    private String grants;
+
+    /**
+     * 转换后金额（换算成人民币）
+     */
+    @Column(name = "format_grants")
+    private String formatGrants;
+
+    /**
+     * 中文摘要     
+     */
+    @Column(name = "ab_cn")
+    private String abCn;
+
+    /**
+     * 英文摘要     
+     */
+    @Column(name = "ab_en")
+    private String abEn;
+
+    /**
+     * 结题摘要     
+     */
+    @Column(name = "final_ab")
+    private String finalAb;
+
+    /**
+     *  原文链接 
+     */
+    @Column(name = "ori_link")
+    private String oriLink;
+
+    /**
+     * 来源文件
+     */
+    private String txtname;
+
+    /**
+     * 基金单位
+     */
+    @Column(name = "fund_inst")
+    private String fundInst;
+
+    /**
+     * 国家
+     */
+    @Column(name = "project_country")
+    private String projectCountry;
+
+    @Column(name = "data_type")
+    private String dataType;
+
+    /**
+     *  datasource   
+     */
+    private String datasource;
+
+    /**
+     * 学科一级id
+     */
+    @Column(name = "app_id_one")
+    private String appIdOne;
+
+    /**
+     * 学科二级id
+     */
+    @Column(name = "app_id_two")
+    private String appIdTwo;
+
+    /**
+     * 学科三级id
+     */
+    @Column(name = "app_id_three")
+    private String appIdThree;
+
+    /**
+     * 学科一级名称
+     */
+    @Column(name = "app_name_one")
+    private String appNameOne;
+
+    /**
+     * 学科二级名称
+     */
+    @Column(name = "app_name_two")
+    private String appNameTwo;
+
+    /**
+     * 学科三级名称
+     */
+    @Column(name = "app_name_three")
+    private String appNameThree;
+
+    /**
+     * 标题关键字
+     */
+    @Column(name = "title_keywords")
+    private String titleKeywords;
+
+    /**
+     * 摘要关键字
+     */
+    @Column(name = "abstract_keywords")
+    private String abstractKeywords;
+
+    /**
+     * 中文主题词    
+     */
+    @Column(name = "keywords_cn")
+    private String keywordsCn;
+
+    /**
+     * 英文主题词    
+     */
+    @Column(name = "keywords_en")
+    private String keywordsEn;
+
+    /**
+     * 获取Id       
+     *
+     * @return id - Id       
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /**
+     * 设置Id       
+     *
+     * @param id Id       
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    /**
+     * 获取编号 
+     *
+     * @return appr_no - 编号 
+     */
+    public String getApprNo() {
+        return apprNo;
+    }
+
+    /**
+     * 设置编号 
+     *
+     * @param apprNo 编号 
+     */
+    public void setApprNo(String apprNo) {
+        this.apprNo = apprNo;
+    }
+
+    /**
+     * 获取项目名称     
+     *
+     * @return pro_name - 项目名称     
+     */
+    public String getProName() {
+        return proName;
+    }
+
+    /**
+     * 设置项目名称     
+     *
+     * @param proName 项目名称     
+     */
+    public void setProName(String proName) {
+        this.proName = proName;
+    }
+
+    /**
+     * 获取项目类别     
+     *
+     * @return pro_type - 项目类别     
+     */
+    public String getProType() {
+        return proType;
+    }
+
+    /**
+     * 设置项目类别     
+     *
+     * @param proType 项目类别     
+     */
+    public void setProType(String proType) {
+        this.proType = proType;
+    }
+
+    /**
+     * 获取学科代码   
+     *
+     * @return app_code - 学科代码   
+     */
+    public String getAppCode() {
+        return appCode;
+    }
+
+    /**
+     * 设置学科代码   
+     *
+     * @param appCode 学科代码   
+     */
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
+
+    /**
+     * 获取学科名称  
+     *
+     * @return app_name - 学科名称  
+     */
+    public String getAppName() {
+        return appName;
+    }
+
+    /**
+     * 设置学科名称  
+     *
+     * @param appName 学科名称  
+     */
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    /**
+     * 获取项目负责人    
+     *
+     * @return pro_leader - 项目负责人    
+     */
+    public String getProLeader() {
+        return proLeader;
+    }
+
+    /**
+     * 设置项目负责人    
+     *
+     * @param proLeader 项目负责人    
+     */
+    public void setProLeader(String proLeader) {
+        this.proLeader = proLeader;
+    }
+
+    /**
+     * 获取负责人职称    
+     *
+     * @return leader_profession - 负责人职称    
+     */
+    public String getLeaderProfession() {
+        return leaderProfession;
+    }
+
+    /**
+     * 设置负责人职称    
+     *
+     * @param leaderProfession 负责人职称    
+     */
+    public void setLeaderProfession(String leaderProfession) {
+        this.leaderProfession = leaderProfession;
+    }
+
+    /**
+     * 获取机构
+     *
+     * @return support_inst - 机构
+     */
+    public String getSupportInst() {
+        return supportInst;
+    }
+
+    /**
+     * 设置机构
+     *
+     * @param supportInst 机构
+     */
+    public void setSupportInst(String supportInst) {
+        this.supportInst = supportInst;
+    }
+
+    /**
+     * 获取研究期限-开始日期
+     *
+     * @return begin_date - 研究期限-开始日期
+     */
+    public String getBeginDate() {
+        return beginDate;
+    }
+
+    /**
+     * 设置研究期限-开始日期
+     *
+     * @param beginDate 研究期限-开始日期
+     */
+    public void setBeginDate(String beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    /**
+     * 获取研究期限-开始年
+     *
+     * @return begin_year - 研究期限-开始年
+     */
+    public String getBeginYear() {
+        return beginYear;
+    }
+
+    /**
+     * 设置研究期限-开始年
+     *
+     * @param beginYear 研究期限-开始年
+     */
+    public void setBeginYear(String beginYear) {
+        this.beginYear = beginYear;
+    }
+
+    /**
+     * 获取研究期限-结束日期
+     *
+     * @return end_date - 研究期限-结束日期
+     */
+    public String getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * 设置研究期限-结束日期
+     *
+     * @param endDate 研究期限-结束日期
+     */
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    /**
+     * 获取研究期限-结束年
+     *
+     * @return end_year - 研究期限-结束年
+     */
+    public String getEndYear() {
+        return endYear;
+    }
+
+    /**
+     * 设置研究期限-结束年
+     *
+     * @param endYear 研究期限-结束年
+     */
+    public void setEndYear(String endYear) {
+        this.endYear = endYear;
+    }
+
+    /**
+     * 获取资助经费     
+     *
+     * @return grants - 资助经费     
+     */
+    public String getGrants() {
+        return grants;
+    }
+
+    /**
+     * 设置资助经费     
+     *
+     * @param grants 资助经费     
+     */
+    public void setGrants(String grants) {
+        this.grants = grants;
+    }
+
+    /**
+     * 获取转换后金额（换算成人民币）
+     *
+     * @return format_grants - 转换后金额（换算成人民币）
+     */
+    public String getFormatGrants() {
+        return formatGrants;
+    }
+
+    /**
+     * 设置转换后金额（换算成人民币）
+     *
+     * @param formatGrants 转换后金额（换算成人民币）
+     */
+    public void setFormatGrants(String formatGrants) {
+        this.formatGrants = formatGrants;
+    }
+
+    /**
+     * 获取中文摘要     
+     *
+     * @return ab_cn - 中文摘要     
+     */
+    public String getAbCn() {
+        return abCn;
+    }
+
+    /**
+     * 设置中文摘要     
+     *
+     * @param abCn 中文摘要     
+     */
+    public void setAbCn(String abCn) {
+        this.abCn = abCn;
+    }
+
+    /**
+     * 获取英文摘要     
+     *
+     * @return ab_en - 英文摘要     
+     */
+    public String getAbEn() {
+        return abEn;
+    }
+
+    /**
+     * 设置英文摘要     
+     *
+     * @param abEn 英文摘要     
+     */
+    public void setAbEn(String abEn) {
+        this.abEn = abEn;
+    }
+
+    /**
+     * 获取结题摘要     
+     *
+     * @return final_ab - 结题摘要     
+     */
+    public String getFinalAb() {
+        return finalAb;
+    }
+
+    /**
+     * 设置结题摘要     
+     *
+     * @param finalAb 结题摘要     
+     */
+    public void setFinalAb(String finalAb) {
+        this.finalAb = finalAb;
+    }
+
+    /**
+     * 获取 原文链接 
+     *
+     * @return ori_link -  原文链接 
+     */
+    public String getOriLink() {
+        return oriLink;
+    }
+
+    /**
+     * 设置 原文链接 
+     *
+     * @param oriLink  原文链接 
+     */
+    public void setOriLink(String oriLink) {
+        this.oriLink = oriLink;
+    }
+
+    /**
+     * 获取来源文件
+     *
+     * @return txtname - 来源文件
+     */
+    public String getTxtname() {
+        return txtname;
+    }
+
+    /**
+     * 设置来源文件
+     *
+     * @param txtname 来源文件
+     */
+    public void setTxtname(String txtname) {
+        this.txtname = txtname;
+    }
+
+    /**
+     * 获取基金单位
+     *
+     * @return fund_inst - 基金单位
+     */
+    public String getFundInst() {
+        return fundInst;
+    }
+
+    /**
+     * 设置基金单位
+     *
+     * @param fundInst 基金单位
+     */
+    public void setFundInst(String fundInst) {
+        this.fundInst = fundInst;
+    }
+
+    /**
+     * 获取国家
+     *
+     * @return project_country - 国家
+     */
+    public String getProjectCountry() {
+        return projectCountry;
+    }
+
+    /**
+     * 设置国家
+     *
+     * @param projectCountry 国家
+     */
+    public void setProjectCountry(String projectCountry) {
+        this.projectCountry = projectCountry;
+    }
+
+    /**
+     * @return data_type
+     */
+    public String getDataType() {
+        return dataType;
+    }
+
+    /**
+     * @param dataType
+     */
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    /**
+     * 获取 datasource   
+     *
+     * @return datasource -  datasource   
+     */
+    public String getDatasource() {
+        return datasource;
+    }
+
+    /**
+     * 设置 datasource   
+     *
+     * @param datasource  datasource   
+     */
+    public void setDatasource(String datasource) {
+        this.datasource = datasource;
+    }
+
+    /**
+     * 获取学科一级id
+     *
+     * @return app_id_one - 学科一级id
+     */
+    public String getAppIdOne() {
+        return appIdOne;
+    }
+
+    /**
+     * 设置学科一级id
+     *
+     * @param appIdOne 学科一级id
+     */
+    public void setAppIdOne(String appIdOne) {
+        this.appIdOne = appIdOne;
+    }
+
+    /**
+     * 获取学科二级id
+     *
+     * @return app_id_two - 学科二级id
+     */
+    public String getAppIdTwo() {
+        return appIdTwo;
+    }
+
+    /**
+     * 设置学科二级id
+     *
+     * @param appIdTwo 学科二级id
+     */
+    public void setAppIdTwo(String appIdTwo) {
+        this.appIdTwo = appIdTwo;
+    }
+
+    /**
+     * 获取学科三级id
+     *
+     * @return app_id_three - 学科三级id
+     */
+    public String getAppIdThree() {
+        return appIdThree;
+    }
+
+    /**
+     * 设置学科三级id
+     *
+     * @param appIdThree 学科三级id
+     */
+    public void setAppIdThree(String appIdThree) {
+        this.appIdThree = appIdThree;
+    }
+
+    /**
+     * 获取学科一级名称
+     *
+     * @return app_name_one - 学科一级名称
+     */
+    public String getAppNameOne() {
+        return appNameOne;
+    }
+
+    /**
+     * 设置学科一级名称
+     *
+     * @param appNameOne 学科一级名称
+     */
+    public void setAppNameOne(String appNameOne) {
+        this.appNameOne = appNameOne;
+    }
+
+    /**
+     * 获取学科二级名称
+     *
+     * @return app_name_two - 学科二级名称
+     */
+    public String getAppNameTwo() {
+        return appNameTwo;
+    }
+
+    /**
+     * 设置学科二级名称
+     *
+     * @param appNameTwo 学科二级名称
+     */
+    public void setAppNameTwo(String appNameTwo) {
+        this.appNameTwo = appNameTwo;
+    }
+
+    /**
+     * 获取学科三级名称
+     *
+     * @return app_name_three - 学科三级名称
+     */
+    public String getAppNameThree() {
+        return appNameThree;
+    }
+
+    /**
+     * 设置学科三级名称
+     *
+     * @param appNameThree 学科三级名称
+     */
+    public void setAppNameThree(String appNameThree) {
+        this.appNameThree = appNameThree;
+    }
+
+    /**
+     * 获取标题关键字
+     *
+     * @return title_keywords - 标题关键字
+     */
+    public String getTitleKeywords() {
+        return titleKeywords;
+    }
+
+    /**
+     * 设置标题关键字
+     *
+     * @param titleKeywords 标题关键字
+     */
+    public void setTitleKeywords(String titleKeywords) {
+        this.titleKeywords = titleKeywords;
+    }
+
+    /**
+     * 获取摘要关键字
+     *
+     * @return abstract_keywords - 摘要关键字
+     */
+    public String getAbstractKeywords() {
+        return abstractKeywords;
+    }
+
+    /**
+     * 设置摘要关键字
+     *
+     * @param abstractKeywords 摘要关键字
+     */
+    public void setAbstractKeywords(String abstractKeywords) {
+        this.abstractKeywords = abstractKeywords;
+    }
+
+    /**
+     * 获取中文主题词    
+     *
+     * @return keywords_cn - 中文主题词    
+     */
+    public String getKeywordsCn() {
+        return keywordsCn;
+    }
+
+    /**
+     * 设置中文主题词    
+     *
+     * @param keywordsCn 中文主题词    
+     */
+    public void setKeywordsCn(String keywordsCn) {
+        this.keywordsCn = keywordsCn;
+    }
+
+    /**
+     * 获取英文主题词    
+     *
+     * @return keywords_en - 英文主题词    
+     */
+    public String getKeywordsEn() {
+        return keywordsEn;
+    }
+
+    /**
+     * 设置英文主题词    
+     *
+     * @param keywordsEn 英文主题词    
+     */
+    public void setKeywordsEn(String keywordsEn) {
+        this.keywordsEn = keywordsEn;
+    }
+}

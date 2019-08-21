@@ -1,0 +1,43 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>调度平台</title>
+    <link th:href="@{/static/layui/css/layui.css}" rel="stylesheet">
+    <link th:href="@{/static/font-awesome/css/font-awesome.min.css}" rel="stylesheet">
+
+    <script th:src="@{/static/jquery/jquery.js}" type="text/javascript"></script>
+    <script th:src="@{/static/layui/layui.js}" type="text/javascript"></script>
+    <script th:src="@{/static/js/sche/detail_list.js}" type="text/javascript"></script>
+
+    <style>
+        .div_detail_class {
+            padding: 10px;
+        }
+
+        .layui-table td {
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+
+        .layui-progress-bar {
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+
+<div id="div_detail" class="div_detail_class">
+    <div>
+        <table id="detail" class="layui-table" lay-filter="detail"></table>
+    </div>
+</div>
+
+</html>
+
+
+
+
+

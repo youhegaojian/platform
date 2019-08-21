@@ -1,0 +1,12 @@
+package com.liming.mapper;
+
+import java.util.List;
+
+import com.liming.domain.ApscDictChiCategory;
+import com.liming.utils.MyMapper;
+
+public interface ApscDictChiCategoryMapper extends MyMapper<ApscDictChiCategory> {
+	
+	List<ApscDictChiCategory> getCodeList();
+	
+}

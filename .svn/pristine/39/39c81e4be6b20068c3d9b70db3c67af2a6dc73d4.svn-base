@@ -1,0 +1,15 @@
+package com.liming.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.liming.domain.ApscResearchProjectData;
+import com.liming.utils.MyMapper;
+@Mapper
+public interface ApscResearchProjectDataMapper extends MyMapper<ApscResearchProjectData> {
+	
+	List<ApscResearchProjectData> getResearchProjectDataList();
+	
+}

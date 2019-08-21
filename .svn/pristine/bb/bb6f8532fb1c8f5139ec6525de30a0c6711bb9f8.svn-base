@@ -1,0 +1,19 @@
+package com.example.demo.service;
+
+import java.util.List;
+import java.util.Map;
+/**
+ * 论文的service接口
+ * @author hao
+ *2019年5月7日
+ *
+ */
+
+public interface PaperService {
+	
+	List<Map> selectPaperByTaskid(String taskid);
+	int selectAnCouByUpid(String id);
+	int selectExCouByUpid(String id);
+	void deleteExByUpid(String id);
+	List<Map> selectRowByTaskid(String taskid);
+}

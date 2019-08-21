@@ -1,0 +1,262 @@
+package com.liming.keyword;
+
+import java.util.List;
+import java.util.Map;
+
+import com.example.demo.domain.ScheduleDomain;
+import edu.stanford.nlp.util.StringUtils;
+import com.example.demo.utils.DateUtils;
+import com.example.demo.utils.SqlUtils;
+
+/**
+ * @author ALPHA.GJ
+ * @date 创建时间：2019年3月28日 上午9:47:14
+ * @version 1.0
+ **/
+public class LemmaBatch {
+
+	KeywordsProcess kp_en = null;
+	ScheduleDomain sche = null;
+
+	public LemmaBatch() {
+		kp_en = new KeywordsProcess("en");
+		sche = new ScheduleDomain("004");
+	}
+
+	public LemmaBatch(String task_id) {
+		kp_en = new KeywordsProcess("en");
+		sche = new ScheduleDomain("004", task_id);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public boolean lemmatize() {
+
+		try {
+			boolean succ = SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(),
+					new String[] { "state" });
+			if (succ) {
+				System.out.println("-----调度任务表插入数据成功....");
+
+				System.out.println("-----nlp jar包加载完成，开始组织数据....");
+				StringBuffer sql = new StringBuffer();
+				sql.append("select id,user_id from apsc_kgo_link a where pl_type in ('WOS', '英文期刊论文') ")
+					.append(" and id = '201806122050421220000002' ")
+						.append(" and exists (")
+						.append(" select 1 from apsc_paper_analyse b where a.id = b.uploadlogid ")
+//			任务明细表已经存在的，表示该记录已经完成了批次，这里不再重跑。
+						.append(" ) and not exists (")
+						.append(" select 1 from apsc_task_detail_schedule b ,apsc_task_schedule c ")
+						.append(" where b.task_id = c.task_id and a.id = b.file_id and b.type='004' and c.type='004' and c.state='4')");
+				List<Map> kgoList = SqlUtils.query(sql.toString());
+
+				for (int i = 0, len = kgoList.size(); i < len; i++) {
+					System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+					System.out.println(
+							"-----开始组织apsc_paper_analyse表 id:" + kgoList.get(i).get("id").toString() + " 的数据....");
+					sql = new StringBuffer();
+					sql.append("select id as id,main_heading from apsc_paper_analyse ").append(" where uploadlogid = '")
+							.append(kgoList.get(i).get("id").toString())
+							.append("' and main_heading != '' and main_heading is not null ");
+
+					List<Map> list = SqlUtils.query(sql.toString());
+
+					if (list != null && list.size() > 0) {
+						sche.getDetail_sche_list().get(0).put("file_id", kgoList.get(i).get("id").toString());
+						sche.getDetail_sche_list().get(0).put("sum_rec", list.size());
+						sche.getDetail_sche_list().get(0).put("tab_name", "apsc_paper_analyse");
+						sche.getDetail_sche_list().get(0).put("user_id",kgoList.get(i).get("user_id"));
+						succ = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+								sche.getDetail_table(), null);
+						if (succ) {
+							System.out.println("-----------调度任务明细表插入数据成功...");
+						}
+
+						System.out.println("-----当前任务的数据量为：" + list.size());
+						for (int j = 0, leng = list.size(); j < leng; j++) {
+							List<String> lemms = kp_en.lemmatize(list.get(j).get("main_heading").toString());
+							list.get(j).put("main_heading", StringUtils.join(lemms, " "));
+						}
+
+						String[] headers = new String[] { "id", "main_heading" };
+						String[] colus = new String[] { "main_heading" };
+						String tabname = "apsc_paper_analyse";
+
+						int leng = list.size();
+						int offset = 1000;
+						int n = leng / offset;
+						int y = leng % offset;
+						if (y != 0) {
+							n = n + 1;
+						}
+
+						if (leng > offset) {
+							List<Map> _list = null;
+							String[] cols = new String[] { "finish_rec" };
+							boolean suc;
+							for (int j = 0; j < n; j++) {
+								int end = ((j + 1) * offset) > leng ? leng : ((j + 1) * offset);
+								_list = list.subList(j * offset, end);
+								suc = SqlUtils.prepareInsert(_list, headers, tabname, colus);
+//							String insert_sql = SqlUtils.sqlMake(_list, headers, tabname, colus);
+//							System.out.println("insert_sql :"+insert_sql);
+								if (suc) {
+									sche.getDetail_sche_list().get(0).put("finish_rec", end);
+									suc = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+											sche.getDetail_table(), cols);
+									if (suc) {
+										System.out.println("----id:" + sche.getDetail_sche_list().get(0).get("task_id")
+												+ "更新已完成记录数成功...");
+									}
+									System.out.println(
+											"---id:" + kgoList.get(i).get("id").toString() + "插入数据 前" + end + "条成功！");
+								}
+								;
+							}
+
+							cols = new String[] { "end_time" };
+							sche.getDetail_sche_list().get(0).put("end_time", DateUtils.getCurrDateTimeStr());
+							suc = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+									sche.getDetail_table(), cols);
+							if (suc) {
+								System.out.println("-------更新完成时间成功...");
+							}
+						} else {
+							boolean suc = SqlUtils.prepareInsert(list, headers, tabname, colus);
+//						String insert_sql = SqlUtils.sqlMake(list, headers, tabname, colus);
+							if (suc) {
+								String[] cols = new String[] { "finish_rec", "end_time" };
+								sche.getDetail_sche_list().get(0).put("finish_rec", list.size());
+								sche.getDetail_sche_list().get(0).put("end_time", DateUtils.getCurrDateTimeStr());
+								suc = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+										sche.getDetail_table(), cols);
+								if (suc) {
+									System.out.println("----id:" + sche.getDetail_sche_list().get(0).get("task_id")
+											+ "更新已完成记录数成功...");
+								}
+								System.out.println("---id:" + kgoList.get(i).get("id").toString() + " 插入数据完成！");
+							}
+							;
+						}
+					}
+
+					System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+					System.out.println(
+							"-----开始组织apsc_paper_analyse_ext表 id:" + kgoList.get(i).get("id").toString() + " 的数据....");
+					sql = new StringBuffer();
+					sql.append("select id ,ext_val from apsc_paper_analyse_ext ").append(" where uploadlogid = '")
+							.append(kgoList.get(i).get("id").toString())
+							.append("' and ext_val != '' and ext_val is not null ");
+
+					List<Map> ext_list = SqlUtils.query(sql.toString());
+
+					sche.getDetail_sche_list().get(0).put("file_id", kgoList.get(i).get("id").toString());
+					sche.getDetail_sche_list().get(0).put("sum_rec", ext_list.size());
+					sche.getDetail_sche_list().get(0).put("tab_name", "apsc_paper_analyse_ext");
+					sche.getDetail_sche_list().get(0).put("begin_time", DateUtils.getCurrDateTimeStr());
+
+					succ = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+							sche.getDetail_table(), null);
+					if (succ) {
+						System.out.println("-----------调度任务明细表插入数据成功...");
+					}
+
+					if (ext_list != null && ext_list.size() > 0) {
+						System.out.println("-----当前任务的数据量为：" + ext_list.size());
+						for (int j = 0, leng = ext_list.size(); j < leng; j++) {
+							List<String> lemms = kp_en.lemmatize(ext_list.get(j).get("ext_val").toString());
+							ext_list.get(j).put("ext_val", StringUtils.join(lemms, " "));
+						}
+
+						String[] headers = new String[] { "id", "ext_val" };
+						String[] colus = new String[] { "ext_val" };
+						String tabname = "apsc_paper_analyse_ext";
+
+						int leng = ext_list.size();
+						int offset = 1000;
+						int n = leng / offset;
+						int y = leng % offset;
+						if (y != 0) {
+							n = n + 1;
+						}
+
+						if (leng > offset) {
+							List<Map> _list = null;
+							String[] cols = new String[] { "finish_rec" };
+							boolean suc;
+							for (int j = 0; j < n; j++) {
+								int end = ((j + 1) * offset) > leng ? leng : ((j + 1) * offset);
+								_list = ext_list.subList(j * offset, end);
+								suc = SqlUtils.prepareInsert(_list, headers, tabname, colus);
+//							String insert_sql = SqlUtils.sqlMake(_list, headers, tabname, colus);
+//							System.out.println("insert_sql :"+insert_sql);
+								if (suc) {
+									sche.getDetail_sche_list().get(0).put("finish_rec", end);
+									suc = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+											sche.getDetail_table(), cols);
+									if (suc) {
+										System.out.println("----id:" + sche.getDetail_sche_list().get(0).get("task_id")
+												+ "更新已完成记录数成功...");
+									}
+									System.out.println(
+											"---id:" + kgoList.get(i).get("id").toString() + "插入数据 前" + end + "条成功！");
+								}
+							}
+
+							cols = new String[] { "end_time" };
+							sche.getDetail_sche_list().get(0).put("end_time", DateUtils.getCurrDateTimeStr());
+							suc = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+									sche.getDetail_table(), cols);
+							if (suc) {
+								System.out.println("-------更新完成时间成功...");
+							}
+						} else {
+							boolean suc = SqlUtils.prepareInsert(ext_list, headers, tabname, colus);
+//						String insert_sql = SqlUtils.sqlMake(list, headers, tabname, colus);
+							if (suc) {
+								String[] cols = new String[] { "finish_rec", "end_time" };
+								sche.getDetail_sche_list().get(0).put("finish_rec", list.size());
+								sche.getDetail_sche_list().get(0).put("end_time", DateUtils.getCurrDateTimeStr());
+								suc = SqlUtils.prepareInsert(sche.getDetail_sche_list(), sche.getDetail_headers(),
+										sche.getDetail_table(), cols);
+								if (suc) {
+									System.out.println("----id:" + sche.getDetail_sche_list().get(0).get("task_id")
+											+ "更新已完成记录数成功...");
+								}
+								System.out.println("---id:" + kgoList.get(i).get("id").toString() + " 插入数据完成！");
+							}
+
+						}
+					}
+
+				}
+
+				sche.getSche_list().get(0).put("state", "4");
+				sche.getSche_list().get(0).put("end_time", DateUtils.getCurrDateTimeStr());
+				succ = SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(),
+						new String[] { "end_time", "state" });
+				if (succ) {
+					System.out.println("--------更新完成时间成功！");
+				}
+				System.out.println("---插入数据 全部完成！");
+				System.out.println("-----当前时间为：" + DateUtils.getCurrDateTimeStr());
+
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			sche.getSche_list().get(0).put("state", "3");
+			SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(),
+					new String[] { "end_time" });
+			e.printStackTrace();
+
+			return false;
+		}
+	}
+
+	public static void main(String[] args) {
+		LemmaBatch lemm = new LemmaBatch();
+		lemm.lemmatize();
+	}
+
+}

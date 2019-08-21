@@ -1,0 +1,71 @@
+package com.example.demo.service.impl;
+
+import java.io.IOException;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.demo.keyword.InsertKeywordOfPaper;
+import com.example.demo.mapper.PaperMapper;
+import com.example.demo.service.PaperService;
+import com.example.demo.utils.PropertiesReader;
+/**
+ * 论文的service接口的实现
+ * @author hao
+ *2019年5月7日
+ *
+ */
+@Service
+@Transactional
+public class PaperServiceImpl implements PaperService {
+	@Autowired
+	private PaperMapper pm;
+	/**
+	 * 从apsc_kgo_link表中根据
+	 */
+	@Override
+	public List<Map> selectPaperByTaskid(String taskid) {
+		List<Map> list = null;
+		try {
+			String conf= InsertKeywordOfPaper.class.getResource("/dbconf.properties").getPath();
+			String date= PropertiesReader.getPaperDate(conf);
+			if (taskid.equals("")||taskid==null) {
+				list = pm.selectPaperByDate(date);
+			} else {
+				list = pm.selectPaperByTaskid(taskid);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	@Override
+	public int selectAnCouByUpid(String id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public int selectExCouByUpid(String id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public void deleteExByUpid(String id) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public List<Map> selectRowByTaskid(String taskid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	
+	
+
+}

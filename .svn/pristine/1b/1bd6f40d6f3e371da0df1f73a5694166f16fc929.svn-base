@@ -1,0 +1,86 @@
+package com.liming.service.impl;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.liming.domain.ApscKgoLink;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.mapper.ApscKgoLinkMapper;
+import com.liming.service.ApscKgoLinkService;
+import com.liming.utils.JSONResult;
+
+import tk.mybatis.mapper.entity.Example;
+@Service 
+public class ApscKgoLinkServiceImpl implements ApscKgoLinkService{
+	
+	@Autowired
+	private ApscKgoLinkMapper kgoMapper;
+	
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ApscKgoLink> getKgoList(String taskid) {
+		Example example = new Example(ApscKgoLink.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("id", taskid);
+		
+		List<ApscKgoLink> list = kgoMapper.selectByExample(example);
+		return list;
+	}
+	
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ApscKgoLink> getKgoListByDate(String date) {		
+		Example example = new Example(ApscKgoLink.class);
+		Example.Criteria criteria = example.createCriteria();
+		String[] tempStrings = {"WOS","中文期刊论文","学位论文","会议论文","英文期刊论文","endnote","noteexpress","refworks"};
+		List<String> tempList = Arrays.asList(tempStrings);
+		criteria.andIn("plType", tempList);
+		criteria.andGreaterThanOrEqualTo("downloadTime", date);
+		List<ApscKgoLink> list = kgoMapper.selectByExample(example);
+		return list;
+	}
+	
+	@Override
+	public List<ApscKgoLink> getPaperList(ApscKgoLink apscKgoLink) {
+
+		List<ApscKgoLink> list = kgoMapper.getPaperList(apscKgoLink);
+		return list;
+	}
+	
+	@Override
+	public List<ApscKgoLink> getPatentList(ApscKgoLink apscKgoLink) {
+
+		List<ApscKgoLink> list = kgoMapper.getPatentList(apscKgoLink);
+		return list;
+	}
+
+	@Override
+	public JSONResult getKgoListByPltype(int page, int pageSize, String pltype) {
+		try {
+			ApscKgoLink apscKgoLink = new ApscKgoLink();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			apscKgoLink.setDownloadTime(df.parse("2019-01-01 00:00:00"));
+			apscKgoLink.setPlType(pltype);		
+			List<ApscKgoLink> list = kgoMapper.selectUnexecuted(apscKgoLink);
+			PageHelper.startPage(page, pageSize);
+			PageInfo<ApscKgoLink> pageInfo = new PageInfo<>(list);
+			return JSONResult.ok(list, pageInfo.getTotal());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	
+
+}

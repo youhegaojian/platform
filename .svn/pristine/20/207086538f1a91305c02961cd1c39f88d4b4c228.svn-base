@@ -1,0 +1,630 @@
+package com.liming.domain;
+
+import javax.persistence.*;
+
+@Table(name = "apsc_paper_analyse")
+public class ApscPaperAnalyse {
+    @Column(name = "ID")
+    private String id;
+
+    private String uploadlogid;
+
+    @Column(name = "references_number")
+    private String referencesNumber;
+
+    @Column(name = "paper_doi")
+    private String paperDoi;
+
+    /**
+     * 国家
+     */
+    private String nation;
+
+    /**
+     * 省/州
+     */
+    private String province;
+
+    /**
+     * 学科类别
+     */
+    private String sc;
+
+    /**
+     * 来源文献名称
+     */
+    private String j9;
+
+    /**
+     * 中图分类号
+     */
+    private String clc;
+
+    private String level;
+
+    /**
+     * 学位论文学术机构
+     */
+    @Column(name = "academic_degree")
+    private String academicDegree;
+
+    /**
+     * 学位论文主题
+     */
+    @Column(name = "degree_subject")
+    private String degreeSubject;
+
+    /**
+     * 学位论文主题代码
+     */
+    @Column(name = "degree_subject_code")
+    private String degreeSubjectCode;
+
+    /**
+     * 学位年
+     */
+    @Column(name = "degree_year")
+    private String degreeYear;
+
+    /**
+     * 会议论文编者
+     */
+    private String editor;
+
+    /**
+     * 会议属性
+     */
+    private String attribute;
+
+    private String title;
+
+    private String authors;
+
+    @Column(name = "thesis_type")
+    private String thesisType;
+
+    @Column(name = "source_title")
+    private String sourceTitle;
+
+    private String organ;
+
+    @Column(name = "main_heading")
+    private String mainHeading;
+
+    private String subject;
+
+    private String fund;
+
+    @Column(name = "publication_year")
+    private String publicationYear;
+
+    @Column(name = "times_cited")
+    private String timesCited;
+
+    private String summary;
+
+    @Column(name = "references_cited")
+    private String referencesCited;
+
+    @Column(name = "cited_doi")
+    private String citedDoi;
+
+    /**
+     * 附加关键词
+     */
+    private String wosid;
+
+    /**
+     * 基金
+     */
+    private String fu;
+
+    /**
+     * 会议组织者
+     */
+    private String organizer;
+
+    /**
+     * @return ID
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @return uploadlogid
+     */
+    public String getUploadlogid() {
+        return uploadlogid;
+    }
+
+    /**
+     * @param uploadlogid
+     */
+    public void setUploadlogid(String uploadlogid) {
+        this.uploadlogid = uploadlogid;
+    }
+
+    /**
+     * @return references_number
+     */
+    public String getReferencesNumber() {
+        return referencesNumber;
+    }
+
+    /**
+     * @param referencesNumber
+     */
+    public void setReferencesNumber(String referencesNumber) {
+        this.referencesNumber = referencesNumber;
+    }
+
+    /**
+     * @return paper_doi
+     */
+    public String getPaperDoi() {
+        return paperDoi;
+    }
+
+    /**
+     * @param paperDoi
+     */
+    public void setPaperDoi(String paperDoi) {
+        this.paperDoi = paperDoi;
+    }
+
+    /**
+     * 获取国家
+     *
+     * @return nation - 国家
+     */
+    public String getNation() {
+        return nation;
+    }
+
+    /**
+     * 设置国家
+     *
+     * @param nation 国家
+     */
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    /**
+     * 获取省/州
+     *
+     * @return province - 省/州
+     */
+    public String getProvince() {
+        return province;
+    }
+
+    /**
+     * 设置省/州
+     *
+     * @param province 省/州
+     */
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    /**
+     * 获取学科类别
+     *
+     * @return sc - 学科类别
+     */
+    public String getSc() {
+        return sc;
+    }
+
+    /**
+     * 设置学科类别
+     *
+     * @param sc 学科类别
+     */
+    public void setSc(String sc) {
+        this.sc = sc;
+    }
+
+    /**
+     * 获取来源文献名称
+     *
+     * @return j9 - 来源文献名称
+     */
+    public String getJ9() {
+        return j9;
+    }
+
+    /**
+     * 设置来源文献名称
+     *
+     * @param j9 来源文献名称
+     */
+    public void setJ9(String j9) {
+        this.j9 = j9;
+    }
+
+    /**
+     * 获取中图分类号
+     *
+     * @return clc - 中图分类号
+     */
+    public String getClc() {
+        return clc;
+    }
+
+    /**
+     * 设置中图分类号
+     *
+     * @param clc 中图分类号
+     */
+    public void setClc(String clc) {
+        this.clc = clc;
+    }
+
+    /**
+     * @return level
+     */
+    public String getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level
+     */
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    /**
+     * 获取学位论文学术机构
+     *
+     * @return academic_degree - 学位论文学术机构
+     */
+    public String getAcademicDegree() {
+        return academicDegree;
+    }
+
+    /**
+     * 设置学位论文学术机构
+     *
+     * @param academicDegree 学位论文学术机构
+     */
+    public void setAcademicDegree(String academicDegree) {
+        this.academicDegree = academicDegree;
+    }
+
+    /**
+     * 获取学位论文主题
+     *
+     * @return degree_subject - 学位论文主题
+     */
+    public String getDegreeSubject() {
+        return degreeSubject;
+    }
+
+    /**
+     * 设置学位论文主题
+     *
+     * @param degreeSubject 学位论文主题
+     */
+    public void setDegreeSubject(String degreeSubject) {
+        this.degreeSubject = degreeSubject;
+    }
+
+    /**
+     * 获取学位论文主题代码
+     *
+     * @return degree_subject_code - 学位论文主题代码
+     */
+    public String getDegreeSubjectCode() {
+        return degreeSubjectCode;
+    }
+
+    /**
+     * 设置学位论文主题代码
+     *
+     * @param degreeSubjectCode 学位论文主题代码
+     */
+    public void setDegreeSubjectCode(String degreeSubjectCode) {
+        this.degreeSubjectCode = degreeSubjectCode;
+    }
+
+    /**
+     * 获取学位年
+     *
+     * @return degree_year - 学位年
+     */
+    public String getDegreeYear() {
+        return degreeYear;
+    }
+
+    /**
+     * 设置学位年
+     *
+     * @param degreeYear 学位年
+     */
+    public void setDegreeYear(String degreeYear) {
+        this.degreeYear = degreeYear;
+    }
+
+    /**
+     * 获取会议论文编者
+     *
+     * @return editor - 会议论文编者
+     */
+    public String getEditor() {
+        return editor;
+    }
+
+    /**
+     * 设置会议论文编者
+     *
+     * @param editor 会议论文编者
+     */
+    public void setEditor(String editor) {
+        this.editor = editor;
+    }
+
+    /**
+     * 获取会议属性
+     *
+     * @return attribute - 会议属性
+     */
+    public String getAttribute() {
+        return attribute;
+    }
+
+    /**
+     * 设置会议属性
+     *
+     * @param attribute 会议属性
+     */
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
+
+    /**
+     * @return title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * @return authors
+     */
+    public String getAuthors() {
+        return authors;
+    }
+
+    /**
+     * @param authors
+     */
+    public void setAuthors(String authors) {
+        this.authors = authors;
+    }
+
+    /**
+     * @return thesis_type
+     */
+    public String getThesisType() {
+        return thesisType;
+    }
+
+    /**
+     * @param thesisType
+     */
+    public void setThesisType(String thesisType) {
+        this.thesisType = thesisType;
+    }
+
+    /**
+     * @return source_title
+     */
+    public String getSourceTitle() {
+        return sourceTitle;
+    }
+
+    /**
+     * @param sourceTitle
+     */
+    public void setSourceTitle(String sourceTitle) {
+        this.sourceTitle = sourceTitle;
+    }
+
+    /**
+     * @return organ
+     */
+    public String getOrgan() {
+        return organ;
+    }
+
+    /**
+     * @param organ
+     */
+    public void setOrgan(String organ) {
+        this.organ = organ;
+    }
+
+    /**
+     * @return main_heading
+     */
+    public String getMainHeading() {
+        return mainHeading;
+    }
+
+    /**
+     * @param mainHeading
+     */
+    public void setMainHeading(String mainHeading) {
+        this.mainHeading = mainHeading;
+    }
+
+    /**
+     * @return subject
+     */
+    public String getSubject() {
+        return subject;
+    }
+
+    /**
+     * @param subject
+     */
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    /**
+     * @return fund
+     */
+    public String getFund() {
+        return fund;
+    }
+
+    /**
+     * @param fund
+     */
+    public void setFund(String fund) {
+        this.fund = fund;
+    }
+
+    /**
+     * @return publication_year
+     */
+    public String getPublicationYear() {
+        return publicationYear;
+    }
+
+    /**
+     * @param publicationYear
+     */
+    public void setPublicationYear(String publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
+    /**
+     * @return times_cited
+     */
+    public String getTimesCited() {
+        return timesCited;
+    }
+
+    /**
+     * @param timesCited
+     */
+    public void setTimesCited(String timesCited) {
+        this.timesCited = timesCited;
+    }
+
+    /**
+     * @return summary
+     */
+    public String getSummary() {
+        return summary;
+    }
+
+    /**
+     * @param summary
+     */
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    /**
+     * @return references_cited
+     */
+    public String getReferencesCited() {
+        return referencesCited;
+    }
+
+    /**
+     * @param referencesCited
+     */
+    public void setReferencesCited(String referencesCited) {
+        this.referencesCited = referencesCited;
+    }
+
+    /**
+     * @return cited_doi
+     */
+    public String getCitedDoi() {
+        return citedDoi;
+    }
+
+    /**
+     * @param citedDoi
+     */
+    public void setCitedDoi(String citedDoi) {
+        this.citedDoi = citedDoi;
+    }
+
+    /**
+     * 获取附加关键词
+     *
+     * @return wosid - 附加关键词
+     */
+    public String getWosid() {
+        return wosid;
+    }
+
+    /**
+     * 设置附加关键词
+     *
+     * @param wosid 附加关键词
+     */
+    public void setWosid(String wosid) {
+        this.wosid = wosid;
+    }
+
+    /**
+     * 获取基金
+     *
+     * @return fu - 基金
+     */
+    public String getFu() {
+        return fu;
+    }
+
+    /**
+     * 设置基金
+     *
+     * @param fu 基金
+     */
+    public void setFu(String fu) {
+        this.fu = fu;
+    }
+
+    /**
+     * 获取会议组织者
+     *
+     * @return organizer - 会议组织者
+     */
+    public String getOrganizer() {
+        return organizer;
+    }
+
+    /**
+     * 设置会议组织者
+     *
+     * @param organizer 会议组织者
+     */
+    public void setOrganizer(String organizer) {
+        this.organizer = organizer;
+    }
+}

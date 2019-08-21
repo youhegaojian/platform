@@ -1,0 +1,98 @@
+package com.liming.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.liming.domain.ApscDictChiCategory;
+import com.liming.domain.ApscPaperAnalyseExt;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.mapper.ApscDictChiCategoryMapper;
+import com.liming.mapper.ApscPaperAnalyseExtMapper;
+import com.liming.mapper.ApscTaskDetailScheduleMapper;
+import com.liming.mapper.ApscTaskScheduleMapper;
+import com.liming.service.ReplaceApscPaperAnalyseExtService;
+import com.liming.utils.DateUtils;
+
+@Service
+public class ReplaceApscPaperAnalyseExtServiceImpl implements ReplaceApscPaperAnalyseExtService {
+
+	@Autowired
+	private ApscTaskScheduleMapper mapper;
+
+	@Autowired
+	private ApscTaskDetailScheduleMapper detailMapper;
+
+	@Autowired
+	private ApscPaperAnalyseExtMapper paperAnalyseExtMapper;
+
+	@Autowired
+	private ApscDictChiCategoryMapper dictChiCategoryMapper;
+
+	private ApscTaskDetailSchedule apscTaskDetailSchedule = null;
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public boolean replace(ApscTaskSchedule apscTaskSchedule) {
+		try {
+
+			mapper.updateByPrimaryKeySelective(apscTaskSchedule);
+			apscTaskDetailSchedule = new ApscTaskDetailSchedule(apscTaskSchedule.getTaskId(),
+					apscTaskSchedule.getBeginTime(), "005");
+
+			List<ApscPaperAnalyseExt> paperlist = paperAnalyseExtMapper.getPaperList();
+
+			apscTaskDetailSchedule.setSumRec(paperlist.size());
+			apscTaskDetailSchedule.setFileId("0");
+			apscTaskDetailSchedule.setTabName("apsc_paper_analyse_ext");
+			apscTaskDetailSchedule.setUserId("");
+			detailMapper.insert(apscTaskDetailSchedule);
+
+			List<ApscDictChiCategory> dictlist = dictChiCategoryMapper.getCodeList();
+
+			List list = new ArrayList<>();// 使用contains的集合必须为顺序表集合
+			for (int i = 0; i < dictlist.size(); i++) {
+				list.add(dictlist.get(i).getCode());
+			}
+
+			for (int i = 0; i < paperlist.size(); i++) {
+				String ext_val = paperlist.get(i).getExtVal().toString();
+				String ext_val1 = ext_val.substring(0, 3).toUpperCase();
+				String ext_val2 = ext_val.substring(0, 2).toUpperCase();
+				if (list.contains(ext_val1)) {
+					paperlist.get(i).setExtVal(ext_val1);
+				} else if (list.contains(ext_val2)) {
+					paperlist.get(i).setExtVal(ext_val2);
+				}
+			}
+
+			paperAnalyseExtMapper.insertListRep(paperlist);
+
+			apscTaskSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+			apscTaskSchedule.setState("4");
+			mapper.updateByPrimaryKeySelective(apscTaskSchedule);
+
+			apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+			apscTaskDetailSchedule.setFinishRec(paperlist.size());
+			detailMapper.updateByPrimaryKeySelective(apscTaskDetailSchedule);
+
+			if (paperlist.size() == 0) {
+				mapper.deleteByPrimaryKey(apscTaskSchedule.getTaskid());
+
+				detailMapper.deleteByPrimaryKey(apscTaskDetailSchedule.getTaskId());
+
+			}
+			return true;
+		} catch (Exception e) {
+			apscTaskSchedule.setState("3");
+			apscTaskSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+			mapper.updateByPrimaryKeySelective(apscTaskSchedule);
+
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+}

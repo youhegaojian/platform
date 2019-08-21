@@ -1,0 +1,21 @@
+package com.liming.service;
+
+import java.util.List;
+
+import com.liming.domain.ApscTaskSchedule;
+
+public interface ApscTaskScheduleService {
+
+    List<ApscTaskSchedule> getList(int page,int pageSize);
+    List<ApscTaskSchedule> getList(String state);
+
+    ApscTaskSchedule getDomain(String state);
+    ApscTaskSchedule getDomain(String date,String type);
+
+    int getCount();
+    void insert(ApscTaskSchedule apscTaskSchedule);
+    void update(ApscTaskSchedule apscTaskSchedule);
+
+    String generateId(String type);
+
+}

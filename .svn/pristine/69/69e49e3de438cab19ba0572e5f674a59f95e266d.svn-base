@@ -1,0 +1,21 @@
+package com.liming.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+/**
+ * 论文的dao接口
+ * @author hao
+ *2019年5月7日
+ *
+ */
+@Component
+public interface PaperMapper {
+	List<Map> selectPaperByDate(String date);
+	List<Map> selectPaperByTaskid(String taskid);
+	int selectAnCouByUpid(String id);
+	int selectExCouByUpid(String id);
+	int deleteExByUpid(String id);
+	List<Map> selectRowByTaskid(String taskid);
+}

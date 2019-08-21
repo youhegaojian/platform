@@ -1,0 +1,5 @@
+package com.liming.mapper;
+
+public interface PatentMapper {
+
+}

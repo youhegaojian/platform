@@ -1,0 +1,43 @@
+package com.liming.service.impl;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.liming.domain.ApscKgoLink;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.mapper.ApscKgoLinkMapper;
+import com.liming.service.ApscKgoLinkService;
+
+import tk.mybatis.mapper.entity.Example;
+@Service 
+public class ApscKgoLinkServiceImpl implements ApscKgoLinkService{
+	@Autowired
+	private ApscKgoLinkMapper aklmapper;
+	@Override
+	public List<ApscKgoLink> getAklList(String taskid) {
+		// 开始分页
+		Example example = new Example(ApscTaskDetailSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("taskId", taskid);
+		List<ApscKgoLink> list = aklmapper.selectByExample(example);
+		return list;
+	}
+	@Override
+	public List<ApscKgoLink> getAklListByDate(String date) {
+		// 开始分页
+		
+		Example example = new Example(ApscKgoLink.class);
+		Example.Criteria criteria = example.createCriteria();
+		String[] tempStrings = {"WOS","中文期刊论文","学位论文","会议论文","英文期刊论文","endnote","noteexpress","refworks"};
+		List<String> tempList = Arrays.asList(tempStrings);
+		criteria.andIn("plType", tempList);
+		criteria.andGreaterThanOrEqualTo("downloadTime", date);
+		List<ApscKgoLink> list = aklmapper.selectByExample(example);
+		return list;
+	}
+
+}

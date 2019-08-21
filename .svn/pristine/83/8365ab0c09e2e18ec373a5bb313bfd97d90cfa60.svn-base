@@ -1,0 +1,2233 @@
+package com.liming.domain;
+
+import javax.persistence.*;
+
+@Table(name = "apsc_analysis_patent")
+public class ApscAnalysisPatent {
+    /**
+     * 记录唯一标识
+     */
+	@Id
+    private Long id;
+
+    /**
+     * 公开号
+     */
+    @Column(name = "publication_no")
+    private String publicationNo;
+
+    /**
+     * 公开日
+     */
+    @Column(name = "publication_date")
+    private String publicationDate;
+
+    /**
+     * 公开日(yyyyMMdd),0表示空值
+     */
+    @Column(name = "publication_day")
+    private String publicationDay;
+
+    /**
+     * 专利类型
+     */
+    @Column(name = "publish_kind")
+    private String publishKind;
+
+    /**
+     * 申请号
+     */
+    @Column(name = "application_no")
+    private String applicationNo;
+
+    /**
+     * 申请日
+     */
+    @Column(name = "application_date")
+    private String applicationDate;
+
+    /**
+     * 标题
+     */
+    private String title;
+
+    /**
+     * 摘要-关键词
+     */
+    @Column(name = "abstract_keywords")
+    private String abstractKeywords;
+
+    /**
+     * 标题-关键词
+     */
+    @Column(name = "title_keywords")
+    private String titleKeywords;
+
+    /**
+     * 申请人或申请单位
+     */
+    @Column(name = "application_person")
+    private String applicationPerson;
+
+    /**
+     * 申请人类型
+     */
+    @Column(name = "application_person_type")
+    private String applicationPersonType;
+
+    /**
+     * 申请人区域代码
+     */
+    @Column(name = "application_person_area_code")
+    private String applicationPersonAreaCode;
+
+    /**
+     * 申请人地址
+     */
+    @Column(name = "application_person_address")
+    private String applicationPersonAddress;
+
+    /**
+     * 发明（设计）人
+     */
+    private String inventor;
+
+    /**
+     * 专利权人
+     */
+    private String owner;
+
+    /**
+     * 专利权人类型
+     */
+    @Column(name = "owner_type")
+    private String ownerType;
+
+    /**
+     * 专利权人区域代码
+     */
+    @Column(name = "owner_area_code")
+    private String ownerAreaCode;
+
+    /**
+     * 专利权人地址
+     */
+    @Column(name = "owner_address")
+    private String ownerAddress;
+
+    /**
+     * 优先权国家
+     */
+    @Column(name = "priority_claim_country")
+    private String priorityClaimCountry;
+
+    /**
+     * 优先权日
+     */
+    @Column(name = "priority_claim_date")
+    private String priorityClaimDate;
+
+    /**
+     * 国际公布号
+     */
+    @Column(name = "publish_no_inter")
+    private String publishNoInter;
+
+    /**
+     * 国际公布日
+     */
+    @Column(name = "publication_date_inter")
+    private String publicationDateInter;
+
+    /**
+     * 国际申请号
+     */
+    @Column(name = "application_no_inter")
+    private String applicationNoInter;
+
+    /**
+     * 国际申请日
+     */
+    @Column(name = "application_date_inter")
+    private String applicationDateInter;
+
+    /**
+     * 进入国家日
+     */
+    @Column(name = "entry_national_stage_date")
+    private String entryNationalStageDate;
+
+    /**
+     * 数据分类(FM,SQ,XX,WG)
+     */
+    @Column(name = "data_type")
+    private String dataType;
+
+    /**
+     * 发明人区域代码
+     */
+    @Column(name = "inventor_area_code")
+    private String inventorAreaCode;
+
+    /**
+     * 来源国代码
+     */
+    @Column(name = "source_country_code")
+    private String sourceCountryCode;
+
+    /**
+     * 来源国
+     */
+    @Column(name = "source_country")
+    private String sourceCountry;
+
+    /**
+     * 申请人及国家
+     */
+    private String pa;
+
+    /**
+     * 权利要求数量
+     */
+    private String cln;
+
+    /**
+     * 被引证数量
+     */
+    @Column(name = "be_quote_cnt")
+    private String beQuoteCnt;
+
+    /**
+     * 引证非专利数量
+     */
+    private String cinc;
+
+    /**
+     * 专利强度
+     */
+    private String vu;
+
+    /**
+     * PCC
+     */
+    private String pcc;
+
+    /**
+     * TCC
+     */
+    private String tcc;
+
+    /**
+     * 专利分类 中国专利C，外国专利F
+     */
+    @Column(name = "patent_classifcation")
+    private String patentClassifcation;
+
+    /**
+     * 任务号id
+     */
+    @Column(name = "task_id")
+    private String taskId;
+
+    /**
+     * 分类号
+     */
+    @Column(name = "main_classification_no")
+    private String mainClassificationNo;
+
+    /**
+     * 优先权
+     */
+    private String priority;
+
+    /**
+     * 欧洲主分类号
+     */
+    @Column(name = "main_classification_no_ep")
+    private String mainClassificationNoEp;
+
+    /**
+     * 入藏号
+     */
+    @Column(name = "accession_no")
+    private String accessionNo;
+
+    /**
+     * 引用的参考文献数-专利 
+     */
+    @Column(name = "ref_patent_num")
+    private Integer refPatentNum;
+
+    /**
+     *  专利权人计数
+     */
+    @Column(name = "owner_num")
+    private Integer ownerNum;
+
+    /**
+     * 第一发明人
+     */
+    @Column(name = "inventor_first")
+    private String inventorFirst;
+
+    /**
+     * 发明人计数
+     */
+    @Column(name = "inventor_num")
+    private Integer inventorNum;
+
+    /**
+     * 优先权日  最早
+     */
+    @Column(name = "priority_claim_day_min")
+    private String priorityClaimDayMin;
+
+    /**
+     * 公开国家/地区
+     */
+    @Column(name = "publication_country")
+    private String publicationCountry;
+
+    /**
+     * 公开年
+     */
+    @Column(name = "publication_year")
+    private String publicationYear;
+
+    /**
+     * 专利权人/首位
+     */
+    @Column(name = "owner_first")
+    private String ownerFirst;
+
+    /**
+     * 当前专利权人
+     */
+    @Column(name = "owner_current")
+    private String ownerCurrent;
+
+    /**
+     * 专利权人计数
+     */
+    @Column(name = "claim_num")
+    private Integer claimNum;
+
+    /**
+     * IPC8位
+     */
+    @Column(name = "ipc_8f")
+    private String ipc8f;
+
+    /**
+     * IPC4位
+     */
+    @Column(name = "ipc_4f")
+    private String ipc4f;
+
+    /**
+     * 引用的参考文献-非专利数量
+     */
+    @Column(name = "np_citation_num")
+    private Integer npCitationNum;
+
+    /**
+     * 施引专利数量
+     */
+    @Column(name = "citing_patent_num")
+    private Integer citingPatentNum;
+
+    /**
+     *  DWPI 同族专利成员计数
+     */
+    @Column(name = "dwpi_family_num")
+    private Integer dwpiFamilyNum;
+
+    /**
+     *  DWPI 同族专利国家/地区计数
+     */
+    @Column(name = "dwpi_fmaily_area_num")
+    private Integer dwpiFmailyAreaNum;
+
+    @Column(name = "dwpi_member_num")
+    private Integer dwpiMemberNum;
+
+    /**
+     * ipc
+     */
+    private String ipc;
+
+    /**
+     * 摘要
+     */
+    @Column(name = "abstract_")
+    private String abstract_;
+
+    /**
+     * 描述-关键词
+     */
+    @Column(name = "desc_keywords")
+    private String descKeywords;
+
+    /**
+     * claims-关键词
+     */
+    @Column(name = "claims_keywords")
+    private String claimsKeywords;
+
+    /**
+     * 优先权
+     */
+    @Column(name = "priority_claim_no")
+    private String priorityClaimNo;
+
+    /**
+     * 优先权年
+     */
+    @Column(name = "priority_claim_year")
+    private String priorityClaimYear;
+
+    /**
+     * 外观设计简要说明
+     */
+    @Column(name = "design_brief_explanation")
+    private String designBriefExplanation;
+
+    /**
+     * CPC
+     */
+    private String cpc;
+
+    /**
+     * 简单同族
+     */
+    @Column(name = "simple_family")
+    private String simpleFamily;
+
+    /**
+     * 同族国别
+     */
+    @Column(name = "famliy_country")
+    private String famliyCountry;
+
+    /**
+     * 复合审查员引证
+     */
+    private String cieo;
+
+    /**
+     * 复合申请人引证
+     */
+    private String ciao;
+
+    /**
+     * 同族专利项
+     */
+    @Column(name = "patent_family")
+    private String patentFamily;
+
+    /**
+     * 引证文献
+     */
+    @Column(name = "literature_citation")
+    private String literatureCitation;
+
+    /**
+     * 欧洲分类号
+     */
+    @Column(name = "classification_no_ep")
+    private String classificationNoEp;
+
+    /**
+     * 引用的参考文献详细信息-专利
+     */
+    @Column(name = "ref_patent_detail")
+    private String refPatentDetail;
+
+    /**
+     *  引用的参考文献-非专利
+     */
+    @Column(name = "ref_others")
+    private String refOthers;
+
+    /**
+     *  引用非专利-DOI
+     */
+    @Column(name = "ref_others_doi")
+    private String refOthersDoi;
+
+    /**
+     *  施引专利
+     */
+    @Column(name = "citing_patent")
+    private String citingPatent;
+
+    /**
+     *  施引参考文献详细信息-专利
+     */
+    @Column(name = "citing_patent_detail")
+    private String citingPatentDetail;
+
+    /**
+     *  IPC 现版
+     */
+    @Column(name = "ipc_now")
+    private String ipcNow;
+
+    /**
+     *  公开专利文献类型识别代码
+     */
+    private String ki;
+
+    /**
+     * 发明人
+     */
+    @Column(name = "inventor_d")
+    private String inventorD;
+
+    /**
+     * 优先权日
+     */
+    @Column(name = "priority_claim_day")
+    private String priorityClaimDay;
+
+    /**
+     * IPC3位
+     */
+    @Column(name = "ipc_3f")
+    private String ipc3f;
+
+    /**
+     * IPC1位
+     */
+    @Column(name = "ipc_1f")
+    private String ipc1f;
+
+    /**
+     * 引用的专利第一专利权人
+     */
+    @Column(name = "p_citation_owner_first")
+    private String pCitationOwnerFirst;
+
+    /**
+     *  引用的参考文献-非专利
+     */
+    @Column(name = "np_citation")
+    private String npCitation;
+
+    /**
+     *  引用的参考文献-非专利的DOI
+     */
+    @Column(name = "np_citation_doi")
+    private String npCitationDoi;
+
+    /**
+     * 施引专利
+     */
+    @Column(name = "citing_patent_no")
+    private String citingPatentNo;
+
+    @Column(name = "citing_patent_owner_first")
+    private String citingPatentOwnerFirst;
+
+    /**
+     * 法律状态
+     */
+    @Column(name = "legal_status")
+    private String legalStatus;
+
+    /**
+     * 法律状态日期
+     */
+    @Column(name = "legal_status_day")
+    private String legalStatusDay;
+
+    /**
+     * 德温特数据库中同族专利成员
+     */
+    @Column(name = "family_dwpi_no")
+    private String familyDwpiNo;
+
+    /**
+     * 获取记录唯一标识
+     *
+     * @return id - 记录唯一标识
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * 设置记录唯一标识
+     *
+     * @param id 记录唯一标识
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * 获取公开号
+     *
+     * @return publication_no - 公开号
+     */
+    public String getPublicationNo() {
+        return publicationNo;
+    }
+
+    /**
+     * 设置公开号
+     *
+     * @param publicationNo 公开号
+     */
+    public void setPublicationNo(String publicationNo) {
+        this.publicationNo = publicationNo;
+    }
+
+    /**
+     * 获取公开日
+     *
+     * @return publication_date - 公开日
+     */
+    public String getPublicationDate() {
+        return publicationDate;
+    }
+
+    /**
+     * 设置公开日
+     *
+     * @param publicationDate 公开日
+     */
+    public void setPublicationDate(String publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    /**
+     * 获取公开日(yyyyMMdd),0表示空值
+     *
+     * @return publication_day - 公开日(yyyyMMdd),0表示空值
+     */
+    public String getPublicationDay() {
+        return publicationDay;
+    }
+
+    /**
+     * 设置公开日(yyyyMMdd),0表示空值
+     *
+     * @param publicationDay 公开日(yyyyMMdd),0表示空值
+     */
+    public void setPublicationDay(String publicationDay) {
+        this.publicationDay = publicationDay;
+    }
+
+    /**
+     * 获取专利类型
+     *
+     * @return publish_kind - 专利类型
+     */
+    public String getPublishKind() {
+        return publishKind;
+    }
+
+    /**
+     * 设置专利类型
+     *
+     * @param publishKind 专利类型
+     */
+    public void setPublishKind(String publishKind) {
+        this.publishKind = publishKind;
+    }
+
+    /**
+     * 获取申请号
+     *
+     * @return application_no - 申请号
+     */
+    public String getApplicationNo() {
+        return applicationNo;
+    }
+
+    /**
+     * 设置申请号
+     *
+     * @param applicationNo 申请号
+     */
+    public void setApplicationNo(String applicationNo) {
+        this.applicationNo = applicationNo;
+    }
+
+    /**
+     * 获取申请日
+     *
+     * @return application_date - 申请日
+     */
+    public String getApplicationDate() {
+        return applicationDate;
+    }
+
+    /**
+     * 设置申请日
+     *
+     * @param applicationDate 申请日
+     */
+    public void setApplicationDate(String applicationDate) {
+        this.applicationDate = applicationDate;
+    }
+
+    /**
+     * 获取标题
+     *
+     * @return title - 标题
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * 设置标题
+     *
+     * @param title 标题
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * 获取摘要-关键词
+     *
+     * @return abstract_keywords - 摘要-关键词
+     */
+    public String getAbstractKeywords() {
+        return abstractKeywords;
+    }
+
+    /**
+     * 设置摘要-关键词
+     *
+     * @param abstractKeywords 摘要-关键词
+     */
+    public void setAbstractKeywords(String abstractKeywords) {
+        this.abstractKeywords = abstractKeywords;
+    }
+
+    /**
+     * 获取标题-关键词
+     *
+     * @return title_keywords - 标题-关键词
+     */
+    public String getTitleKeywords() {
+        return titleKeywords;
+    }
+
+    /**
+     * 设置标题-关键词
+     *
+     * @param titleKeywords 标题-关键词
+     */
+    public void setTitleKeywords(String titleKeywords) {
+        this.titleKeywords = titleKeywords;
+    }
+
+    /**
+     * 获取申请人或申请单位
+     *
+     * @return application_person - 申请人或申请单位
+     */
+    public String getApplicationPerson() {
+        return applicationPerson;
+    }
+
+    /**
+     * 设置申请人或申请单位
+     *
+     * @param applicationPerson 申请人或申请单位
+     */
+    public void setApplicationPerson(String applicationPerson) {
+        this.applicationPerson = applicationPerson;
+    }
+
+    /**
+     * 获取申请人类型
+     *
+     * @return application_person_type - 申请人类型
+     */
+    public String getApplicationPersonType() {
+        return applicationPersonType;
+    }
+
+    /**
+     * 设置申请人类型
+     *
+     * @param applicationPersonType 申请人类型
+     */
+    public void setApplicationPersonType(String applicationPersonType) {
+        this.applicationPersonType = applicationPersonType;
+    }
+
+    /**
+     * 获取申请人区域代码
+     *
+     * @return application_person_area_code - 申请人区域代码
+     */
+    public String getApplicationPersonAreaCode() {
+        return applicationPersonAreaCode;
+    }
+
+    /**
+     * 设置申请人区域代码
+     *
+     * @param applicationPersonAreaCode 申请人区域代码
+     */
+    public void setApplicationPersonAreaCode(String applicationPersonAreaCode) {
+        this.applicationPersonAreaCode = applicationPersonAreaCode;
+    }
+
+    /**
+     * 获取申请人地址
+     *
+     * @return application_person_address - 申请人地址
+     */
+    public String getApplicationPersonAddress() {
+        return applicationPersonAddress;
+    }
+
+    /**
+     * 设置申请人地址
+     *
+     * @param applicationPersonAddress 申请人地址
+     */
+    public void setApplicationPersonAddress(String applicationPersonAddress) {
+        this.applicationPersonAddress = applicationPersonAddress;
+    }
+
+    /**
+     * 获取发明（设计）人
+     *
+     * @return inventor - 发明（设计）人
+     */
+    public String getInventor() {
+        return inventor;
+    }
+
+    /**
+     * 设置发明（设计）人
+     *
+     * @param inventor 发明（设计）人
+     */
+    public void setInventor(String inventor) {
+        this.inventor = inventor;
+    }
+
+    /**
+     * 获取专利权人
+     *
+     * @return owner - 专利权人
+     */
+    public String getOwner() {
+        return owner;
+    }
+
+    /**
+     * 设置专利权人
+     *
+     * @param owner 专利权人
+     */
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    /**
+     * 获取专利权人类型
+     *
+     * @return owner_type - 专利权人类型
+     */
+    public String getOwnerType() {
+        return ownerType;
+    }
+
+    /**
+     * 设置专利权人类型
+     *
+     * @param ownerType 专利权人类型
+     */
+    public void setOwnerType(String ownerType) {
+        this.ownerType = ownerType;
+    }
+
+    /**
+     * 获取专利权人区域代码
+     *
+     * @return owner_area_code - 专利权人区域代码
+     */
+    public String getOwnerAreaCode() {
+        return ownerAreaCode;
+    }
+
+    /**
+     * 设置专利权人区域代码
+     *
+     * @param ownerAreaCode 专利权人区域代码
+     */
+    public void setOwnerAreaCode(String ownerAreaCode) {
+        this.ownerAreaCode = ownerAreaCode;
+    }
+
+    /**
+     * 获取专利权人地址
+     *
+     * @return owner_address - 专利权人地址
+     */
+    public String getOwnerAddress() {
+        return ownerAddress;
+    }
+
+    /**
+     * 设置专利权人地址
+     *
+     * @param ownerAddress 专利权人地址
+     */
+    public void setOwnerAddress(String ownerAddress) {
+        this.ownerAddress = ownerAddress;
+    }
+
+    /**
+     * 获取优先权国家
+     *
+     * @return priority_claim_country - 优先权国家
+     */
+    public String getPriorityClaimCountry() {
+        return priorityClaimCountry;
+    }
+
+    /**
+     * 设置优先权国家
+     *
+     * @param priorityClaimCountry 优先权国家
+     */
+    public void setPriorityClaimCountry(String priorityClaimCountry) {
+        this.priorityClaimCountry = priorityClaimCountry;
+    }
+
+    /**
+     * 获取优先权日
+     *
+     * @return priority_claim_date - 优先权日
+     */
+    public String getPriorityClaimDate() {
+        return priorityClaimDate;
+    }
+
+    /**
+     * 设置优先权日
+     *
+     * @param priorityClaimDate 优先权日
+     */
+    public void setPriorityClaimDate(String priorityClaimDate) {
+        this.priorityClaimDate = priorityClaimDate;
+    }
+
+    /**
+     * 获取国际公布号
+     *
+     * @return publish_no_inter - 国际公布号
+     */
+    public String getPublishNoInter() {
+        return publishNoInter;
+    }
+
+    /**
+     * 设置国际公布号
+     *
+     * @param publishNoInter 国际公布号
+     */
+    public void setPublishNoInter(String publishNoInter) {
+        this.publishNoInter = publishNoInter;
+    }
+
+    /**
+     * 获取国际公布日
+     *
+     * @return publication_date_inter - 国际公布日
+     */
+    public String getPublicationDateInter() {
+        return publicationDateInter;
+    }
+
+    /**
+     * 设置国际公布日
+     *
+     * @param publicationDateInter 国际公布日
+     */
+    public void setPublicationDateInter(String publicationDateInter) {
+        this.publicationDateInter = publicationDateInter;
+    }
+
+    /**
+     * 获取国际申请号
+     *
+     * @return application_no_inter - 国际申请号
+     */
+    public String getApplicationNoInter() {
+        return applicationNoInter;
+    }
+
+    /**
+     * 设置国际申请号
+     *
+     * @param applicationNoInter 国际申请号
+     */
+    public void setApplicationNoInter(String applicationNoInter) {
+        this.applicationNoInter = applicationNoInter;
+    }
+
+    /**
+     * 获取国际申请日
+     *
+     * @return application_date_inter - 国际申请日
+     */
+    public String getApplicationDateInter() {
+        return applicationDateInter;
+    }
+
+    /**
+     * 设置国际申请日
+     *
+     * @param applicationDateInter 国际申请日
+     */
+    public void setApplicationDateInter(String applicationDateInter) {
+        this.applicationDateInter = applicationDateInter;
+    }
+
+    /**
+     * 获取进入国家日
+     *
+     * @return entry_national_stage_date - 进入国家日
+     */
+    public String getEntryNationalStageDate() {
+        return entryNationalStageDate;
+    }
+
+    /**
+     * 设置进入国家日
+     *
+     * @param entryNationalStageDate 进入国家日
+     */
+    public void setEntryNationalStageDate(String entryNationalStageDate) {
+        this.entryNationalStageDate = entryNationalStageDate;
+    }
+
+    /**
+     * 获取数据分类(FM,SQ,XX,WG)
+     *
+     * @return data_type - 数据分类(FM,SQ,XX,WG)
+     */
+    public String getDataType() {
+        return dataType;
+    }
+
+    /**
+     * 设置数据分类(FM,SQ,XX,WG)
+     *
+     * @param dataType 数据分类(FM,SQ,XX,WG)
+     */
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    /**
+     * 获取发明人区域代码
+     *
+     * @return inventor_area_code - 发明人区域代码
+     */
+    public String getInventorAreaCode() {
+        return inventorAreaCode;
+    }
+
+    /**
+     * 设置发明人区域代码
+     *
+     * @param inventorAreaCode 发明人区域代码
+     */
+    public void setInventorAreaCode(String inventorAreaCode) {
+        this.inventorAreaCode = inventorAreaCode;
+    }
+
+    /**
+     * 获取来源国代码
+     *
+     * @return source_country_code - 来源国代码
+     */
+    public String getSourceCountryCode() {
+        return sourceCountryCode;
+    }
+
+    /**
+     * 设置来源国代码
+     *
+     * @param sourceCountryCode 来源国代码
+     */
+    public void setSourceCountryCode(String sourceCountryCode) {
+        this.sourceCountryCode = sourceCountryCode;
+    }
+
+    /**
+     * 获取来源国
+     *
+     * @return source_country - 来源国
+     */
+    public String getSourceCountry() {
+        return sourceCountry;
+    }
+
+    /**
+     * 设置来源国
+     *
+     * @param sourceCountry 来源国
+     */
+    public void setSourceCountry(String sourceCountry) {
+        this.sourceCountry = sourceCountry;
+    }
+
+    /**
+     * 获取申请人及国家
+     *
+     * @return pa - 申请人及国家
+     */
+    public String getPa() {
+        return pa;
+    }
+
+    /**
+     * 设置申请人及国家
+     *
+     * @param pa 申请人及国家
+     */
+    public void setPa(String pa) {
+        this.pa = pa;
+    }
+
+    /**
+     * 获取权利要求数量
+     *
+     * @return cln - 权利要求数量
+     */
+    public String getCln() {
+        return cln;
+    }
+
+    /**
+     * 设置权利要求数量
+     *
+     * @param cln 权利要求数量
+     */
+    public void setCln(String cln) {
+        this.cln = cln;
+    }
+
+    /**
+     * 获取被引证数量
+     *
+     * @return be_quote_cnt - 被引证数量
+     */
+    public String getBeQuoteCnt() {
+        return beQuoteCnt;
+    }
+
+    /**
+     * 设置被引证数量
+     *
+     * @param beQuoteCnt 被引证数量
+     */
+    public void setBeQuoteCnt(String beQuoteCnt) {
+        this.beQuoteCnt = beQuoteCnt;
+    }
+
+    /**
+     * 获取引证非专利数量
+     *
+     * @return cinc - 引证非专利数量
+     */
+    public String getCinc() {
+        return cinc;
+    }
+
+    /**
+     * 设置引证非专利数量
+     *
+     * @param cinc 引证非专利数量
+     */
+    public void setCinc(String cinc) {
+        this.cinc = cinc;
+    }
+
+    /**
+     * 获取专利强度
+     *
+     * @return vu - 专利强度
+     */
+    public String getVu() {
+        return vu;
+    }
+
+    /**
+     * 设置专利强度
+     *
+     * @param vu 专利强度
+     */
+    public void setVu(String vu) {
+        this.vu = vu;
+    }
+
+    /**
+     * 获取PCC
+     *
+     * @return pcc - PCC
+     */
+    public String getPcc() {
+        return pcc;
+    }
+
+    /**
+     * 设置PCC
+     *
+     * @param pcc PCC
+     */
+    public void setPcc(String pcc) {
+        this.pcc = pcc;
+    }
+
+    /**
+     * 获取TCC
+     *
+     * @return tcc - TCC
+     */
+    public String getTcc() {
+        return tcc;
+    }
+
+    /**
+     * 设置TCC
+     *
+     * @param tcc TCC
+     */
+    public void setTcc(String tcc) {
+        this.tcc = tcc;
+    }
+
+    /**
+     * 获取专利分类 中国专利C，外国专利F
+     *
+     * @return patent_classifcation - 专利分类 中国专利C，外国专利F
+     */
+    public String getPatentClassifcation() {
+        return patentClassifcation;
+    }
+
+    /**
+     * 设置专利分类 中国专利C，外国专利F
+     *
+     * @param patentClassifcation 专利分类 中国专利C，外国专利F
+     */
+    public void setPatentClassifcation(String patentClassifcation) {
+        this.patentClassifcation = patentClassifcation;
+    }
+
+    /**
+     * 获取任务号id
+     *
+     * @return task_id - 任务号id
+     */
+    public String getTaskId() {
+        return taskId;
+    }
+
+    /**
+     * 设置任务号id
+     *
+     * @param taskId 任务号id
+     */
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    /**
+     * 获取分类号
+     *
+     * @return main_classification_no - 分类号
+     */
+    public String getMainClassificationNo() {
+        return mainClassificationNo;
+    }
+
+    /**
+     * 设置分类号
+     *
+     * @param mainClassificationNo 分类号
+     */
+    public void setMainClassificationNo(String mainClassificationNo) {
+        this.mainClassificationNo = mainClassificationNo;
+    }
+
+    /**
+     * 获取优先权
+     *
+     * @return priority - 优先权
+     */
+    public String getPriority() {
+        return priority;
+    }
+
+    /**
+     * 设置优先权
+     *
+     * @param priority 优先权
+     */
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    /**
+     * 获取欧洲主分类号
+     *
+     * @return main_classification_no_ep - 欧洲主分类号
+     */
+    public String getMainClassificationNoEp() {
+        return mainClassificationNoEp;
+    }
+
+    /**
+     * 设置欧洲主分类号
+     *
+     * @param mainClassificationNoEp 欧洲主分类号
+     */
+    public void setMainClassificationNoEp(String mainClassificationNoEp) {
+        this.mainClassificationNoEp = mainClassificationNoEp;
+    }
+
+    /**
+     * 获取入藏号
+     *
+     * @return accession_no - 入藏号
+     */
+    public String getAccessionNo() {
+        return accessionNo;
+    }
+
+    /**
+     * 设置入藏号
+     *
+     * @param accessionNo 入藏号
+     */
+    public void setAccessionNo(String accessionNo) {
+        this.accessionNo = accessionNo;
+    }
+
+    /**
+     * 获取引用的参考文献数-专利 
+     *
+     * @return ref_patent_num - 引用的参考文献数-专利 
+     */
+    public Integer getRefPatentNum() {
+        return refPatentNum;
+    }
+
+    /**
+     * 设置引用的参考文献数-专利 
+     *
+     * @param refPatentNum 引用的参考文献数-专利 
+     */
+    public void setRefPatentNum(Integer refPatentNum) {
+        this.refPatentNum = refPatentNum;
+    }
+
+    /**
+     * 获取 专利权人计数
+     *
+     * @return owner_num -  专利权人计数
+     */
+    public Integer getOwnerNum() {
+        return ownerNum;
+    }
+
+    /**
+     * 设置 专利权人计数
+     *
+     * @param ownerNum  专利权人计数
+     */
+    public void setOwnerNum(Integer ownerNum) {
+        this.ownerNum = ownerNum;
+    }
+
+    /**
+     * 获取第一发明人
+     *
+     * @return inventor_first - 第一发明人
+     */
+    public String getInventorFirst() {
+        return inventorFirst;
+    }
+
+    /**
+     * 设置第一发明人
+     *
+     * @param inventorFirst 第一发明人
+     */
+    public void setInventorFirst(String inventorFirst) {
+        this.inventorFirst = inventorFirst;
+    }
+
+    /**
+     * 获取发明人计数
+     *
+     * @return inventor_num - 发明人计数
+     */
+    public Integer getInventorNum() {
+        return inventorNum;
+    }
+
+    /**
+     * 设置发明人计数
+     *
+     * @param inventorNum 发明人计数
+     */
+    public void setInventorNum(Integer inventorNum) {
+        this.inventorNum = inventorNum;
+    }
+
+    /**
+     * 获取优先权日  最早
+     *
+     * @return priority_claim_day_min - 优先权日  最早
+     */
+    public String getPriorityClaimDayMin() {
+        return priorityClaimDayMin;
+    }
+
+    /**
+     * 设置优先权日  最早
+     *
+     * @param priorityClaimDayMin 优先权日  最早
+     */
+    public void setPriorityClaimDayMin(String priorityClaimDayMin) {
+        this.priorityClaimDayMin = priorityClaimDayMin;
+    }
+
+    /**
+     * 获取公开国家/地区
+     *
+     * @return publication_country - 公开国家/地区
+     */
+    public String getPublicationCountry() {
+        return publicationCountry;
+    }
+
+    /**
+     * 设置公开国家/地区
+     *
+     * @param publicationCountry 公开国家/地区
+     */
+    public void setPublicationCountry(String publicationCountry) {
+        this.publicationCountry = publicationCountry;
+    }
+
+    /**
+     * 获取公开年
+     *
+     * @return publication_year - 公开年
+     */
+    public String getPublicationYear() {
+        return publicationYear;
+    }
+
+    /**
+     * 设置公开年
+     *
+     * @param publicationYear 公开年
+     */
+    public void setPublicationYear(String publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
+    /**
+     * 获取专利权人/首位
+     *
+     * @return owner_first - 专利权人/首位
+     */
+    public String getOwnerFirst() {
+        return ownerFirst;
+    }
+
+    /**
+     * 设置专利权人/首位
+     *
+     * @param ownerFirst 专利权人/首位
+     */
+    public void setOwnerFirst(String ownerFirst) {
+        this.ownerFirst = ownerFirst;
+    }
+
+    /**
+     * 获取当前专利权人
+     *
+     * @return owner_current - 当前专利权人
+     */
+    public String getOwnerCurrent() {
+        return ownerCurrent;
+    }
+
+    /**
+     * 设置当前专利权人
+     *
+     * @param ownerCurrent 当前专利权人
+     */
+    public void setOwnerCurrent(String ownerCurrent) {
+        this.ownerCurrent = ownerCurrent;
+    }
+
+    /**
+     * 获取专利权人计数
+     *
+     * @return claim_num - 专利权人计数
+     */
+    public Integer getClaimNum() {
+        return claimNum;
+    }
+
+    /**
+     * 设置专利权人计数
+     *
+     * @param claimNum 专利权人计数
+     */
+    public void setClaimNum(Integer claimNum) {
+        this.claimNum = claimNum;
+    }
+
+    /**
+     * 获取IPC8位
+     *
+     * @return ipc_8f - IPC8位
+     */
+    public String getIpc8f() {
+        return ipc8f;
+    }
+
+    /**
+     * 设置IPC8位
+     *
+     * @param ipc8f IPC8位
+     */
+    public void setIpc8f(String ipc8f) {
+        this.ipc8f = ipc8f;
+    }
+
+    /**
+     * 获取IPC4位
+     *
+     * @return ipc_4f - IPC4位
+     */
+    public String getIpc4f() {
+        return ipc4f;
+    }
+
+    /**
+     * 设置IPC4位
+     *
+     * @param ipc4f IPC4位
+     */
+    public void setIpc4f(String ipc4f) {
+        this.ipc4f = ipc4f;
+    }
+
+    /**
+     * 获取引用的参考文献-非专利数量
+     *
+     * @return np_citation_num - 引用的参考文献-非专利数量
+     */
+    public Integer getNpCitationNum() {
+        return npCitationNum;
+    }
+
+    /**
+     * 设置引用的参考文献-非专利数量
+     *
+     * @param npCitationNum 引用的参考文献-非专利数量
+     */
+    public void setNpCitationNum(Integer npCitationNum) {
+        this.npCitationNum = npCitationNum;
+    }
+
+    /**
+     * 获取施引专利数量
+     *
+     * @return citing_patent_num - 施引专利数量
+     */
+    public Integer getCitingPatentNum() {
+        return citingPatentNum;
+    }
+
+    /**
+     * 设置施引专利数量
+     *
+     * @param citingPatentNum 施引专利数量
+     */
+    public void setCitingPatentNum(Integer citingPatentNum) {
+        this.citingPatentNum = citingPatentNum;
+    }
+
+    /**
+     * 获取 DWPI 同族专利成员计数
+     *
+     * @return dwpi_family_num -  DWPI 同族专利成员计数
+     */
+    public Integer getDwpiFamilyNum() {
+        return dwpiFamilyNum;
+    }
+
+    /**
+     * 设置 DWPI 同族专利成员计数
+     *
+     * @param dwpiFamilyNum  DWPI 同族专利成员计数
+     */
+    public void setDwpiFamilyNum(Integer dwpiFamilyNum) {
+        this.dwpiFamilyNum = dwpiFamilyNum;
+    }
+
+    /**
+     * 获取 DWPI 同族专利国家/地区计数
+     *
+     * @return dwpi_fmaily_area_num -  DWPI 同族专利国家/地区计数
+     */
+    public Integer getDwpiFmailyAreaNum() {
+        return dwpiFmailyAreaNum;
+    }
+
+    /**
+     * 设置 DWPI 同族专利国家/地区计数
+     *
+     * @param dwpiFmailyAreaNum  DWPI 同族专利国家/地区计数
+     */
+    public void setDwpiFmailyAreaNum(Integer dwpiFmailyAreaNum) {
+        this.dwpiFmailyAreaNum = dwpiFmailyAreaNum;
+    }
+
+    /**
+     * @return dwpi_member_num
+     */
+    public Integer getDwpiMemberNum() {
+        return dwpiMemberNum;
+    }
+
+    /**
+     * @param dwpiMemberNum
+     */
+    public void setDwpiMemberNum(Integer dwpiMemberNum) {
+        this.dwpiMemberNum = dwpiMemberNum;
+    }
+
+    /**
+     * 获取ipc
+     *
+     * @return ipc - ipc
+     */
+    public String getIpc() {
+        return ipc;
+    }
+
+    /**
+     * 设置ipc
+     *
+     * @param ipc ipc
+     */
+    public void setIpc(String ipc) {
+        this.ipc = ipc;
+    }
+
+    /**
+     * 获取摘要
+     *
+     * @return abstract_ - 摘要
+     */
+    public String getAbstract() {
+        return abstract_;
+    }
+
+    /**
+     * 设置摘要
+     *
+     * @param abstract 摘要
+     */
+    public void setAbstract(String abstract_) {
+        this.abstract_ = abstract_;
+    }
+
+    /**
+     * 获取描述-关键词
+     *
+     * @return desc_keywords - 描述-关键词
+     */
+    public String getDescKeywords() {
+        return descKeywords;
+    }
+
+    /**
+     * 设置描述-关键词
+     *
+     * @param descKeywords 描述-关键词
+     */
+    public void setDescKeywords(String descKeywords) {
+        this.descKeywords = descKeywords;
+    }
+
+    /**
+     * 获取claims-关键词
+     *
+     * @return claims_keywords - claims-关键词
+     */
+    public String getClaimsKeywords() {
+        return claimsKeywords;
+    }
+
+    /**
+     * 设置claims-关键词
+     *
+     * @param claimsKeywords claims-关键词
+     */
+    public void setClaimsKeywords(String claimsKeywords) {
+        this.claimsKeywords = claimsKeywords;
+    }
+
+    /**
+     * 获取优先权
+     *
+     * @return priority_claim_no - 优先权
+     */
+    public String getPriorityClaimNo() {
+        return priorityClaimNo;
+    }
+
+    /**
+     * 设置优先权
+     *
+     * @param priorityClaimNo 优先权
+     */
+    public void setPriorityClaimNo(String priorityClaimNo) {
+        this.priorityClaimNo = priorityClaimNo;
+    }
+
+    /**
+     * 获取优先权年
+     *
+     * @return priority_claim_year - 优先权年
+     */
+    public String getPriorityClaimYear() {
+        return priorityClaimYear;
+    }
+
+    /**
+     * 设置优先权年
+     *
+     * @param priorityClaimYear 优先权年
+     */
+    public void setPriorityClaimYear(String priorityClaimYear) {
+        this.priorityClaimYear = priorityClaimYear;
+    }
+
+    /**
+     * 获取外观设计简要说明
+     *
+     * @return design_brief_explanation - 外观设计简要说明
+     */
+    public String getDesignBriefExplanation() {
+        return designBriefExplanation;
+    }
+
+    /**
+     * 设置外观设计简要说明
+     *
+     * @param designBriefExplanation 外观设计简要说明
+     */
+    public void setDesignBriefExplanation(String designBriefExplanation) {
+        this.designBriefExplanation = designBriefExplanation;
+    }
+
+    /**
+     * 获取CPC
+     *
+     * @return cpc - CPC
+     */
+    public String getCpc() {
+        return cpc;
+    }
+
+    /**
+     * 设置CPC
+     *
+     * @param cpc CPC
+     */
+    public void setCpc(String cpc) {
+        this.cpc = cpc;
+    }
+
+    /**
+     * 获取简单同族
+     *
+     * @return simple_family - 简单同族
+     */
+    public String getSimpleFamily() {
+        return simpleFamily;
+    }
+
+    /**
+     * 设置简单同族
+     *
+     * @param simpleFamily 简单同族
+     */
+    public void setSimpleFamily(String simpleFamily) {
+        this.simpleFamily = simpleFamily;
+    }
+
+    /**
+     * 获取同族国别
+     *
+     * @return famliy_country - 同族国别
+     */
+    public String getFamliyCountry() {
+        return famliyCountry;
+    }
+
+    /**
+     * 设置同族国别
+     *
+     * @param famliyCountry 同族国别
+     */
+    public void setFamliyCountry(String famliyCountry) {
+        this.famliyCountry = famliyCountry;
+    }
+
+    /**
+     * 获取复合审查员引证
+     *
+     * @return cieo - 复合审查员引证
+     */
+    public String getCieo() {
+        return cieo;
+    }
+
+    /**
+     * 设置复合审查员引证
+     *
+     * @param cieo 复合审查员引证
+     */
+    public void setCieo(String cieo) {
+        this.cieo = cieo;
+    }
+
+    /**
+     * 获取复合申请人引证
+     *
+     * @return ciao - 复合申请人引证
+     */
+    public String getCiao() {
+        return ciao;
+    }
+
+    /**
+     * 设置复合申请人引证
+     *
+     * @param ciao 复合申请人引证
+     */
+    public void setCiao(String ciao) {
+        this.ciao = ciao;
+    }
+
+    /**
+     * 获取同族专利项
+     *
+     * @return patent_family - 同族专利项
+     */
+    public String getPatentFamily() {
+        return patentFamily;
+    }
+
+    /**
+     * 设置同族专利项
+     *
+     * @param patentFamily 同族专利项
+     */
+    public void setPatentFamily(String patentFamily) {
+        this.patentFamily = patentFamily;
+    }
+
+    /**
+     * 获取引证文献
+     *
+     * @return literature_citation - 引证文献
+     */
+    public String getLiteratureCitation() {
+        return literatureCitation;
+    }
+
+    /**
+     * 设置引证文献
+     *
+     * @param literatureCitation 引证文献
+     */
+    public void setLiteratureCitation(String literatureCitation) {
+        this.literatureCitation = literatureCitation;
+    }
+
+    /**
+     * 获取欧洲分类号
+     *
+     * @return classification_no_ep - 欧洲分类号
+     */
+    public String getClassificationNoEp() {
+        return classificationNoEp;
+    }
+
+    /**
+     * 设置欧洲分类号
+     *
+     * @param classificationNoEp 欧洲分类号
+     */
+    public void setClassificationNoEp(String classificationNoEp) {
+        this.classificationNoEp = classificationNoEp;
+    }
+
+    /**
+     * 获取引用的参考文献详细信息-专利
+     *
+     * @return ref_patent_detail - 引用的参考文献详细信息-专利
+     */
+    public String getRefPatentDetail() {
+        return refPatentDetail;
+    }
+
+    /**
+     * 设置引用的参考文献详细信息-专利
+     *
+     * @param refPatentDetail 引用的参考文献详细信息-专利
+     */
+    public void setRefPatentDetail(String refPatentDetail) {
+        this.refPatentDetail = refPatentDetail;
+    }
+
+    /**
+     * 获取 引用的参考文献-非专利
+     *
+     * @return ref_others -  引用的参考文献-非专利
+     */
+    public String getRefOthers() {
+        return refOthers;
+    }
+
+    /**
+     * 设置 引用的参考文献-非专利
+     *
+     * @param refOthers  引用的参考文献-非专利
+     */
+    public void setRefOthers(String refOthers) {
+        this.refOthers = refOthers;
+    }
+
+    /**
+     * 获取 引用非专利-DOI
+     *
+     * @return ref_others_doi -  引用非专利-DOI
+     */
+    public String getRefOthersDoi() {
+        return refOthersDoi;
+    }
+
+    /**
+     * 设置 引用非专利-DOI
+     *
+     * @param refOthersDoi  引用非专利-DOI
+     */
+    public void setRefOthersDoi(String refOthersDoi) {
+        this.refOthersDoi = refOthersDoi;
+    }
+
+    /**
+     * 获取 施引专利
+     *
+     * @return citing_patent -  施引专利
+     */
+    public String getCitingPatent() {
+        return citingPatent;
+    }
+
+    /**
+     * 设置 施引专利
+     *
+     * @param citingPatent  施引专利
+     */
+    public void setCitingPatent(String citingPatent) {
+        this.citingPatent = citingPatent;
+    }
+
+    /**
+     * 获取 施引参考文献详细信息-专利
+     *
+     * @return citing_patent_detail -  施引参考文献详细信息-专利
+     */
+    public String getCitingPatentDetail() {
+        return citingPatentDetail;
+    }
+
+    /**
+     * 设置 施引参考文献详细信息-专利
+     *
+     * @param citingPatentDetail  施引参考文献详细信息-专利
+     */
+    public void setCitingPatentDetail(String citingPatentDetail) {
+        this.citingPatentDetail = citingPatentDetail;
+    }
+
+    /**
+     * 获取 IPC 现版
+     *
+     * @return ipc_now -  IPC 现版
+     */
+    public String getIpcNow() {
+        return ipcNow;
+    }
+
+    /**
+     * 设置 IPC 现版
+     *
+     * @param ipcNow  IPC 现版
+     */
+    public void setIpcNow(String ipcNow) {
+        this.ipcNow = ipcNow;
+    }
+
+    /**
+     * 获取 公开专利文献类型识别代码
+     *
+     * @return ki -  公开专利文献类型识别代码
+     */
+    public String getKi() {
+        return ki;
+    }
+
+    /**
+     * 设置 公开专利文献类型识别代码
+     *
+     * @param ki  公开专利文献类型识别代码
+     */
+    public void setKi(String ki) {
+        this.ki = ki;
+    }
+
+    /**
+     * 获取发明人
+     *
+     * @return inventor_d - 发明人
+     */
+    public String getInventorD() {
+        return inventorD;
+    }
+
+    /**
+     * 设置发明人
+     *
+     * @param inventorD 发明人
+     */
+    public void setInventorD(String inventorD) {
+        this.inventorD = inventorD;
+    }
+
+    /**
+     * 获取优先权日
+     *
+     * @return priority_claim_day - 优先权日
+     */
+    public String getPriorityClaimDay() {
+        return priorityClaimDay;
+    }
+
+    /**
+     * 设置优先权日
+     *
+     * @param priorityClaimDay 优先权日
+     */
+    public void setPriorityClaimDay(String priorityClaimDay) {
+        this.priorityClaimDay = priorityClaimDay;
+    }
+
+    /**
+     * 获取IPC3位
+     *
+     * @return ipc_3f - IPC3位
+     */
+    public String getIpc3f() {
+        return ipc3f;
+    }
+
+    /**
+     * 设置IPC3位
+     *
+     * @param ipc3f IPC3位
+     */
+    public void setIpc3f(String ipc3f) {
+        this.ipc3f = ipc3f;
+    }
+
+    /**
+     * 获取IPC1位
+     *
+     * @return ipc_1f - IPC1位
+     */
+    public String getIpc1f() {
+        return ipc1f;
+    }
+
+    /**
+     * 设置IPC1位
+     *
+     * @param ipc1f IPC1位
+     */
+    public void setIpc1f(String ipc1f) {
+        this.ipc1f = ipc1f;
+    }
+
+    /**
+     * 获取引用的专利第一专利权人
+     *
+     * @return p_citation_owner_first - 引用的专利第一专利权人
+     */
+    public String getpCitationOwnerFirst() {
+        return pCitationOwnerFirst;
+    }
+
+    /**
+     * 设置引用的专利第一专利权人
+     *
+     * @param pCitationOwnerFirst 引用的专利第一专利权人
+     */
+    public void setpCitationOwnerFirst(String pCitationOwnerFirst) {
+        this.pCitationOwnerFirst = pCitationOwnerFirst;
+    }
+
+    /**
+     * 获取 引用的参考文献-非专利
+     *
+     * @return np_citation -  引用的参考文献-非专利
+     */
+    public String getNpCitation() {
+        return npCitation;
+    }
+
+    /**
+     * 设置 引用的参考文献-非专利
+     *
+     * @param npCitation  引用的参考文献-非专利
+     */
+    public void setNpCitation(String npCitation) {
+        this.npCitation = npCitation;
+    }
+
+    /**
+     * 获取 引用的参考文献-非专利的DOI
+     *
+     * @return np_citation_doi -  引用的参考文献-非专利的DOI
+     */
+    public String getNpCitationDoi() {
+        return npCitationDoi;
+    }
+
+    /**
+     * 设置 引用的参考文献-非专利的DOI
+     *
+     * @param npCitationDoi  引用的参考文献-非专利的DOI
+     */
+    public void setNpCitationDoi(String npCitationDoi) {
+        this.npCitationDoi = npCitationDoi;
+    }
+
+    /**
+     * 获取施引专利
+     *
+     * @return citing_patent_no - 施引专利
+     */
+    public String getCitingPatentNo() {
+        return citingPatentNo;
+    }
+
+    /**
+     * 设置施引专利
+     *
+     * @param citingPatentNo 施引专利
+     */
+    public void setCitingPatentNo(String citingPatentNo) {
+        this.citingPatentNo = citingPatentNo;
+    }
+
+    /**
+     * @return citing_patent_owner_first
+     */
+    public String getCitingPatentOwnerFirst() {
+        return citingPatentOwnerFirst;
+    }
+
+    /**
+     * @param citingPatentOwnerFirst
+     */
+    public void setCitingPatentOwnerFirst(String citingPatentOwnerFirst) {
+        this.citingPatentOwnerFirst = citingPatentOwnerFirst;
+    }
+
+    /**
+     * 获取法律状态
+     *
+     * @return legal_status - 法律状态
+     */
+    public String getLegalStatus() {
+        return legalStatus;
+    }
+
+    /**
+     * 设置法律状态
+     *
+     * @param legalStatus 法律状态
+     */
+    public void setLegalStatus(String legalStatus) {
+        this.legalStatus = legalStatus;
+    }
+
+    /**
+     * 获取法律状态日期
+     *
+     * @return legal_status_day - 法律状态日期
+     */
+    public String getLegalStatusDay() {
+        return legalStatusDay;
+    }
+
+    /**
+     * 设置法律状态日期
+     *
+     * @param legalStatusDay 法律状态日期
+     */
+    public void setLegalStatusDay(String legalStatusDay) {
+        this.legalStatusDay = legalStatusDay;
+    }
+
+    /**
+     * 获取德温特数据库中同族专利成员
+     *
+     * @return family_dwpi_no - 德温特数据库中同族专利成员
+     */
+    public String getFamilyDwpiNo() {
+        return familyDwpiNo;
+    }
+
+    /**
+     * 设置德温特数据库中同族专利成员
+     *
+     * @param familyDwpiNo 德温特数据库中同族专利成员
+     */
+    public void setFamilyDwpiNo(String familyDwpiNo) {
+        this.familyDwpiNo = familyDwpiNo;
+    }
+}

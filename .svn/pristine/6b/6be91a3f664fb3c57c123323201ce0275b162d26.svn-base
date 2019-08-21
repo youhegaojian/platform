@@ -1,0 +1,21 @@
+package com.liming.service;
+
+import com.liming.utils.JSONResult;
+
+import com.liming.domain.ApscTaskDetailSchedule;
+
+/**
+ * Copyright: Copyright (c) 2019 liming
+ * 
+ * @Description: 该类的功能描述
+ * @author: ALPHA.GJ.
+ * @date: 2019年5月9日 上午8:30:37
+ */
+public interface ApscTaskDetailScheduleService {
+
+	JSONResult getList(int page, int pageSize);
+	JSONResult getList(int page, int pageSize,String task_id);
+
+    void insert(ApscTaskDetailSchedule apscTaskDetailSchedule);
+    void update(ApscTaskDetailSchedule apscTaskDetailSchedule);
+}

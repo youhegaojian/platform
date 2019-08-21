@@ -1,0 +1,24 @@
+package com.liming.mapper;
+
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+
+import com.liming.domain.ApscKgoLink;
+import com.liming.utils.MyMapper;
+@Mapper 
+public interface ApscKgoLinkMapper extends MyMapper<ApscKgoLink> {
+	
+	List<ApscKgoLink> getKgoListLemma(ApscKgoLink apscKgoLink);
+	
+	List<ApscKgoLink> getKgoListNaction(ApscKgoLink apscKgoLink);
+
+	List<ApscKgoLink> getPaperList(ApscKgoLink apscKgoLink);
+	
+	List<ApscKgoLink> getPatentList(ApscKgoLink apscKgoLink);
+
+	List<ApscKgoLink> selectUnexecuted(ApscKgoLink apscKgoLink);
+	
+}

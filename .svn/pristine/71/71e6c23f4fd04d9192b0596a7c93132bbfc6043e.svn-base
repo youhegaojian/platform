@@ -1,0 +1,46 @@
+package com.liming.service.impl;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.liming.domain.ApscPaperAnalyse;
+import com.liming.domain.ApscPaperAnalyseExt;
+import com.liming.mapper.ApscPaperAnalyseExtMapper;
+import com.liming.mapper.ApscPaperAnalyseMapper;
+import com.liming.service.ApscPaperAnalyseExtService;
+import com.liming.service.ApscPaperAnalyseService;
+import tk.mybatis.mapper.entity.Example;
+
+public class ApscPaperAnalyseExtServiceImpl implements ApscPaperAnalyseExtService {
+	
+	@Autowired
+    private  ApscPaperAnalyseExtMapper mapper;
+
+	@Override
+	public int getCount(String id) {
+		Example example = new Example(ApscPaperAnalyseExt.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("uploadlogid", id);
+		criteria.andEqualTo("ext_name", "title_keywords");
+		List<ApscPaperAnalyseExt> list = mapper.selectByExample(example);
+		return list.size();
+	}
+
+	@Override
+	public void delete(String id) {
+		Example example = new Example(ApscPaperAnalyseExt.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("uploadlogid", id);
+		criteria.andEqualTo("ext_name", "title_keywords");
+		criteria.andEqualTo("ext_name", "abstract_keywords");
+		mapper.deleteByExample(example); 
+	}
+
+	@Override
+	public void insert(List<ApscPaperAnalyseExt> newlist) {
+		for (ApscPaperAnalyseExt apscPaperAnalyseExt : newlist) {
+			mapper.insert(apscPaperAnalyseExt);
+		}
+	}
+}

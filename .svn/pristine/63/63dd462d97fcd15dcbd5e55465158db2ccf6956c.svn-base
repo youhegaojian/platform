@@ -1,0 +1,25 @@
+package com.liming.utils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class RegexpFilter {
+	
+    public static String stringFilter(String str) {
+        
+    	/**
+	 	* 特殊字符处理 
+	 	* 1. 
+	 	* 2.\n换行 
+	 	* 3.\r回车 
+	 	* 4.\t tab
+	 	* 5.\f 换页
+    	*/
+        String regEx = "[ \\n\\r\\t\\f]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        str = m.replaceAll("").trim();
+        return str;
+
+    }
+}

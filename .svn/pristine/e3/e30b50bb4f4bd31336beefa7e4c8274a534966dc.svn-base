@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liming.mapper.ApscAnalysisPatentMapper">
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscAnalysisPatent">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="publication_no" jdbcType="VARCHAR" property="publicationNo" />
+    <result column="publication_date" jdbcType="VARCHAR" property="publicationDate" />
+    <result column="publication_day" jdbcType="VARCHAR" property="publicationDay" />
+    <result column="publish_kind" jdbcType="VARCHAR" property="publishKind" />
+    <result column="application_no" jdbcType="VARCHAR" property="applicationNo" />
+    <result column="application_date" jdbcType="VARCHAR" property="applicationDate" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="abstract_keywords" jdbcType="VARCHAR" property="abstractKeywords" />
+    <result column="title_keywords" jdbcType="VARCHAR" property="titleKeywords" />
+    <result column="application_person" jdbcType="VARCHAR" property="applicationPerson" />
+    <result column="application_person_type" jdbcType="VARCHAR" property="applicationPersonType" />
+    <result column="application_person_area_code" jdbcType="VARCHAR" property="applicationPersonAreaCode" />
+    <result column="application_person_address" jdbcType="VARCHAR" property="applicationPersonAddress" />
+    <result column="inventor" jdbcType="VARCHAR" property="inventor" />
+    <result column="owner" jdbcType="VARCHAR" property="owner" />
+    <result column="owner_type" jdbcType="VARCHAR" property="ownerType" />
+    <result column="owner_area_code" jdbcType="VARCHAR" property="ownerAreaCode" />
+    <result column="owner_address" jdbcType="VARCHAR" property="ownerAddress" />
+    <result column="priority_claim_country" jdbcType="VARCHAR" property="priorityClaimCountry" />
+    <result column="priority_claim_date" jdbcType="VARCHAR" property="priorityClaimDate" />
+    <result column="publish_no_inter" jdbcType="VARCHAR" property="publishNoInter" />
+    <result column="publication_date_inter" jdbcType="VARCHAR" property="publicationDateInter" />
+    <result column="application_no_inter" jdbcType="VARCHAR" property="applicationNoInter" />
+    <result column="application_date_inter" jdbcType="VARCHAR" property="applicationDateInter" />
+    <result column="entry_national_stage_date" jdbcType="VARCHAR" property="entryNationalStageDate" />
+    <result column="data_type" jdbcType="VARCHAR" property="dataType" />
+    <result column="inventor_area_code" jdbcType="VARCHAR" property="inventorAreaCode" />
+    <result column="source_country_code" jdbcType="VARCHAR" property="sourceCountryCode" />
+    <result column="source_country" jdbcType="VARCHAR" property="sourceCountry" />
+    <result column="pa" jdbcType="VARCHAR" property="pa" />
+    <result column="cln" jdbcType="VARCHAR" property="cln" />
+    <result column="be_quote_cnt" jdbcType="VARCHAR" property="beQuoteCnt" />
+    <result column="cinc" jdbcType="VARCHAR" property="cinc" />
+    <result column="vu" jdbcType="VARCHAR" property="vu" />
+    <result column="pcc" jdbcType="VARCHAR" property="pcc" />
+    <result column="tcc" jdbcType="VARCHAR" property="tcc" />
+    <result column="patent_classifcation" jdbcType="VARCHAR" property="patentClassifcation" />
+    <result column="task_id" jdbcType="VARCHAR" property="taskId" />
+    <result column="main_classification_no" jdbcType="VARCHAR" property="mainClassificationNo" />
+    <result column="priority" jdbcType="VARCHAR" property="priority" />
+    <result column="main_classification_no_ep" jdbcType="VARCHAR" property="mainClassificationNoEp" />
+    <result column="accession_no" jdbcType="VARCHAR" property="accessionNo" />
+    <result column="ref_patent_num" jdbcType="INTEGER" property="refPatentNum" />
+    <result column="owner_num" jdbcType="INTEGER" property="ownerNum" />
+    <result column="inventor_first" jdbcType="VARCHAR" property="inventorFirst" />
+    <result column="inventor_num" jdbcType="INTEGER" property="inventorNum" />
+    <result column="priority_claim_day_min" jdbcType="VARCHAR" property="priorityClaimDayMin" />
+    <result column="publication_country" jdbcType="VARCHAR" property="publicationCountry" />
+    <result column="publication_year" jdbcType="VARCHAR" property="publicationYear" />
+    <result column="owner_first" jdbcType="VARCHAR" property="ownerFirst" />
+    <result column="owner_current" jdbcType="VARCHAR" property="ownerCurrent" />
+    <result column="claim_num" jdbcType="INTEGER" property="claimNum" />
+    <result column="ipc_8f" jdbcType="VARCHAR" property="ipc8f" />
+    <result column="ipc_4f" jdbcType="VARCHAR" property="ipc4f" />
+    <result column="np_citation_num" jdbcType="INTEGER" property="npCitationNum" />
+    <result column="citing_patent_num" jdbcType="INTEGER" property="citingPatentNum" />
+    <result column="dwpi_family_num" jdbcType="INTEGER" property="dwpiFamilyNum" />
+    <result column="dwpi_fmaily_area_num" jdbcType="INTEGER" property="dwpiFmailyAreaNum" />
+    <result column="dwpi_member_num" jdbcType="INTEGER" property="dwpiMemberNum" />
+    <result column="ipc" jdbcType="LONGVARCHAR" property="ipc" />
+    <result column="abstract_" jdbcType="LONGVARCHAR" property="abstract" />
+    <result column="desc_keywords" jdbcType="LONGVARCHAR" property="descKeywords" />
+    <result column="claims_keywords" jdbcType="LONGVARCHAR" property="claimsKeywords" />
+    <result column="priority_claim_no" jdbcType="LONGVARCHAR" property="priorityClaimNo" />
+    <result column="priority_claim_year" jdbcType="LONGVARCHAR" property="priorityClaimYear" />
+    <result column="design_brief_explanation" jdbcType="LONGVARCHAR" property="designBriefExplanation" />
+    <result column="cpc" jdbcType="LONGVARCHAR" property="cpc" />
+    <result column="simple_family" jdbcType="LONGVARCHAR" property="simpleFamily" />
+    <result column="famliy_country" jdbcType="LONGVARCHAR" property="famliyCountry" />
+    <result column="cieo" jdbcType="LONGVARCHAR" property="cieo" />
+    <result column="ciao" jdbcType="LONGVARCHAR" property="ciao" />
+    <result column="patent_family" jdbcType="LONGVARCHAR" property="patentFamily" />
+    <result column="literature_citation" jdbcType="LONGVARCHAR" property="literatureCitation" />
+    <result column="classification_no_ep" jdbcType="LONGVARCHAR" property="classificationNoEp" />
+    <result column="ref_patent_detail" jdbcType="LONGVARCHAR" property="refPatentDetail" />
+    <result column="ref_others" jdbcType="LONGVARCHAR" property="refOthers" />
+    <result column="ref_others_doi" jdbcType="LONGVARCHAR" property="refOthersDoi" />
+    <result column="citing_patent" jdbcType="LONGVARCHAR" property="citingPatent" />
+    <result column="citing_patent_detail" jdbcType="LONGVARCHAR" property="citingPatentDetail" />
+    <result column="ipc_now" jdbcType="LONGVARCHAR" property="ipcNow" />
+    <result column="ki" jdbcType="LONGVARCHAR" property="ki" />
+    <result column="inventor_d" jdbcType="LONGVARCHAR" property="inventorD" />
+    <result column="priority_claim_day" jdbcType="LONGVARCHAR" property="priorityClaimDay" />
+    <result column="ipc_3f" jdbcType="LONGVARCHAR" property="ipc3f" />
+    <result column="ipc_1f" jdbcType="LONGVARCHAR" property="ipc1f" />
+    <result column="p_citation_owner_first" jdbcType="LONGVARCHAR" property="pCitationOwnerFirst" />
+    <result column="np_citation" jdbcType="LONGVARCHAR" property="npCitation" />
+    <result column="np_citation_doi" jdbcType="LONGVARCHAR" property="npCitationDoi" />
+    <result column="citing_patent_no" jdbcType="LONGVARCHAR" property="citingPatentNo" />
+    <result column="citing_patent_owner_first" jdbcType="LONGVARCHAR" property="citingPatentOwnerFirst" />
+    <result column="legal_status" jdbcType="LONGVARCHAR" property="legalStatus" />
+    <result column="legal_status_day" jdbcType="LONGVARCHAR" property="legalStatusDay" />
+    <result column="family_dwpi_no" jdbcType="LONGVARCHAR" property="familyDwpiNo" />
+  </resultMap>
+  <select id="getAapList" resultType="list">
+  	SELECT * from apsc_analysis_patent 
+  	WHERE 
+  		abstract_keywords is null and 
+  		title_keywords is null and 
+  		task_id=#{TaskId} limit #{Limit}
+  
+  </select>
+</mapper>

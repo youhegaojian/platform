@@ -1,0 +1,101 @@
+package com.liming.thread;
+
+import java.util.List;
+import java.util.Map;
+
+import com.example.demo.domain.ScheduleDomain;
+import com.example.demo.utils.DateUtils;
+import com.example.demo.utils.SqlUtils;
+import com.liming.service.InsertKeywordOfPaper;
+import com.liming.service.InsertKeywordOfPatent;
+import com.liming.service.InsertKeywordOfProtect;
+import com.liming.service.LemmaBatch;
+import com.liming.service.NationExtract;
+import com.liming.service.Replace_apsc_paper_analyse_ext;
+
+/**
+ * @author ALPHA.GJ
+ * @date 创建时间：2019年3月29日 下午2:25:16
+ * @version 1.0
+ **/
+public class ScheduleThread extends Thread {
+	
+	/*@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void run() {
+		// 循环判断
+		// 查询数据库有没有正在排队的数据，获取数据
+		 System.out.println("--------开始循环查询...");
+		// 获取正在计算中的任务列表
+		StringBuffer sql = new StringBuffer();
+		sql.append("select * from apsc_task_schedule where state = '2' ");
+		List<Map> scheList = SqlUtils.query(sql.toString());
+		
+		if (scheList.size() < 1) {
+//			如果正在计算中的任务小于 1,查询处于 等待执行中的任务。
+			sql = new StringBuffer();
+			sql.append("select * from apsc_task_schedule where state = '1' order by begin_time limit 1");
+			List<Map> _scheList = SqlUtils.query(sql.toString());
+			Map clusMap = null;
+			if(_scheList != null && _scheList.size()>0) {
+				clusMap = _scheList.get(0);
+				String type = clusMap.get("type").toString();
+//				String taskid = clusMap.get("taskid").toString();
+				String task_id = clusMap.get("task_id").toString();
+				ScheduleDomain sche = new ScheduleDomain(type,task_id);
+				
+				try {
+					boolean flag = false;
+					switch(type) {
+						case "001":
+							InsertKeywordOfPatent patkwd = new InsertKeywordOfPatent(task_id);
+							flag =patkwd.insertKeyword(task_id);
+							break;
+						case "002":
+							InsertKeywordOfPaper pakwd = new InsertKeywordOfPaper(task_id);
+							flag =pakwd.insertKeyword(task_id);
+							break;
+						case "003": 
+							InsertKeywordOfProtect prkwd = new InsertKeywordOfProtect(task_id);
+							flag =prkwd.insertKeyword();
+							break;
+						case "004": 
+							LemmaBatch lem = new LemmaBatch(task_id);
+							flag = lem.lemmatize();
+							break;
+						case "005": 
+							Replace_apsc_paper_analyse_ext rep = new Replace_apsc_paper_analyse_ext(task_id);
+							flag =rep.replace();
+							break;
+						case "006": 
+							NationExtract nae = new NationExtract(task_id);
+							flag = nae.updateNation();
+							break;
+					}
+					// 调用执行方法
+					if (flag) {
+						this.run();
+					} else {
+						// 更新数据，将状态改为计算出错
+						sche.getSche_list().get(0).put("state", "3");
+						sche.getSche_list().get(0).put("end_time", DateUtils.getCurrDateTimeStr());
+						SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(),
+								new String[] { "end_time", "state" });
+						this.run();
+					}
+				} catch (Exception e) {
+					// 更新数据，将状态改为计算出错
+					sche.getSche_list().get(0).put("state", "3");
+					sche.getSche_list().get(0).put("end_time", DateUtils.getCurrDateTimeStr());
+					SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(),
+							new String[] { "end_time", "state" });
+					this.run();
+					e.printStackTrace();
+				}
+			} else {
+				System.out.println("没有等待处理的任务....");
+			}
+		} else {
+			System.out.println("有1个任务正在计算，请稍后....");
+		}
+	}*/
+}

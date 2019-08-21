@@ -1,0 +1,142 @@
+package com.liming.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.mapper.ApscTaskScheduleMapper;
+import com.liming.service.ApscTaskScheduleService;
+import com.liming.utils.DateUtils;
+import com.liming.utils.JSONResult;
+
+import tk.mybatis.mapper.entity.Example;
+
+@Service("apscTaskScheduleService")
+public class ApscTaskScheduleServiceImpl implements ApscTaskScheduleService {
+
+	@Autowired
+	private ApscTaskScheduleMapper mapper;
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public JSONResult getList(int page, int pageSize) {
+		// 开始分页
+		PageHelper.startPage(page, pageSize);
+		Example example = new Example(ApscTaskSchedule.class);
+		List<ApscTaskSchedule> list = mapper.selectByExample(example);
+		PageInfo<ApscTaskSchedule> pageInfo = new PageInfo<>(list);
+		return JSONResult.ok(list, pageInfo.getTotal());
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ApscTaskSchedule> getList(String state) {
+		Example example = new Example(ApscTaskSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("state", state);
+		List<ApscTaskSchedule> list = new ArrayList<ApscTaskSchedule>();
+		list=mapper.selectByExample(example);
+		return list;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public ApscTaskSchedule getDomain(String state) {
+		Example example = new Example(ApscTaskSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("state", state);
+		example.orderBy("beginTime");
+		List<ApscTaskSchedule> list = mapper.selectByExample(example);
+		if (list != null && !list.isEmpty()) {
+			return (ApscTaskSchedule) list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public ApscTaskSchedule getDomain(String date, String type) {
+		Example example = new Example(ApscTaskSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andLike("taskId", date + type);
+		example.orderBy("taskId").desc();
+		List<ApscTaskSchedule> list = mapper.selectByExample(example);
+		if (list != null && !list.isEmpty()) {
+			return (ApscTaskSchedule) list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public void insert(ApscTaskSchedule apscTaskSchedule) {
+		mapper.insert(apscTaskSchedule);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public boolean update(ApscTaskSchedule apscTaskSchedule) {
+		Example example = new Example(ApscTaskSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("taskId", apscTaskSchedule.getTaskId());
+		apscTaskSchedule.setState("4");
+		int result = mapper.updateByExampleSelective(apscTaskSchedule, example);
+		if (result>0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public String generateId(String type) {
+
+		String id = null;
+		String date = DateUtils.getCurrDateS();
+		ApscTaskSchedule schedule = getDomain(date, type);
+
+		if (schedule != null) {
+			if (schedule.getTaskId() != null) {
+				Long _id = Long.parseLong(schedule.getTaskId());
+				id = String.valueOf(_id + 1);
+			} else {
+				id = date + type + "0001";
+			}
+		} else {
+			id = date + type + "0001";
+		}
+		return id;
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public JSONResult getList(int page, int pageSize, String type) {
+		// 开始分页
+		PageHelper.startPage(page, pageSize);
+		Example example = new Example(ApscTaskSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("type", type);
+		example.orderBy("beginTime").desc();
+		List<ApscTaskSchedule> list = mapper.selectByExample(example);
+		PageInfo<ApscTaskSchedule> pageInfo = new PageInfo<>(list);
+		return JSONResult.ok(list,pageInfo.getTotal());
+	}
+	
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public void delete(ApscTaskSchedule apscTaskSchedule) {
+		Example example = new Example(ApscTaskSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("taskId", apscTaskSchedule.getTaskId());
+		mapper.deleteByExample(example);
+	}
+
+}

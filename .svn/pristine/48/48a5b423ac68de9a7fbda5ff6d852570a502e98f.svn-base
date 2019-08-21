@@ -1,0 +1,10 @@
+package com.liming.mapper;
+
+import java.util.List;
+
+import com.liming.domain.ApscTaskDefineSchedule;
+import com.liming.utils.MyMapper;
+
+public interface ApscTaskDefineScheduleMapper extends MyMapper<ApscTaskDefineSchedule> {
+    List<ApscTaskDefineSchedule> getList();
+}

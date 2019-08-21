@@ -1,0 +1,70 @@
+package com.liming.service.impl;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.pagehelper.PageHelper;
+import com.liming.domain.ApscAnalysisPatent;
+import com.liming.domain.ApscKgoLink;
+import com.liming.domain.ApscPaperAnalyseExt;
+import com.liming.domain.ApscTaskDefineSchedule;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.mapper.ApscAnalysisPatentMapper;
+import com.liming.mapper.ApscKgoLinkMapper;
+import com.liming.service.ApscAnalysisPatentService;
+
+import tk.mybatis.mapper.entity.Example;
+@Service
+public class ApscAnalysisPatentServiceImpl implements ApscAnalysisPatentService {
+
+	@Autowired
+	private ApscAnalysisPatentMapper aapmapper;
+	
+
+
+	//SELECT * from apsc_analysis_patent WHERE abstract_keywords is null and title_keywords is null and task_id="+id+" limit "+limit+"";
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ApscAnalysisPatent> getAapList(String id, int limit){
+		
+		List<ApscAnalysisPatent> list = aapmapper.getAapList(id, limit);
+		System.out.println("list@aapservice============>>"+list.size());
+		return list;
+	}
+
+
+
+	@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public void insertAapByListAndHeader(List<ApscAnalysisPatent> list) {
+		// insert into aap(headers) values(list.foreach) 
+		// on duplicate key update title_keywords = VALUES(title_keywords),abstract_keywords = VALUES(abstract_keywords)
+		for (ApscAnalysisPatent ApscAnalysisPatent : list) {
+			Example example = new Example(ApscAnalysisPatent.class);
+			Example.Criteria criteria = example.createCriteria();
+			criteria.andEqualTo("id", ApscAnalysisPatent.getId());
+			aapmapper.updateByExampleSelective(ApscAnalysisPatent, example);
+			int i = 0;
+			System.out.println(i++);
+		}
+		
+		
+		
+	}
+
+
+
+	
+	
+	
+	
+	
+	
+	 
+}

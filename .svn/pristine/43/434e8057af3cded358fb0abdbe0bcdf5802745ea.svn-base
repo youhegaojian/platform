@@ -1,0 +1,9 @@
+package com.liming.service;
+
+import com.liming.domain.ApscTaskSchedule;
+
+public interface LemmaBatchService {
+	
+	public boolean lemmatize(ApscTaskSchedule apscTaskSchedule);
+
+}

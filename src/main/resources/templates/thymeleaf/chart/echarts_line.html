@@ -1,0 +1,30 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<title>折线图</title>
+<link th:href="@{/static/css/chart/echarts_line.css}" rel="stylesheet">
+<link th:href="@{/static/layui/css/layui.css}" rel="stylesheet">
+<script th:src="@{/static/js/echart-4.1.0/echarts.min.js}"
+	type="text/javascript"></script>
+<script type="text/javascript" th:src="@{/static/jquery/jquery.min.js}"></script>
+<script th:src="@{/static/js/chart/echarts_line.js}"
+	type="text/javascript"></script>
+<script th:src="@{/static/layui/layui.js}" charset="utf-8"></script>
+</head>
+<body>
+	<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+	<form class="layui-form">
+		<div class="layui-input-inline">
+			<select class="control_select" id="data_source" name="month"
+				lay-filter="data_source">
+			</select>
+		</div>
+		<div id="bnt">
+			<a class="layui-btn" onclick="lineInit(param)">返回</a>
+		</div>
+	</form>
+	<div id="main"></div>
+</body>
+</html>

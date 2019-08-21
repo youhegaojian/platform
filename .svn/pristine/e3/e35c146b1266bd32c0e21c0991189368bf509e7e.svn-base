@@ -1,0 +1,134 @@
+package com.liming.domain;
+
+import com.example.demo.utils.DateUtils;
+import com.example.demo.utils.IdUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * @author ALPHA.GJ
+ * @date 创建时间：2019年3月28日 下午2:58:07
+ * @version 1.0
+ **/
+public class ScheduleDomain {
+
+	private List<Map> sche_list = new ArrayList<Map>();
+	private List<Map> detail_sche_list = new ArrayList<Map>();
+	private String[] headers;
+	private String[] detail_headers;
+	private String sche_table;
+	private String detail_table;
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ScheduleDomain(String type) {
+		Map map = new HashMap();
+
+		String task_id = IdUtils.generateId(type);
+		String state = "2";
+		String begin_time = DateUtils.getCurrDateTimeStr();
+
+		map.put("task_id", task_id);
+		map.put("type", type);
+		map.put("state", state);
+		map.put("begin_time", begin_time);
+		map.put("end_time", "");
+
+		sche_list.add(map);
+
+		map.put("file_id", "");
+		map.put("finish_rec", 0);
+		map.put("tab_name", "");
+		map.put("user_id", "");
+		detail_sche_list.add(map);
+
+		headers = new String[] { "task_id", "type", "state", "begin_time", "end_time" };
+		sche_table = "apsc_task_schedule";
+
+		detail_headers = new String[] { "task_id", "file_id", "type", "begin_time", "end_time", "sum_rec", "finish_rec",
+				"tab_name","user_id"};
+		detail_table = "apsc_task_detail_schedule";
+	}
+
+	@SuppressWarnings("unchecked")
+	public ScheduleDomain(String type, String task_id) {
+		Map map = new HashMap();
+
+		String state = "2";
+		String begin_time = DateUtils.getCurrDateTimeStr();
+
+		map.put("task_id", task_id);
+		map.put("type", type);
+		map.put("state", state);
+		map.put("begin_time", begin_time);
+		map.put("end_time", "");
+
+		sche_list.add(map);
+
+		map.put("file_id", "");
+		map.put("finish_rec", 0);
+		map.put("tab_name", "");
+		map.put("user_id", "");
+		detail_sche_list.add(map);
+
+		headers = new String[] { "task_id", "type", "state", "begin_time", "end_time" };
+		sche_table = "apsc_task_schedule";
+
+		detail_headers = new String[] { "task_id", "file_id", "type", "begin_time", "end_time", "sum_rec", "finish_rec",
+				"tab_name" ,"user_id"};
+		detail_table = "apsc_task_detail_schedule";
+
+	}
+
+	public List<Map> getSche_list() {
+		return sche_list;
+	}
+
+	public void setSche_list(List<Map> sche_list) {
+		this.sche_list = sche_list;
+	}
+
+	public List<Map> getDetail_sche_list() {
+		return detail_sche_list;
+	}
+
+	public void setDetail_sche_list(List<Map> detail_sche_list) {
+		this.detail_sche_list = detail_sche_list;
+	}
+
+	public String[] getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(String[] headers) {
+		this.headers = headers;
+	}
+
+	public String getSche_table() {
+		return sche_table;
+	}
+
+	public void setSche_table(String sche_table) {
+		this.sche_table = sche_table;
+	}
+
+	public String[] getDetail_headers() {
+		return detail_headers;
+	}
+
+	public void setDetail_headers(String[] detail_headers) {
+		this.detail_headers = detail_headers;
+	}
+
+	public String getDetail_table() {
+		return detail_table;
+	}
+
+	public void setDetail_table(String detail_table) {
+		this.detail_table = detail_table;
+	}
+
+}

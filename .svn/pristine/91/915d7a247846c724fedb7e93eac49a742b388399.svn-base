@@ -1,0 +1,16 @@
+package com.liming;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import tk.mybatis.spring.annotation.MapperScan;
+
+@SpringBootApplication
+@MapperScan("com.liming.mapper")
+public class KwordEApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(KwordEApplication.class, args);
+	}
+
+}

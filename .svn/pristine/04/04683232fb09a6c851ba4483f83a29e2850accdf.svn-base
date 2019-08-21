@@ -1,0 +1,90 @@
+package com.liming.domain;
+
+import javax.persistence.*;
+
+@Table(name = "apsc_paper_analyse_ext")
+public class ApscPaperAnalyseExt {
+    @Column(name = "ID")
+    private Integer id;
+
+    @Column(name = "paper_id")
+    private String paperId;
+
+    @Column(name = "ext_name")
+    private String extName;
+
+    private String uploadlogid;
+
+    @Column(name = "ext_val")
+    private String extVal;
+
+    /**
+     * @return ID
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /**
+     * @param id
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    /**
+     * @return paper_id
+     */
+    public String getPaperId() {
+        return paperId;
+    }
+
+    /**
+     * @param paperId
+     */
+    public void setPaperId(String paperId) {
+        this.paperId = paperId;
+    }
+
+    /**
+     * @return ext_name
+     */
+    public String getExtName() {
+        return extName;
+    }
+
+    /**
+     * @param extName
+     */
+    public void setExtName(String extName) {
+        this.extName = extName;
+    }
+
+    /**
+     * @return uploadlogid
+     */
+    public String getUploadlogid() {
+        return uploadlogid;
+    }
+
+    /**
+     * @param uploadlogid
+     */
+    public void setUploadlogid(String uploadlogid) {
+        this.uploadlogid = uploadlogid;
+    }
+
+    /**
+     * @return ext_val
+     */
+    public String getExtVal() {
+        return extVal;
+    }
+
+    /**
+     * @param extVal
+     */
+    public void setExtVal(String extVal) {
+        this.extVal = extVal;
+    }
+}

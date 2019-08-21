@@ -1,0 +1,14 @@
+package com.liming.service;
+
+import java.util.List;
+
+import com.liming.domain.ApscResearchProjectData;
+
+public interface ApscResearchProjectDataService {
+	//SELECT * from apsc_research_project_data 
+	//where title_keywords is null and abstract_keywords is null limit "+limit+""
+	List<ApscResearchProjectData> getarpdList(int limit);
+	int delete(ApscResearchProjectData arpd);
+	int insert(List<ApscResearchProjectData> list);
+	int update();
+}

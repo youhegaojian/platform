@@ -1,0 +1,60 @@
+package com.liming.utils;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.liming.mapper.IdMapper;
+
+
+/**
+ * 生成任务id
+ * @author hao
+ *2019年5月6日
+ * 获取任务id
+ */
+@Component
+public class IdUtils {
+	@Autowired
+	private IdMapper idMapper;
+
+	private static IdMapper iMapper;
+	@PostConstruct
+    public void init() {
+        iMapper = idMapper;
+    }
+	/**
+	 * 从apsc_task_schedule 表中获取最大的id然后将id+1返回
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes" })
+	public static String generateId(String type) {
+		
+		String id = null;
+		String date = DateUtils.getCurrDateS();
+//		String idsql = "select Max(task_id) as task_id from apsc_task_schedule where task_id like '%" + date + type + "%'";
+		String temp = date + type;
+		System.out.println("idUtils _________ temp============"+temp);
+		System.out.println(iMapper);
+//		List<Map> ids = SqlUtils.query(idsql);
+		List<Map> ids =iMapper.generateId(temp);
+		System.out.println("idUtils _________ ids"+ids.get(0).toString());
+		if (ids != null && ids.size() > 0) {
+			if(ids.get(0).get("task_id") != null) {
+				Long _id = Long.parseLong(ids.get(0).get("task_id").toString());
+				id = String.valueOf(_id + 1);
+			}else {
+				id = date + type + "0001";
+			}
+		} else {
+			id = date + type + "0001";
+		}
+		return id;
+	}
+
+}

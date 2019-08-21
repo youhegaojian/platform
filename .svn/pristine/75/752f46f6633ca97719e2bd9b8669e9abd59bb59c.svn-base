@@ -1,0 +1,238 @@
+package com.liming.utils;
+
+
+import java.util.*;
+
+/**
+ * 通过此之间的相邻关系构建网络，然后用 PageRank 迭代计算每个节点的 rank 值，排序 rank 值即可得到关键词
+ */
+public class TextRankProcess {
+
+    // 语言类型
+    private Constants.LANGUAGE lang = Constants.LANGUAGE.EN;
+    // 分词最小、最大长度
+    private int wordMin = 2;
+    private int wordMax = 4;
+    // 每篇文章展示前topN个关键词（0为所有）
+    private int topN = 0;
+    // 打印日志
+    private boolean isDebug = false;
+    // 阻尼系数，一般取值为0.85
+    private static double damping = 0.85;
+    // 最小收敛精度
+    private static double minConvergence = 0.00000001;
+    // 最大迭代次数
+    private static int maxIteration = 400;
+    private static Set<String> stopwords=new HashSet<>();
+    
+    KeywordProcess keywordProcess = null;
+    public TextRankProcess(Constants.LANGUAGE lang) {
+        this.lang = lang;
+    }
+
+    public TextRankProcess(Constants.LANGUAGE lang, boolean isDebug) {
+        this.lang = lang;
+        this.isDebug = isDebug;
+    }
+
+    public TextRankProcess(Constants.LANGUAGE lang, int wordMin, int wordMax) {
+        this(lang);
+        this.wordMin = wordMin;
+        this.wordMax = wordMax;
+    }
+
+    public TextRankProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, boolean isDebug) {
+        this(lang);
+        this.wordMin = wordMin;
+        this.wordMax = wordMax;
+        this.isDebug = isDebug;
+    }
+
+    public TextRankProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, int topN) {
+        this(lang, wordMin, wordMax);
+        this.topN = topN;
+        keywordProcess = new KeywordProcess(this.lang, this.wordMin, this.wordMax, this.topN, this.isDebug);
+    }
+
+    public TextRankProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, int topN, boolean isDebug) {
+        this(lang, wordMin, wordMax, topN);
+        this.isDebug = isDebug;
+    }
+    public TextRankProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, int topN, Set<String> stopwords) {
+        this(lang, wordMin, wordMax, topN);
+        this.stopwords = stopwords;
+    }
+    /**
+     * 计算方法 1.
+     * 先查找关键词组，再计算关键词组的TextRank
+     * @param documents
+     * @return
+     */
+    public List<Set<String>> calculateTextRank1(List<String> documents,Set<String> stopwords) {
+        List<List<Keyword>> keywords_all = new ArrayList<>();
+        /*
+            Step 1.
+         */
+        for(String document : documents) {
+            List<Keyword> keywords_single = keywordProcess.documentsHandler(document,stopwords);
+            keywords_all.add(keywords_single);
+        }
+        List<List<Keyword>> keywords_group_all = keywordProcess.keywordsGroupHandler(keywords_all);
+        Map<String, Set<String>> network = coOccurrenceNetworkHandler(keywords_group_all);
+        textRankHandler(keywords_group_all, network);
+        List<Set<String>> final_keywords = keywordProcess.topKeywordsGroupHandler(keywords_group_all, Constants.INDICATOR.TEXTRANK);
+        return final_keywords;
+    }
+
+    /**
+     * 计算方法 2.
+     * 先查计算关键词的TextRank, 再找关键词组，再计算关键词组的TextRank
+     * @param documents
+     * @return
+     */
+    public List<Set<String>> calculateTextRank2(List<String> documents,Set<String> stopwords) {
+        List<List<Keyword>> keywords_all = new ArrayList<>();
+        /*
+            Step 1.
+         */
+        for(String document : documents) {
+            List<Keyword> keywords_single = keywordProcess.documentsHandler(document,stopwords);
+            keywords_all.add(keywords_single);
+        }
+        Map<String, Set<String>> network = coOccurrenceNetworkHandler(keywords_all);
+        textRankHandler(keywords_all, network);
+        List<List<Keyword>> keywords_group_all = keywordProcess.keywordsGroupHandlerWithIndicator(keywords_all, Constants.INDICATOR.TEXTRANK);
+        List<Set<String>> final_keywords = keywordProcess.topKeywordsGroupHandler(keywords_group_all, Constants.INDICATOR.TEXTRANK);
+        return final_keywords;
+    }
+
+    /**
+     * Step 2.
+     * 构建候选关键词图，采用共现关系构造任意两点之间的边
+     */
+    private Map<String, Set<String>> coOccurrenceNetworkHandler(List<List<Keyword>> keywords_all) {
+
+        Map<String, Set<String>> network = new HashMap<>();
+        for(List<Keyword> keywords_single : keywords_all) {
+            Set<String> keywords_set = new HashSet<>();
+            for(Keyword keyword : keywords_single) {
+                if(!keyword.isStop()) {
+                    keywords_set.add(keyword.getWord());
+                }
+                if(isDebug) {
+                    System.out.print(keyword.getWord() + "(" + keyword.getPos() + "-" + keyword.getFrequency() + ")");
+                }
+            }
+            if(isDebug) {
+//                System.out.println();
+            }
+            for(String keyword : keywords_set) {
+                Set<String> coOccurrence = new HashSet<>();
+                coOccurrence.addAll(keywords_set);
+                coOccurrence.remove(keyword);
+                if(network.containsKey(keyword)) {
+                    coOccurrence.addAll(network.get(keyword));
+                    network.put(keyword, coOccurrence);
+                } else {
+                    network.put(keyword, coOccurrence);
+                }
+            }
+        }
+        return network;
+
+    }
+
+    /**
+     * Step 3.
+     * 根据 TextRank 公式，迭代传播个节点的权重，直至收敛（初始 TR 一般取 1/N）
+     * TR(i) = (1 - d) / N + d * SUM(TR(j) / L(j))
+     * d : 阻尼系数，一般取0.85
+     * N : 关键词总数
+     * L : 与 i 有关的关键词的相关关键词总数
+     * j : 与 i 有关的关键词
+     * @param keywords_all
+     * @param network
+     */
+    private void textRankHandler(List<List<Keyword>> keywords_all, Map<String, Set<String>> network) {
+
+        Map<String, Double> textrank = null;
+        if(network != null) {
+            int N = network.size();
+            if(N > 0) {
+                textrank = new HashMap<>();
+                // 初始化各关键词的 rank 值
+                for(String word : network.keySet()) {
+                    textrank.put(word, 1.0 / N);
+                }
+                // 迭代计算各关键词的 rank 值
+                for(int i = 0; i < this.maxIteration; i++) {
+                    double maxConvergence = 0.0;
+                    for (String word : network.keySet()) {
+                        for (String relatedword : network.get(word)) {
+                            int relatedN = network.get(relatedword).size();
+                            if(relatedN <= 0 || relatedword.equals(word)) {
+                                continue;
+                            } else {
+                                textrank.put(word, textrank.get(word) + textrank.get(relatedword) / network.get(relatedword).size());
+                            }
+                        }
+                        textrank.put(word, (1 - this.damping) / N + this.damping * textrank.get(word));
+                        maxConvergence = Math.max(maxConvergence, textrank.get(word) - 1.0 / N);
+                    }
+                    if(this.minConvergence >= maxConvergence) {
+                        break;
+                    }
+                }
+            }
+            // 在原始分词结果上标记TextRank值
+            for(List<Keyword> keywords_single : keywords_all) {
+                for(Keyword keyword : keywords_single) {
+                    if(!keyword.isStop() && textrank.containsKey(keyword.getWord())) {
+                        keyword.setTextrank(textrank.get(keyword.getWord()));
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Setp 5.
+     * 对节点权重进行倒序排序，得到最重要的单词作为候选关键词
+     * @param textrank
+     * @return 最重要的关键词
+     */
+    private Map<String, Double> importantKeywordsHandler(Map<String, Double> textrank) {
+
+        Map<String, Double> keywords = new HashMap<>();
+        List<Map.Entry<String, Double>> sortedtextrank = new ArrayList<>(textrank.entrySet());
+        Collections.sort(sortedtextrank, new Comparator<Map.Entry<String, Double>>() {
+            @Override
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                if(o1.getValue() > o2.getValue()) {
+                    return -1;
+                } else if(o1.getValue() < o2.getValue()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        if(this.isDebug) {
+            System.out.println("TextRank 值 : ");
+        }
+        for(Map.Entry<String, Double> sortedtextrankmap : sortedtextrank) {
+            if(this.topN > 0 && keywords.size() > this.topN) {
+                break;
+            } else {
+                keywords.put(sortedtextrankmap.getKey(), sortedtextrankmap.getValue());
+                if (this.isDebug) {
+                    System.out.println(sortedtextrankmap.getKey() + " : " + sortedtextrankmap.getValue());
+                }
+            }
+        }
+        return keywords;
+
+    }
+
+}

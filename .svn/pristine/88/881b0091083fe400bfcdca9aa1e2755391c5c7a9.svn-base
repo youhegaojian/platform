@@ -1,0 +1,208 @@
+package com.liming.utils;
+
+
+import java.util.*;
+
+/**
+ * TF-IDF          信息检索领域非常重要的搜索词重要性度量
+ *                 用以衡量一个关键词对于查询所能提供的信息
+ *                 = TF * IDF
+ *
+ * TF（词频）       关键词在文档中出现的频率
+ *                 = 关键词出现次数 / 当前文档所有词的数量
+ * IDF（逆文档频率） 关键词的普遍程度。IDF越小，关键词越普遍
+ *                 = log((1 + 所有文档总数) / (1 + 包含关键词的文档数)) + 1
+ */
+public class TfIdfProcess {
+
+    // 语言类型
+    private Constants.LANGUAGE lang = Constants.LANGUAGE.EN;
+    // 分词最小、最大长度
+    private int wordMin = 2;
+    private int wordMax = 4;
+    // 每篇文章展示前topN个关键词（0为所有）
+    private int topN = 0;
+    // 打印日志
+    private boolean isDebug = false;
+    // 停用词
+    private Set<String> stopwords = null;
+    
+    KeywordProcess keywordProcess = null;
+
+    public TfIdfProcess(Constants.LANGUAGE lang) {
+        this.lang = lang;
+    }
+
+    public TfIdfProcess(Constants.LANGUAGE lang, boolean isDebug) {
+        this.lang = lang;
+        this.isDebug = isDebug;
+    }
+
+    public TfIdfProcess(Constants.LANGUAGE lang, int wordMin, int wordMax) {
+        this(lang);
+        this.wordMin = wordMin;
+        this.wordMax = wordMax;
+    }
+
+    public TfIdfProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, boolean isDebug) {
+        this(lang);
+        this.wordMin = wordMin;
+        this.wordMax = wordMax;
+        this.isDebug = isDebug;
+    }
+
+    public TfIdfProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, int topN) {
+        this(lang, wordMin, wordMax);
+        this.topN = topN;
+        keywordProcess = new KeywordProcess(this.lang, this.wordMin, this.wordMax, this.topN, this.isDebug);
+    }
+
+    public TfIdfProcess(Constants.LANGUAGE lang, int wordMin, int wordMax, int topN, boolean isDebug) {
+        this(lang, wordMin, wordMax, topN);
+        this.isDebug = isDebug;
+    }
+
+    /**
+     * 计算方法 1.
+     * 先查找关键词组，再计算关键词组的TF-IDF
+     * @param documents
+     * @return
+     */
+    public List<Set<String>> calculateTfIdf1(List<String> documents, Set<String> stopwords) {
+        //KeywordProcess keywordProcess = new KeywordProcess(this.lang, this.wordMin, this.wordMax, this.topN, this.isDebug);
+        List<List<Keyword>> keywords_all = new ArrayList<>();
+        for(String document : documents) {
+            List<Keyword> keywords_single = keywordProcess.documentsHandler(document, stopwords);
+            keywords_all.add(keywords_single);
+        }
+        List<List<Keyword>> keywords_group_all = keywordProcess.keywordsGroupHandler(keywords_all);
+        tfHandler(keywords_group_all);
+        idfHandler(keywords_group_all);
+        tfidfHandler(keywords_group_all);
+        List<Set<String>> final_keywords = keywordProcess.topKeywordsGroupHandler(keywords_group_all, Constants.INDICATOR.TFIDF);
+        return final_keywords;
+    }
+
+    /**
+     * 计算方法 2.
+     * 先查计算关键词的TF-IDF, 再找关键词组，再计算关键词组的TF-IDF
+     * @param documents
+     * @return
+     */
+    public List<Set<String>> calculateTfIdf2(List<String> documents, Set<String> stopwords) {
+        //KeywordProcess keywordProcess = new KeywordProcess(this.lang, this.wordMin, this.wordMax, this.topN, this.isDebug);
+        List<List<Keyword>> keywords_all = new ArrayList<>();
+        for(String document : documents) {
+            List<Keyword> keywords_single = keywordProcess.documentsHandler(document, stopwords);
+            keywords_all.add(keywords_single);
+        }
+        tfHandler(keywords_all);
+        idfHandler(keywords_all);
+        tfidfHandler(keywords_all);
+        List<List<Keyword>> keywords_group_all = keywordProcess.keywordsGroupHandlerWithIndicator(keywords_all, Constants.INDICATOR.TFIDF);
+        List<Set<String>> final_keywords = keywordProcess.topKeywordsGroupHandler(keywords_group_all, Constants.INDICATOR.TFIDF);
+        return final_keywords;
+    }
+
+    /**
+     * 获取关键字的 TF
+     * tf = 词语在文档中出现的频率 / 所有词语在文档中出现的频率之和
+     * @param keywords_all
+     */
+    private void tfHandler(List<List<Keyword>> keywords_all) {
+        if(this.isDebug) {
+            System.out.println("TF: ");
+        }
+        for(List<Keyword> keywords_single : keywords_all) {
+            // 所有词条出现的次数总和
+            int keywordsFreqSum = 0;
+            for (Keyword keyword : keywords_single) {
+                if(!keyword.isStop()) {
+                    keywordsFreqSum += keyword.getFrequency();
+                }
+            }
+            for (Keyword keyword : keywords_single) {
+                if(!keyword.isStop()) {
+                    keyword.setTf(keyword.getFrequency() * 1.0 / keywordsFreqSum);
+                    if (this.isDebug) {
+                        System.out.print(keyword.getWord() + "(" + keyword.getTf() + ")");
+                    }
+                }
+            }
+            if(this.isDebug) {
+                System.out.println();
+            }
+        }
+    }
+
+    /**
+     * 获取关键字的 IDF
+     * idf = log((1 + 所有文档总数) / (1 + 包含关键词的文档数)) + 1
+     * @param keywords_all
+     */
+    private void idfHandler(List<List<Keyword>> keywords_all) {
+
+        List<Set<String>> keywordsSet_all = new ArrayList<>();
+        for(List<Keyword> keywords_single : keywords_all) {
+            Set<String> keywordsSet_single = new HashSet<>();
+            for(Keyword keyword : keywords_single) {
+                if(!keyword.isStop()) {
+                    keywordsSet_single.add(keyword.getWord());
+                }
+            }
+            keywordsSet_all.add(keywordsSet_single);
+        }
+
+        if(this.isDebug) {
+            System.out.println("IDF: ");
+        }
+        for(List<Keyword> keywords_single : keywords_all) {
+            for(Keyword keyword : keywords_single) {
+                if(!keyword.isStop()) {
+                    // 包含关键字的文件数
+                    int keywordDocumentCount = 0;
+                    for (Set<String> keywordsSet_single : keywordsSet_all) {
+                        if (keywordsSet_single.contains(keyword.getWord())) {
+                            keywordDocumentCount++;
+                        }
+                    }
+                    keyword.setIdf(Math.log((1 + keywords_all.size()) * 1.0 / (1 + keywordDocumentCount)) + 1);
+                    if (this.isDebug) {
+                        System.out.print(keyword.getWord() + "(" + keyword.getIdf() + ")");
+                    }
+                }
+            }
+            if(this.isDebug) {
+                System.out.println();
+            }
+        }
+
+    }
+
+    /**
+     * 获取关键字的 TF-IDF
+     * TF-IDF = TF * IDF
+     * @param keywords_all
+     */
+    private void tfidfHandler(List<List<Keyword>> keywords_all) {
+
+        if(this.isDebug) {
+            System.out.println("TF-IDF: ");
+        }
+        for(List<Keyword> keywords_single : keywords_all) {
+            for (Keyword keyword : keywords_single) {
+                if (!keyword.isStop()) {
+                    keyword.setTfidf();
+                    if (this.isDebug) {
+                        System.out.print(keyword.getWord() + "(" + keyword.getTfidf() + ")");
+                    }
+                }
+            }
+            if (this.isDebug) {
+                System.out.println();
+            }
+        }
+
+    }
+
+}

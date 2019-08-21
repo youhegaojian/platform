@@ -1,0 +1,10 @@
+package com.liming.service;
+
+import java.util.List;
+
+import com.liming.domain.ApscKgoLink;
+
+public interface ApscKgoLinkService {
+	List<ApscKgoLink> getAklList(String taskid);
+	List<ApscKgoLink> getAklListByDate(String date);
+}

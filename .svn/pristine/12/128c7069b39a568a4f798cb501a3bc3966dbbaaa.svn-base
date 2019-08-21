@@ -1,0 +1,27 @@
+<head xmlns:th="http://www.w3.org/1999/xhtml">
+<meta charset="utf-8">
+<link th:href="@{/static/layui/css/layui.css}" rel="stylesheet" />
+<link th:href="@{/static/font-awesome/css/font-awesome.min.css}"
+	rel="stylesheet" />
+
+<script th:src="@{/static/jquery/jquery.js}" type="text/javascript"></script>
+<script th:src="@{/static/layui/layui.js}" type="text/javascript"></script>
+<script th:src="@{/static/js/sche/sche_define.js}" type="text/javascript"></script>
+
+<style>
+.div_country_detail_class {
+	padding: 10px;
+}
+
+.layui-table td {
+	font-family: sans-serif;
+	font-size: 14px;
+}
+</style>
+</head>
+<body>
+	<div class="div_country_detail_class">
+		<table id="demo" lay-filter="test"></table>
+	</div>
+</body>
+

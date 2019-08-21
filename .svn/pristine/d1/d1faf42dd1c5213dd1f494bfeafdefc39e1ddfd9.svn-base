@@ -1,0 +1,17 @@
+package com.liming.mapper;
+
+import java.util.List;
+
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.utils.MyMapper;
+
+public interface ApscTaskDetailScheduleMapper extends MyMapper<ApscTaskDetailSchedule> {
+
+	int updateByKey(ApscTaskDetailSchedule apscTaskDetailSchedule);
+
+	List<ApscTaskDetailSchedule> getList();
+	
+	List<ApscTaskDetailSchedule> getyData();
+	
+	List<ApscTaskDetailSchedule> getBarData(ApscTaskDetailSchedule apscTaskDetailSchedule);
+}

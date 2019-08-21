@@ -1,0 +1,19 @@
+package com.example.demo.mapper;
+
+import java.util.List;
+
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+/**
+ *	获取任务号的dao接口
+ * @author hao
+ *2019年5月7日
+ *
+ */
+
+@Component
+public interface IdMapper {
+	List<Map> generateId(String temp);
+}

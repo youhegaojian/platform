@@ -1,0 +1,34 @@
+package com.liming.controller;
+
+import org.springframework.stereotype.Controller;
+
+/**
+ * @author ALPHA.GJ
+ * @date 创建时间：2019年3月25日 下午6:29:26
+ * @version 1.0
+ **/
+@Controller
+public class JobController {
+
+	/*@RequestMapping("/job/addTask")
+	@ResponseBody
+	protected Map addTask(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String type = request.getParameter("type");
+		String taskid = request.getParameter("taskid");
+		ScheduleDomain sche = new ScheduleDomain(type);
+		sche.getSche_list().get(0).put("state", 1);
+		sche.getSche_list().get(0).put("taskid", taskid);
+
+		boolean succ = SqlUtils.prepareInsert(sche.getSche_list(), sche.getHeaders(), sche.getSche_table(), null);
+		sche.getSche_list().get(0).put("succ", succ);
+
+		ScheduleThread st = new ScheduleThread();
+		st.start();
+		return sche.getSche_list().get(0);
+
+		return null;
+	}*/
+
+}

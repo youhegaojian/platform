@@ -1,0 +1,239 @@
+package com.liming.utils;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.thymeleaf.util.StringUtils;
+
+import com.example.demo.mapper.SqlUtilMapper;
+
+/**
+ * @author ALPHA.GJ
+ * @date 创建时间：2019年3月21日 上午9:42:01
+ * @version 1.0
+ **/
+@Component
+public class SqlUtils {
+	@Autowired
+	private SqlUtilMapper sqlUtilMapper;
+	
+	private static SqlUtilMapper sm;
+	@PostConstruct
+    public void init() {
+		sm = sqlUtilMapper;
+    }
+	
+	/*	@SuppressWarnings("rawtypes")
+	public static String sqlMake(List<Map> list, String[] headers, String tabname, String[] updateCols) {
+		StringBuffer sql = new StringBuffer();
+
+		sql.append("insert into ").append(tabname).append("(");// apsc_research_project_data
+		sql.append(StringUtils.join(headers, ",")).append(") VALUES ");
+
+		for (int i = 0; i < list.size(); i++) {
+			Map map = list.get(i);
+			sql.append("(");
+			for (int j = 0; j < headers.length; j++) {
+				if (j < headers.length - 1) {
+					sql.append("'");
+					sql.append(map.get(headers[j]).toString());
+					sql.append("',");
+				} else {
+					sql.append("'");
+					sql.append(map.get(headers[j]).toString());
+					sql.append("'");
+				}
+			}
+			if (i < list.size() - 1) {
+				sql.append("),");
+			} else {
+				if (updateCols != null) {
+					sql.append(") on duplicate key update ");
+					// 组织要更新的字段
+					List<String> _updateCols = new ArrayList<String>();
+					for (int k = 0; k < updateCols.length; k++) {
+						_updateCols.add(updateCols[k] + " = VALUES(" + updateCols[k] + ")");
+					}
+					sql.append(StringUtils.join(_updateCols, ","));
+				} else {
+					sql.append(") ");
+				}
+
+			}
+		}
+//		System.out.println(sql);
+		return sql.toString();
+	}
+
+	public static String sqlMake(List<Map> list, String[] headers) {
+    	StringBuffer sql = new StringBuffer();
+    	sql.append("replace into apsc_paper_analyse_ext(");//apsc_research_project_data_copy
+    	for (int i = 0; i < headers.length; i++) {
+    		if (i < headers.length - 1) {
+    			sql.append(headers[i]).append(",");
+    		} else {
+    			sql.append(headers[i]).append(") value ");
+    		}
+    	}
+    	for (int i = 0; i < list.size(); i++) {
+    		Map map = list.get(i);
+    		sql.append("(");
+    		for (int j = 0; j < headers.length; j++) {
+    			if (j < headers.length - 1) {
+    				sql.append("'");
+    				sql.append(map.get(headers[j]).toString());
+    				sql.append("',");
+    			} else {
+    				sql.append("'");
+					sql.append(map.get(headers[j]).toString());
+    				sql.append("'");
+    			}
+    		}
+    		if(i < list.size()-1) {
+    			sql.append("),");
+    		}else {
+    			sql.append(")");
+    		}
+    	}
+    	return sql.toString();
+    }    */
+	
+	public static List<Map> query(String sql) {
+		Object a = null;
+		List<Map> list = new ArrayList<>();
+		try {
+			if (conn == null || conn.isClosed()) {
+				conn = DBUtil.getConn();
+			}
+			conn.setAutoCommit(false);
+			PreparedStatement pst = (PreparedStatement) conn.prepareStatement(" ");
+			// 添加执行SQL
+			ResultSet rs = pst.executeQuery(sql);
+			list = getListFromRs(rs);
+			// 提交事务
+			conn.commit();
+			pst.close();
+//			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 * 得到结果集存储到list中
+	 * 
+	 * @param rs 查询的结果集
+	 * @return
+	 * @throws SQLException
+	 */
+	public static List<Map> getListFromRs(ResultSet rs) throws SQLException {
+		List<Map> list = new ArrayList<Map>();
+		if (rs != null) {
+			ResultSetMetaData md = rs.getMetaData();// 得到结果集列的属性
+			int columns = md.getColumnCount();// 得到记录有多少列
+			int i;
+			while (rs.next()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				for (i = 0; i < columns; i++) {
+					// System.out.println(md.getColumnName(i + 1)+"\t"+md.getColumnType(i + 1));
+					map.put(md.getColumnLabel(i + 1).toLowerCase(),
+							getValueByType(rs, md.getColumnType(i + 1), md.getColumnLabel(i + 1)));
+				}
+				list.add(map);
+			}
+		}
+		return list;
+	}
+
+	private static Object getValueByType(ResultSet rs, int type, String name) throws SQLException {
+		switch (type) {
+		case Types.NUMERIC:
+			return rs.getLong(name);
+		case Types.VARCHAR:
+			
+			return rs.getString(name);
+		case Types.DATE:
+			
+			return rs.getDate(name);
+		case Types.TIMESTAMP:
+			return rs.getTimestamp(name).toString().substring(0, rs.getTimestamp(name).toString().length() - 2);
+		case Types.INTEGER:
+			return rs.getInt(name);
+		case Types.DOUBLE:
+			return rs.getDouble(name);
+		case Types.FLOAT:
+			return rs.getFloat(name);
+		case Types.BIGINT:
+			return rs.getLong(name);
+		default:
+			return rs.getObject(name);
+		}
+	}
+
+	public static boolean prepareInsert(List<Map> list, String[] headers, String tabname, String[] updateCols) {
+		int reSum = 0;
+		for (int i = 0; i < list.size(); i++) {
+			SqlUtils.sm.prepareInsert(list.get(i), headers, tabname, updateCols);
+			reSum++;
+		}
+		if (reSum>0) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean insert(String sql) {
+
+		try {
+			if (conn == null || conn.isClosed()) {
+				conn = DBUtil.getConn();
+			}
+			conn.setAutoCommit(false);
+			PreparedStatement pst = (PreparedStatement) conn.prepareStatement(" ");
+			// 添加执行SQL
+			pst.addBatch(sql);
+			// 执行操作
+			int[] res = pst.executeBatch();
+			// 提交事务
+			conn.commit();
+			pst.close();
+//			conn.close();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static void UpdateOrDelete(String sql) {
+		try {
+			if (conn == null || conn.isClosed()) {
+				conn = DBUtil.getConn();
+			}
+			conn.setAutoCommit(false);
+			PreparedStatement pst = (PreparedStatement) conn.prepareStatement(" ");
+			// 添加执行SQL
+			pst.executeUpdate(sql);
+			// 提交事务
+			conn.commit();
+			pst.close();
+//			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+}

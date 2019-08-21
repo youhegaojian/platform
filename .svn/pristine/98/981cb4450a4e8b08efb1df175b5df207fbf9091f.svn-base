@@ -1,0 +1,65 @@
+package com.liming.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.github.pagehelper.PageHelper;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.mapper.ApscTaskDetailScheduleMapper;
+import com.liming.service.ApscTaskDetailScheduleService;
+
+import tk.mybatis.mapper.entity.Example;
+
+/**
+ * Copyright: Copyright (c) 2019 liming
+ * 
+ * @Description: 该类的功能描述
+ * @author: ALPHA.GJ.
+ * @date: 2019年5月9日 上午8:31:43
+ */
+@Service
+public class ApscTaskDetailScheduleServiceImpl implements ApscTaskDetailScheduleService {
+
+	@Autowired
+	private ApscTaskDetailScheduleMapper mapper;
+
+	@Override
+	public List<ApscTaskDetailSchedule> getList(int page, int pageSize) {
+		// 开始分页
+		PageHelper.startPage(page, pageSize);
+		Example example = new Example(ApscTaskDetailSchedule.class);
+		List<ApscTaskDetailSchedule> list = mapper.selectByExample(example);
+		return list;
+	}
+
+	@Override
+	public List<ApscTaskDetailSchedule> getList(int page, int pageSize, String task_id) {
+		// 开始分页
+		PageHelper.startPage(page, pageSize);
+		Example example = new Example(ApscTaskDetailSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("taskId", task_id);
+		example.orderBy("beginTime").desc();
+		List<ApscTaskDetailSchedule> list = mapper.selectByExample(example);
+		return list;
+	}
+
+	@Override
+	public int getCount() {
+		Example example = new Example(ApscTaskDetailSchedule.class);
+		int count = mapper.selectCountByExample(example);
+		return count;
+	}
+
+	@Override
+	public int getCount(String task_id) {
+		Example example = new Example(ApscTaskDetailSchedule.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("taskId", task_id);
+		int count = mapper.selectCountByExample(example);
+		return count;
+	}
+
+}

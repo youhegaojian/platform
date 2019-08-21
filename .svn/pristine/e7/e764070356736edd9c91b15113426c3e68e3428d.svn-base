@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liming.mapper.ApscKgoLinkMapper">
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscKgoLink">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="download_time" jdbcType="TIMESTAMP" property="downloadTime" />
+    <result column="search_id" jdbcType="VARCHAR" property="searchId" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="pl_type" jdbcType="VARCHAR" property="plType" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="is_parse" jdbcType="VARCHAR" property="isParse" />
+    <result column="clean_time" jdbcType="TIMESTAMP" property="cleanTime" />
+    <result column="last_view_time" jdbcType="TIMESTAMP" property="lastViewTime" />
+    <result column="record" jdbcType="VARCHAR" property="record" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="search_word" jdbcType="LONGVARCHAR" property="searchWord" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscKgoLink">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="download_time" jdbcType="TIMESTAMP" property="downloadTime" />
+    <result column="search_id" jdbcType="VARCHAR" property="searchId" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="pl_type" jdbcType="VARCHAR" property="plType" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="is_parse" jdbcType="VARCHAR" property="isParse" />
+    <result column="clean_time" jdbcType="TIMESTAMP" property="cleanTime" />
+    <result column="last_view_time" jdbcType="TIMESTAMP" property="lastViewTime" />
+    <result column="search_word" jdbcType="LONGVARCHAR" property="searchWord" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscKgoLink">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="download_time" jdbcType="TIMESTAMP" property="downloadTime" />
+    <result column="search_id" jdbcType="VARCHAR" property="searchId" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="pl_type" jdbcType="VARCHAR" property="plType" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="is_parse" jdbcType="VARCHAR" property="isParse" />
+    <result column="clean_time" jdbcType="TIMESTAMP" property="cleanTime" />
+    <result column="last_view_time" jdbcType="TIMESTAMP" property="lastViewTime" />
+    <result column="search_word" jdbcType="LONGVARCHAR" property="searchWord" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscKgoLink">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="download_time" jdbcType="TIMESTAMP" property="downloadTime" />
+    <result column="search_id" jdbcType="VARCHAR" property="searchId" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="pl_type" jdbcType="VARCHAR" property="plType" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="is_parse" jdbcType="VARCHAR" property="isParse" />
+    <result column="clean_time" jdbcType="TIMESTAMP" property="cleanTime" />
+    <result column="last_view_time" jdbcType="TIMESTAMP" property="lastViewTime" />
+    <result column="record" jdbcType="VARCHAR" property="record" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="search_word" jdbcType="LONGVARCHAR" property="searchWord" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscKgoLink">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="download_time" jdbcType="TIMESTAMP" property="downloadTime" />
+    <result column="search_id" jdbcType="VARCHAR" property="searchId" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="pl_type" jdbcType="VARCHAR" property="plType" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="is_parse" jdbcType="VARCHAR" property="isParse" />
+    <result column="clean_time" jdbcType="TIMESTAMP" property="cleanTime" />
+    <result column="last_view_time" jdbcType="TIMESTAMP" property="lastViewTime" />
+    <result column="search_word" jdbcType="LONGVARCHAR" property="searchWord" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscKgoLink">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="download_time" jdbcType="TIMESTAMP" property="downloadTime" />
+    <result column="search_id" jdbcType="VARCHAR" property="searchId" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="pl_type" jdbcType="VARCHAR" property="plType" />
+    <result column="filename" jdbcType="VARCHAR" property="filename" />
+    <result column="is_parse" jdbcType="VARCHAR" property="isParse" />
+    <result column="clean_time" jdbcType="TIMESTAMP" property="cleanTime" />
+    <result column="last_view_time" jdbcType="TIMESTAMP" property="lastViewTime" />
+    <result column="search_word" jdbcType="LONGVARCHAR" property="searchWord" />
+  </resultMap>
+</mapper>

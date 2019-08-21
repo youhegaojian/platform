@@ -1,0 +1,4 @@
+#annotators = tokenize, ssplit, pos, lemma, ner, depparse, coref
+annotators = tokenize, ssplit, pos, lemma,ner
+tokenize.language = en
+

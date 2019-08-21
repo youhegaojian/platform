@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liming.mapper.ApscPaperAnalyseMapper">
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscPaperAnalyse">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="uploadlogid" jdbcType="VARCHAR" property="uploadlogid" />
+    <result column="references_number" jdbcType="VARCHAR" property="referencesNumber" />
+    <result column="paper_doi" jdbcType="VARCHAR" property="paperDoi" />
+    <result column="nation" jdbcType="VARCHAR" property="nation" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="sc" jdbcType="VARCHAR" property="sc" />
+    <result column="j9" jdbcType="VARCHAR" property="j9" />
+    <result column="clc" jdbcType="VARCHAR" property="clc" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="academic_degree" jdbcType="VARCHAR" property="academicDegree" />
+    <result column="degree_subject" jdbcType="VARCHAR" property="degreeSubject" />
+    <result column="degree_subject_code" jdbcType="VARCHAR" property="degreeSubjectCode" />
+    <result column="degree_year" jdbcType="VARCHAR" property="degreeYear" />
+    <result column="editor" jdbcType="VARCHAR" property="editor" />
+    <result column="attribute" jdbcType="VARCHAR" property="attribute" />
+    <result column="title" jdbcType="LONGVARCHAR" property="title" />
+    <result column="authors" jdbcType="LONGVARCHAR" property="authors" />
+    <result column="thesis_type" jdbcType="LONGVARCHAR" property="thesisType" />
+    <result column="source_title" jdbcType="LONGVARCHAR" property="sourceTitle" />
+    <result column="organ" jdbcType="LONGVARCHAR" property="organ" />
+    <result column="main_heading" jdbcType="LONGVARCHAR" property="mainHeading" />
+    <result column="subject" jdbcType="LONGVARCHAR" property="subject" />
+    <result column="fund" jdbcType="LONGVARCHAR" property="fund" />
+    <result column="publication_year" jdbcType="LONGVARCHAR" property="publicationYear" />
+    <result column="times_cited" jdbcType="LONGVARCHAR" property="timesCited" />
+    <result column="summary" jdbcType="LONGVARCHAR" property="summary" />
+    <result column="references_cited" jdbcType="LONGVARCHAR" property="referencesCited" />
+    <result column="cited_doi" jdbcType="LONGVARCHAR" property="citedDoi" />
+    <result column="wosid" jdbcType="LONGVARCHAR" property="wosid" />
+    <result column="fu" jdbcType="LONGVARCHAR" property="fu" />
+    <result column="organizer" jdbcType="LONGVARCHAR" property="organizer" />
+  </resultMap>
+  
+  <select id="getApscPaperAnalyseList" resultType="com.liming.domain.ApscPaperAnalyse" parameterType="string">
+		select 
+			ID id,main_heading mainHeading
+		from 
+			apsc_paper_analyse
+		where 
+			uploadlogid = #{uploadlogid}
+		and 
+			main_heading != '' and main_heading is not null
+			
+	</select>
+	
+	<insert id="insertList">
+		insert into apsc_paper_analyse (
+			id,
+			main_heading 
+		) values 
+		<foreach collection="list" item="paper" index="key" 
+					 separator="," >
+		(
+			#{paper.id},
+			#{paper.mainHeading}
+		)	
+		</foreach>
+		on duplicate key update
+		main_heading = values(main_heading)
+		
+	</insert>
+	
+	<select id="getPaperList" resultType="com.liming.domain.ApscPaperAnalyse" parameterType="string">
+		select 
+			ID id,
+			uploadlogid,
+			title,
+			summary,
+			wosid,
+			main_heading mainHeading
+		from
+			apsc_paper_analyse
+		where 			
+			uploadlogid=#{id}
+			
+			
+	</select>
+	
+</mapper>

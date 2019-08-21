@@ -1,0 +1,14 @@
+package com.liming.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.liming.domain.ApscTaskDefineSchedule;
+import com.liming.utils.MyMapper;
+
+import tk.mybatis.mapper.entity.Example;
+@Mapper
+public interface ApscTaskDefineScheduleMapper extends MyMapper<ApscTaskDefineSchedule> {
+	List<ApscTaskDefineSchedule> selectByExample(Example example);
+}

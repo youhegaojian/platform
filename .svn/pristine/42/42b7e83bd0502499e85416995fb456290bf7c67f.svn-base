@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.liming.mapper.ApscTaskDetailScheduleMapper">
+	<resultMap id="BaseResultMap"
+		type="com.liming.domain.ApscTaskDetailSchedule">
+		<!-- WARNING - @mbg.generated -->
+		<result column="task_id" property="taskId" jdbcType="VARCHAR" />
+		<result column="file_id" property="fileId" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="CHAR" />
+		<result column="begin_time" property="beginTime"
+			jdbcType="VARCHAR" />
+		<result column="end_time" property="endTime" jdbcType="VARCHAR" />
+		<result column="sum_rec" property="sumRec" jdbcType="INTEGER" />
+		<result column="finish_rec" property="finishRec"
+			jdbcType="INTEGER" />
+		<result column="tab_name" property="tabName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<update id="updateByKey"
+		parameterType="com.liming.domain.ApscTaskDetailSchedule">
+		update
+			apsc_task_detail_schedule
+		set
+			finish_rec = #{finishRec}
+		<if test="endTime != null and endTime != ''">
+			,end_time = #{endTime}
+		</if>
+		<if test="sumRec != null and sumRec != ''">
+			,sum_rec = #{sumRec}
+		</if>
+		where
+			task_id = #{taskId}
+		and
+			file_id = #{fileId}
+		and
+			type = #{type}
+		and
+			tab_name = #{tabName}
+	</update>
+
+	<select id="getList"
+		resultType="com.liming.domain.ApscTaskDetailSchedule">
+		SELECT DISTINCT
+			LEFT(`task_id`, 8) AS `time`
+		FROM
+			`apsc_task_detail_schedule`
+	</select>
+	<select id="getyData"
+		resultType="com.liming.domain.ApscTaskDetailSchedule">
+		SELECT
+			c.*,
+		COALESCE(d.count, 0) AS `count`
+		FROM
+			(SELECT a.time,b.type
+		FROM
+			(SELECT DISTINCT
+		LEFT(`task_id`, 8) AS `time`
+		FROM
+			`apsc_task_detail_schedule`) AS a,
+			`apsc_task_define_schedule` AS b) AS c
+		LEFT JOIN
+			(SELECT `type`, LEFT(`task_id`, 8) AS `time`, COUNT(`file_id`) AS `count`
+		FROM
+			`apsc_task_detail_schedule`
+		GROUP BY  TYPE,TIME) AS d 
+		ON  c.time = d.time AND c.type = d.type 
+	</select>
+    <!--查询解析任务对应日期的柱状图数据  -->
+	<select id="getBarData"
+		resultType="com.liming.domain.ApscTaskDetailSchedule"
+		parameterType="com.liming.domain.ApscTaskDetailSchedule">
+SELECT
+ 	 b.`file_id` as fileId,
+ 	 b.`finish_rec` as finishRec,
+  	 b.`tab_name`,
+  	 a.`filename`,
+CASE
+    WHEN b.`tab_name` = 'apsc_paper_analyse'
+    THEN '1'
+    ELSE '2'
+END AS tableType
+FROM
+  	(SELECT
+    *
+FROM
+    `apsc_kgo_link`) AS a
+LEFT JOIN
+    (SELECT
+     *,
+     LEFT(`task_id`, 8) AS `time`
+FROM 
+      `apsc_task_detail_schedule` AS c
+WHERE c.type = #{type}) AS b
+     ON a.`id` = b.`file_id`
+WHERE b.time = #{time}
+		</select>
+</mapper>

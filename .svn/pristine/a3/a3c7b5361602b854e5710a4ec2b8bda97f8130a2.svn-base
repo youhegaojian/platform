@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.liming.mapper.ApscPaperAnalyseOrganMapper" >
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscPaperAnalyseOrgan" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="paper_id" property="paperId" jdbcType="VARCHAR" />
+    <result column="uploadlog_id" property="uploadlogId" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="organ" property="organ" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="nation_region" property="nationRegion" jdbcType="VARCHAR" />
+    <result column="source_title" property="sourceTitle" jdbcType="VARCHAR" />
+    <result column="year" property="year" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getApscPaperAnalyseOrganList" resultType="com.liming.domain.ApscPaperAnalyseOrgan" parameterType="string">
+		select 
+			id,paper_id paperId,uploadlog_id uploadlogId,organ 
+		from 
+			apsc_paper_analyse_organ
+		where 
+			uploadlog_id = #{uploadlogId}
+		and 
+			organ != '' 
+		and 
+			organ is not null
+			
+	</select>
+	
+	<insert id="insertList">
+		insert into apsc_paper_analyse_organ (
+			id,
+			paper_id,
+			uploadlog_id, 
+			nation_region
+		) values
+		<foreach collection="list" item="paper" index="key" 
+					separator=",">
+		(
+			#{paper.id},
+			#{paper.paperId},
+			#{paper.uploadlogId},
+			#{paper.nationRegion}	
+		)
+		</foreach>
+		on duplicate key update
+		nation_region = values (nation_region)
+	</insert>
+  
+</mapper>

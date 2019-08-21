@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liming.mapper.ApscPaperAnalyseExtMapper">
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscPaperAnalyseExt">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="ID" jdbcType="INTEGER" property="id" />
+    <result column="paper_id" jdbcType="VARCHAR" property="paperId" />
+    <result column="ext_name" jdbcType="VARCHAR" property="extName" />
+    <result column="uploadlogid" jdbcType="VARCHAR" property="uploadlogid" />
+    <result column="ext_val" jdbcType="LONGVARCHAR" property="extVal" />
+  </resultMap>
+  
+  <select id="getApscPaperAnalyseExtList" resultType="com.liming.domain.ApscPaperAnalyseExt" parameterType="string">
+		select 
+			id ,ext_val extVal
+		from 
+			apsc_paper_analyse_ext
+		where 
+			uploadlogid = #{uploadlogid}
+		and 
+			ext_val != '' and ext_val is not null
+			
+	</select>
+	
+	<insert id="insertList">
+		insert into apsc_paper_analyse_ext (
+			id,
+			ext_val 
+		) values 
+		<foreach collection="list" item="paper" index="key" 
+					separator=",">
+		(
+			#{paper.id},
+			#{paper.extVal}
+		)	
+		</foreach>
+		on duplicate key update
+		ext_val = values (ext_val)
+		
+	</insert>
+	
+	<select id="getPaperList" resultType="com.liming.domain.ApscPaperAnalyseExt">
+		select
+			ID,paper_id paperId,ext_val extVal,ext_name extName,uploadlogid
+		from 
+			apsc_paper_analyse_ext 
+		where 
+			ext_name = 'subject' 
+		and 
+			length(ext_val)>'2'
+		and
+			ext_val is not null
+		and 
+			uploadlogid 
+		in
+			(SELECT  id from apsc_kgo_link where pl_type in('会议论文','中文期刊论文','英文期刊论文'))
+			
+	</select>
+	
+	<insert id="insertListRep">
+		replace into apsc_paper_analyse_ext (
+			ID,
+			paper_id,
+			ext_name,
+			ext_val,
+			uploadlogid
+		) values
+		<foreach collection="list" item="paper" index="key" 
+					 separator="," >
+		(
+			#{paper.id},
+			#{paper.paperId},	
+			#{paper.extName},
+			#{paper.extVal},
+			#{paper.uploadlogid}
+		)
+		</foreach>
+		
+	</insert>
+	
+	<insert id="insertPaperAnalyseExtList">
+		insert into apsc_paper_analyse_ext (
+			uploadlogid,
+			paper_id,
+			ext_name,
+			ext_val
+		) values 
+		<foreach collection="list" item="paper" index="key" 
+					separator=",">
+		(
+			#{paper.uploadlogid},
+			#{paper.paperId},
+			#{paper.extName},
+			#{paper.extVal}
+		)	
+		</foreach>
+
+	</insert>
+  
+</mapper>

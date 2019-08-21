@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liming.mapper.ListApscMapper">
+	<select id="defineScheList" resultType="Map">
+		select * from apsc_task_define_schedule
+	</select>
+	<select id="ScheList" resultType="Map" parameterType="string">
+		select 
+			a.task_id,a.begin_time,a.end_time,b.task_name,a.state 
+		from 
+			apsc_task_schedule a
+		left join 
+			apsc_task_define_schedule b on a.type = b.type
+		<if test="#{_parameter} != null ">
+			where a.type= #{_parameter}  order by a.begin_time desc
+		</if>	
+	</select>
+	<select id="ScheDetailList" resultType="Map" parameterType="string">
+		select 
+			* 
+		from 
+			apsc_task_detail_schedule 
+		<if test="#{_parameter} != null ">
+			where 
+				task_id=#{_parameter}
+		</if>
+		
+		order by 
+			begin_time desc
+	</select>
+</mapper>

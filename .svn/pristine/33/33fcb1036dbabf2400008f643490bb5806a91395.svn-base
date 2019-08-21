@@ -1,0 +1,110 @@
+package com.liming.controller;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.liming.domain.JSONDomain;
+import com.liming.service.ListApscService;
+
+/**
+ * @author hao
+ *2019年5月6日
+ * 
+ */
+@Controller
+public class ListApscController {
+	@Autowired
+	private ListApscService las;
+	/**
+	 * 首页数据显示的方法
+	 * @param page  当前页，有layui控制传入
+	 * @param limit  每页数量，有layui控制传入
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/sche/defineScheList")
+	@ResponseBody
+	public JSONDomain defineScheList(@RequestParam(required=false)int page,
+			@RequestParam(required=false)int limit,
+			HttpServletRequest request){
+		request.setAttribute("page", page);
+		return las.defineScheList(page, limit);
+		
+	}
+	
+	/**
+	 * 次页数据显示的方法
+	 * @param type  从什么中提取关键字
+	 * @param page  当前页，有layui控制传入
+	 * @param limit  每页数量，有layui控制传入
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/sche/ScheList")
+	@ResponseBody
+	public JSONDomain ScheList(String type,
+			@RequestParam(required=false)int page,
+			@RequestParam(required=false)int limit,
+			HttpServletRequest request){
+		request.setAttribute("page", page);
+		return las.ScheList(page, limit, type);
+	}
+	/**
+	 * 第三页数据显示的方法
+	 * @param task_id  任务号
+	 * @param page  当前页，有layui控制传入
+	 * @param limit  每页数量，有layui控制传入
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/sche/ScheDetailList")
+	@ResponseBody
+	public JSONDomain ScheDetailList(String task_id,
+			@RequestParam(required=false)int page,
+			@RequestParam(required=false)int limit,
+			HttpServletRequest request){
+		
+		request.setAttribute("page", page);
+		return las.ScheDetailList(page, limit, task_id);
+	}
+	
+	
+	@RequestMapping("/index")
+    public String index(ModelMap map) {
+        return "thymeleaf/index";
+    }
+
+    @RequestMapping("/login")
+    public String login(ModelMap map) {
+        return "thymeleaf/login";
+    }
+
+    @RequestMapping("/console")
+    public String console(ModelMap map) {
+        return "thymeleaf/sche/console";
+    }
+
+    @RequestMapping("/sche/sche_define")
+    public String sche_define(ModelMap map) {
+        return "thymeleaf/sche/sche_define";
+    }
+
+    @RequestMapping("/sche/sche_list")
+    public String sche_list(ModelMap map) {
+        return "thymeleaf/sche/sche_list";
+    }
+
+    @RequestMapping("/sche/detail_list")
+    public String detail_list(ModelMap map) {
+        return "thymeleaf/sche/detail_list";
+    }
+    
+   
+    
+}

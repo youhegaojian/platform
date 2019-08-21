@@ -1,0 +1,273 @@
+package com.liming.keyword;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.liming.domain.ApscKgoLink;
+import com.liming.domain.ApscPaperAnalyse;
+import com.liming.domain.ApscPaperAnalyseExt;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.domain.ConfDomain;
+import com.liming.service.ApscPaperAnalyseService;
+import com.liming.service.ApscTaskDetailScheduleService;
+import com.liming.service.ApscTaskScheduleService;
+import com.liming.service.ApscKgoLinkService;
+import com.liming.service.ApscPaperAnalyseExtService;
+import com.liming.utils.*;
+import java.text.SimpleDateFormat;
+
+/** 					论文 
+ *    	执行论文关键字提取之前，执行下面的SQL：
+ * update  apsc_paper_analyse set summary=replace(summary,' ','')  //**在数据库中把'口'型替换为空**
+ * @author lcb
+ */
+public class InsertKeywordOfPaper {
+	
+	private ApscPaperAnalyseService  apscAnalysisPaperService = SpringUtils.getBean(ApscPaperAnalyseService.class);
+
+	private ApscPaperAnalyseExtService  apscPaperAnalyseExtService = SpringUtils.getBean(ApscPaperAnalyseExtService.class);
+
+	private ApscKgoLinkService  apscKgoLinkService = SpringUtils.getBean(ApscKgoLinkService.class);
+
+	private ApscTaskScheduleService apscScheduleService = SpringUtils.getBean(ApscTaskScheduleService.class);
+	
+	private ApscTaskDetailScheduleService apscTaskDetailScheduleService = SpringUtils.getBean(ApscTaskDetailScheduleService.class);
+	
+	private ApscKgoLink apscKgoLink=null;
+	
+	private ApscTaskSchedule apscTaskSchedule = null;
+	
+	private ApscTaskDetailSchedule apscTaskDetailSchedule=null;
+	
+	TextRankProcess trprocess_tit_cn = null;
+	
+	TextRankProcess trprocess_tit_en = null;
+	
+	public InsertKeywordOfPaper(ApscTaskSchedule taskSchedule) {
+		trprocess_tit_cn = new TextRankProcess(Constants.LANGUAGE.CN, 2, 6, 10);
+		trprocess_tit_en = new TextRankProcess(Constants.LANGUAGE.EN, 2, 5, 10); 
+		apscTaskSchedule = taskSchedule;
+		apscTaskDetailSchedule=new ApscTaskDetailSchedule(apscTaskSchedule.getTaskId(), DateUtils.getCurrDateTimeStr(), "002");
+		apscKgoLink = new ApscKgoLink();
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	public boolean insertKeyword(ApscTaskSchedule apscTaskSchedule) throws IOException {
+		try {
+		//查出基金表数据
+		ConfDomain ConfDomain=new ConfDomain();
+		String date=ConfDomain.getPaper_date();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		apscKgoLink.setDownloadTime(df.parse(date));
+		apscKgoLink.setId(apscTaskSchedule.getTaskid());
+		List<ApscKgoLink> kgoList = apscKgoLinkService.getPaperList(apscKgoLink);
+
+        //先查数据库有无此记录，有则删除，无则新增,查询条件-id，时间
+        apscTaskSchedule.setState("2");
+        apscScheduleService.update(apscTaskSchedule);
+	        
+        for (int j = 0; j < kgoList.size(); j++) {
+			String pl_type=kgoList.get(j).getPlType().trim();
+			String id=kgoList.get(j).getId();			
+			
+			apscPaperAnalyseExtService.deletePaperAnalyseExt(id);
+			List<ApscPaperAnalyse> paper_analyseList=apscAnalysisPaperService.getPaperList(id);
+			
+			if (paper_analyseList.size() > 0) {
+				//paper_analyseList长度>0，往作业调度明细表中插一条数据，若=0，没有意义
+				apscTaskDetailSchedule.setSumRec(paper_analyseList.size());
+				apscTaskDetailSchedule.setFileId(id);
+				apscTaskDetailSchedule.setTabName("apsc_paper_analyse_ext");
+				apscTaskDetailSchedule.setUserId(kgoList.get(j).getUserId());
+				apscTaskDetailSchedule.setBeginTime(DateUtils.getCurrDateTimeStr());
+				apscTaskDetailScheduleService.insert(apscTaskDetailSchedule);
+			
+				//每offset条插一次
+				if (paper_analyseList != null && paper_analyseList.size()>0) {
+					int length = paper_analyseList.size();
+					int offset = 1000;//1000
+					int n = length/offset;
+					int y = length%offset;
+					if(y != 0) {
+						n = n + 1;
+					}
+					if(length > offset) {
+						List<ApscPaperAnalyse> _list = null;
+						for(int i = 0; i < n; i++) {
+							int end = ((i + 1) * offset) > length ? length : ((i + 1) * offset);
+							_list = (paper_analyseList).subList(i * offset, end);
+							add(_list, apscTaskDetailSchedule, pl_type, end);
+							
+							System.out.println("---------插入 >> "+i*offset+"----"+end+"<< ------------");
+						}
+					}else {
+						add(paper_analyseList, apscTaskDetailSchedule, pl_type, length);
+						System.out.println("---------插入 >> "+0+"----"+length+"<< ------------");
+					}
+				}
+				
+				apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+				apscTaskDetailScheduleService.update(apscTaskDetailSchedule);
+			}
+        }
+        setTaskState("4");
+			
+        return true;
+		} catch (Exception e) {
+			setTaskState("3");
+			
+			e.printStackTrace();
+			return false;
+		}
+    }
+	
+	public void setTaskState(String state) {
+		apscTaskSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+		apscTaskSchedule.setState(state);
+		apscTaskSchedule.setTaskId(apscTaskDetailSchedule.getTaskId());
+		apscScheduleService.update(apscTaskSchedule);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void add(List<ApscPaperAnalyse> _list,ApscTaskDetailSchedule apscTaskDetailSchedule, String pl_type, int length) throws IOException {
+		 if (_list.size()>0) {
+	        	List<ApscPaperAnalyseExt> paperlist=new ArrayList<>();
+	        	List<ApscPaperAnalyseExt> paperlist2=new ArrayList<>();
+	            //更新数据
+	            for (ApscPaperAnalyse apscPaperAnalyse: _list) {
+	            	if ((apscPaperAnalyse.getSummary())==null) {
+	            		apscPaperAnalyse.setSummary("");
+	        		}
+	            	if ((apscPaperAnalyse.getTitle())==null) {
+	            		apscPaperAnalyse.setTitle("");;
+	            	}
+	            	if ((apscPaperAnalyse.getWosid())==null) {
+	            		apscPaperAnalyse.setWosid("");
+	            	}
+	            	if ((apscPaperAnalyse.getMainHeading())==null) {
+	            		apscPaperAnalyse.setMainHeading("");
+	            	}
+	    			String title=apscPaperAnalyse.getTitle().equals(" ")?"":apscPaperAnalyse.getTitle().replace("。", "").replace(".", "").replace("；", ";").replace("'", "").replace("’", "").trim();//调用取值方法,得到的数据赋给其他字段
+	    			String abstract_=apscPaperAnalyse.getSummary().equals(" ")?"":apscPaperAnalyse.getSummary().toString().replace("。", "").replace(".", "").replace("；", ";").replace("'", "").replace("’", "").trim();;
+	    			String wosid=apscPaperAnalyse.getWosid().trim();
+	    			String main_heading=apscPaperAnalyse.getMainHeading().trim();
+	    			
+	    			abstract_=abstract_.replaceAll(",", ".");
+	    			abstract_=abstract_.replaceAll("\\ ","");
+	    			abstract_=abstract_.replaceAll("\\?","").replaceAll("\\\\","");
+	    			
+	    			title=title.replaceAll("\\ ","").replaceAll("\\\\","");
+	    			
+	    			if (abstract_.equals(" ")) {
+		   				 abstract_=abstract_.replace(" ","");
+		    		}
+	    			
+	    			//生成停止词
+	    			main_heading=main_heading.replace("|", ";");
+	    			String[] de2array= main_heading.split(";");
+	    			String[] dearray= wosid.split(";");
+	    			Set<String> stopwords=new HashSet<>();
+    		        for (String string : dearray) {
+    					stopwords.add(string.trim().toLowerCase());
+    				}
+    		        for (String string : de2array) {
+    		        	stopwords.add(string.trim().toLowerCase());
+    		        }
+	    		        
+	    			String title2="";
+	    	        String abstract_2="";
+	    	        List<String> documents_tit = new ArrayList<>();//存放被提取的对象
+    		        documents_tit.add(title);
+		   	        List<String> documents_ab = new ArrayList<>();//存放被提取的对象
+		   	        documents_ab.add(abstract_);
+    		        List<Set<String>> final_keywords_tit_cn = null;//存放提取结果
+	    			//获取标题-中文关键字--必须先中文后英文  'WOS','中文期刊论文','学位论文','会议论文','英文期刊论文','endnote','noteexpress','refworks'
+    		        String[] aarray = null;
+    		        if (pl_type.equals("中文期刊论文")) {
+    	    			if (!title.trim().equals("")) {
+
+		    				final_keywords_tit_cn = trprocess_tit_cn.calculateTextRank2(documents_tit, stopwords);
+		    				for(String b : final_keywords_tit_cn.get(0)) {
+				   	        	title2+=b+",";
+				   	        }
+    	    			}
+    	    			//去除存在的关键字
+    	    			aarray= title2.split(",");
+        		        for (String string : aarray) {
+        					stopwords.add(string.toLowerCase());
+        				}
+        	  			//获取摘要-中文关键字--必须先中文后英文
+    	    			if (!abstract_.trim().equals("")) {
+
+    	    				final_keywords_tit_cn = trprocess_tit_cn.calculateTextRank2(documents_ab, stopwords);
+    	    				for(String b : final_keywords_tit_cn.get(0)) {
+    	    					abstract_2+=b+",";
+    			   	        }
+    	    				if (!abstract_2.equals("")) {
+    	    					abstract_2=abstract_2.substring(0, abstract_2.length()-1);
+    	    				}
+    	    			}
+					}else {
+						//获取标题-英文关键字
+		    			if (!title.trim().equals("")) {
+
+		    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_tit, stopwords);
+		    				for(String b : final_keywords_tit_cn.get(0)) {
+				   	        	title2+=b+",";
+				   	        }
+		    				if (!title2.equals("")) {
+								title2=title2.substring(0, title2.length()-1);
+		    				}
+		    			}
+		    			//去除存在的关键字
+    	    			 aarray= title2.split(",");
+        		        for (String string : aarray) {
+        					stopwords.add(string.toLowerCase());
+        				}
+    	    			//获取摘要-英文关键字
+    	    			if (!abstract_.trim().equals("")) {
+
+    	    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_ab, stopwords);
+    	    				for(String b : final_keywords_tit_cn.get(0)) {
+    	    					abstract_2+=b+",";
+    			   	        }
+    	    				if (!abstract_2.equals("")) {
+    	    					abstract_2=abstract_2.substring(0, abstract_2.length()-1);
+    	    				}
+    	    			}
+        		        
+					}
+    		        for (String arr : aarray) {
+    		        	ApscPaperAnalyseExt apscPaperAnalyseExt=new ApscPaperAnalyseExt(); 
+    		        	apscPaperAnalyseExt.setUploadlogid(apscPaperAnalyse.getUploadlogid());
+    		        	apscPaperAnalyseExt.setPaperId(apscPaperAnalyse.getId());
+    		        	apscPaperAnalyseExt.setExtName("title_keywords");
+    		        	apscPaperAnalyseExt.setExtVal(arr);
+    		        	paperlist.add(apscPaperAnalyseExt); 
+    		        }
+	    			
+	    			String abstractArr[] = abstract_2.split(",");
+	    			for (String abstractStr : abstractArr) {
+	    				ApscPaperAnalyseExt apscPaperAnalyseExt2=new ApscPaperAnalyseExt(); 
+	    				apscPaperAnalyseExt2.setUploadlogid(apscPaperAnalyse.getUploadlogid());
+	    				apscPaperAnalyseExt2.setPaperId(apscPaperAnalyse.getId());
+	    				apscPaperAnalyseExt2.setExtName("abstract_keywords");
+	    				apscPaperAnalyseExt2.setExtVal(abstractStr);
+	    				paperlist2.add(apscPaperAnalyseExt2);	
+	    			}
+	    		}
+	            //插入数据库
+	            apscPaperAnalyseExtService.insertPaperAnalyseExtList(paperlist);
+	            
+	            apscPaperAnalyseExtService.insertPaperAnalyseExtList(paperlist2);
+	            
+	            apscTaskDetailSchedule.setFinishRec(length);
+	            apscTaskDetailScheduleService.update(apscTaskDetailSchedule);
+			    
+			}
+	}
+}

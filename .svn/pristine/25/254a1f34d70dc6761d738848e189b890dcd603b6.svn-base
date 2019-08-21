@@ -1,0 +1,116 @@
+package com.liming.controller;
+
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.liming.domain.ApscTaskDefineSchedule;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.service.ApscTaskDefineScheduleService;
+import com.liming.service.ApscTaskDetailScheduleService;
+import com.liming.service.ApscTaskScheduleService;
+import com.liming.utils.JSONResult;
+import com.liming.utils.PageUtils;
+
+@Controller
+public class Schedule {
+
+    @Autowired
+    private ApscTaskDefineScheduleService defineService;
+    @Autowired
+    private ApscTaskScheduleService service;
+    @Autowired
+    private ApscTaskDetailScheduleService detailService;
+    
+    
+
+    @RequestMapping("/index")
+    public String index(ModelMap map) {
+        return "thymeleaf/index";
+    }
+
+    @RequestMapping("/login")
+    public String login(ModelMap map) {
+        return "thymeleaf/login";
+    }
+
+    @RequestMapping("/console")
+    public String console(ModelMap map) {
+        return "thymeleaf/sche/console";
+    }
+
+    @RequestMapping("/sche/sche_define")
+    public String sche_define(ModelMap map) {
+        return "thymeleaf/sche/sche_define";
+    }
+
+    @RequestMapping("/sche/sche_list")
+    public String sche_list(ModelMap map) {
+        return "thymeleaf/sche/sche_list";
+    }
+
+    @RequestMapping("/sche/detail_list")
+    public String detail_list(ModelMap map) {
+        return "thymeleaf/sche/detail_list";
+    }
+
+    @RequestMapping("/doLogin")
+    @ResponseBody
+    public JSONResult doLogin(HttpServletRequest request) {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        if("admin".equals(username)){
+            if("123456a?".equals(password)){
+                return JSONResult.ok("登陆成功",1);
+            }else{
+                return JSONResult.ok("密码输入有误,请重新输入",1);
+            }
+        }else{
+            return JSONResult.ok("用户名不存在",1);
+        }
+
+    }
+
+
+    @RequestMapping("/sche/defineScheList")
+    @ResponseBody
+    public JSONResult defineScheList(HttpServletRequest request) {
+        PageUtils pu = new PageUtils(request);
+        List<ApscTaskDefineSchedule> list = defineService.getList(pu.getPage(),pu.getPageSize());
+        int count = defineService.getCount();
+        return JSONResult.ok(list,count);
+    }
+
+    @RequestMapping("/sche/ScheList")
+    @ResponseBody
+    public JSONResult ScheList(HttpServletRequest request) {
+
+        String type = request.getParameter("type");
+        PageUtils pu = new PageUtils(request);
+        List<ApscTaskSchedule> list = service.getList(pu.getPage(), pu.getPageSize(),type);
+        int count = service.getCount(type);
+
+        return JSONResult.ok(list,count);
+    }
+
+    @RequestMapping("/sche/ScheDetailList")
+    @ResponseBody
+    public JSONResult ScheDetailList(HttpServletRequest request) {
+
+        String task_id = request.getParameter("task_id");
+        PageUtils pu = new PageUtils(request);
+        
+        List<ApscTaskDetailSchedule> list = detailService.getList(pu.getPage(), pu.getPageSize(),task_id);
+        int count = detailService.getCount(task_id);
+
+        return JSONResult.ok(list,count);
+    }
+
+
+}

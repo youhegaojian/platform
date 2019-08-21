@@ -1,0 +1,5 @@
+package com.liming.service;
+
+public interface ScheduleService {
+
+}

@@ -1,0 +1,124 @@
+var task_id = null;
+$(function() {
+	htmlInit();
+});
+
+var htmlInit = function(){
+	if(parseUrl()!== undefined){
+		task_id = parseUrl()['task_id'];
+	}
+	detailTableInit(task_id);
+}
+
+setTimeout('htmlInit()',10*1000); //指定10秒刷新一次
+
+function detailTableInit(task_id) {
+	
+	var param = {};
+	param.task_id = task_id;
+	
+	layui.use([ 'layer', 'table','element'], function() {
+		var layer = layui.layer
+		, table = layui.table
+		,element = layui.element;
+		table.render({
+			elem : '#detail',
+			title : '明细表',
+			url : 'ScheDetailList/',
+			where : param,
+			page : true ,
+			cols : [[ 
+				{
+					type : 'numbers',
+					title : '序号'
+				}, {sort : true,
+					field : 'fileId',
+					width : 230,
+					title : '分析任务id'
+				}, {
+					field : 'userId',
+					width : 100,
+					title : '用户名'
+				}, {
+					sort : true,
+					field : 'beginTime',
+					title : '任务开始时间'
+				}, {
+					field : 'endTime',
+					title : '任务结束时间'
+				}, {
+					field : 'sumRec',
+					title : '完成进度',
+					width : 200,
+					templet : function(row){
+						var r = 0;
+						if(row.sumRec>0){
+//							r = Math.round(row.finishRec / row.sumRec*100);
+							r = row.finishRec / row.sumRec;
+						}
+						var rs = 
+							'<div style="margin-top:3px;" class="layui-progress layui-progress-big" lay-showpercent="true">' 
+						  + '<div class="layui-progress-bar" lay-percent="'+row.finishRec+'/'+row.sumRec+'"></div>'
+						  + '</div>';
+						return rs;
+					}
+				}, {
+					field : 'tabName',
+					title : '操作表'
+				},{
+					field:'delete',
+					title:'操作',
+					templet:function(row){
+						//console.log(row);
+						return '<button onclick="Delete('+row.taskId+','+'\''+row.fileId+'\''+','+row.type+','+'\''+row.tabName+'\''+','+'\''+row.userId+'\''+')" class="layui-btn"><i class="layui-icon"></i></button>'
+					}
+				}
+			]],
+			done:function(){
+				element.render();
+			}
+		});
+	})
+}
+function Delete(taskId,fileId,type,tabName,userId){
+	var data={};
+	data.taskId= taskId;
+	data.fileId=fileId;
+	data.type= "00"+type;
+	data.tabName= tabName;
+	data.userId= userId;
+	
+	$.ajax({
+		type : 'post',
+		url : 'DeleteDetail/',
+		dataType : 'json',
+		data :data,
+		success : function(data) {
+			if(data){
+				layer.msg("删除成功");
+				htmlInit();
+			}else{
+				layer.msg("删除失败");
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			console.info(XMLHttpRequest.status);
+			console.info(XMLHttpRequest.readyStat);
+			console.info(textStatus);
+		}
+	});
+}
+function parseUrl() {
+	var url = location.href;
+	var i = url.indexOf('?');
+	if (i === -1)
+		return;
+	var queryStr = url.substr(i + 1);
+	var arr1 = queryStr.split('&');
+	var arr2 = new Object();
+	for (i in arr1) {
+		var ta = arr1[i].split('=');
+		arr2[ta[0]] = ta[1];
+	}
+	return arr2;
+}

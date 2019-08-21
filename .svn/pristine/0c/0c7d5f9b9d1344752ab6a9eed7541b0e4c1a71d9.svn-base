@@ -1,0 +1,12 @@
+package com.liming.service;
+
+import com.liming.domain.JSONDomain;
+/**
+ * 显示task三表的service接口
+ * 
+ */
+public interface ListApscService {
+	JSONDomain defineScheList(int page,int limit);
+	JSONDomain ScheList(int page,int limit,String type);
+	JSONDomain ScheDetailList(int page,int limit,String task_id);
+}

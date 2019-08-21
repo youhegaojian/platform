@@ -1,0 +1,23 @@
+package com.liming.mapper;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
+import com.liming.domain.ApscPaperAnalyseExt;
+import com.liming.utils.MyMapper;
+
+public interface ApscPaperAnalyseExtMapper extends MyMapper<ApscPaperAnalyseExt> {
+	
+	List<ApscPaperAnalyseExt> getApscPaperAnalyseExtList(@Param("uploadlogid")String uploadlogid);
+	
+	int insertList(List<ApscPaperAnalyseExt> list);
+	
+	List<ApscPaperAnalyseExt>  getPaperList();
+	
+	int insertListRep(List<ApscPaperAnalyseExt> list);
+	
+	int insertPaperAnalyseExtList(List<ApscPaperAnalyseExt> list);
+	
+	void deletePaperAnalyseExt(@Param("uploadlogid")String uploadlogid);
+	
+}

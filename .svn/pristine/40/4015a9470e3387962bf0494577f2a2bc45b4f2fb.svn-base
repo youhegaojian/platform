@@ -1,0 +1,124 @@
+$(function() {
+	var type = null;
+	if(parseUrl()!= undefined){
+		type = parseUrl()['type'];
+	}
+	tableinit(type);
+})
+
+function tableinit(type) {
+	var param = {};
+	param.type = type;
+	
+	layui.use([ 'layer', 'table'], function() {
+		var layer = layui.layer
+		, table = layui.table
+		table.render({
+			elem : '#demo',
+			title : '任务表',
+			url : '/sche/ScheList/',
+			where : param,
+			page : true
+			,
+			cols : [[
+				{type: 'numbers', title:'序号',},
+				{
+					field : 'taskId',
+					title : '任务号',
+					sort : true,
+					templet : function(data) {
+						return '<a style="cursor:pointer;" onclick="viewDetail(\''
+								+ data.taskId
+								+ '\')">'
+								+ data.taskId
+								+ '</a>'
+					}
+				}, {
+					field : 'type',
+					title : '任务类型',
+					sort : true,
+					templet : function(row){
+						return translateType(row.type);
+					}
+				}, 
+				{
+					field : 'beginTime',
+					title : '任务开始时间',
+					sort : true,
+				}, {
+					field : 'endTime',
+					title : '任务结束时间',
+					sort : true,
+				}, {
+					field : 'state',
+					title : '状态',
+					sort : true,
+					templet : function(row){
+						return translateStatus(row.state);
+					}
+				}
+			]]
+		});
+
+	})
+
+}
+var viewDetail = function(taskId) {
+
+	var url = "/sche/detail_list?task_id="+taskId;
+	var title = '作业明细列表';
+
+	parent.x_admin_add_to_tab(title,url,true);
+
+}
+
+
+/**
+ * 将状态值转化为含义
+ * @param status 0:未开始；1:等待执行；2:执行中；3:报错；4：完成
+ */
+function translateStatus(status){
+	if(status=='0'){
+		return "<font color='FF9933' > 未开始</font>";
+	}else if(status=='1'){
+		return "<font color='FF9933' > 等待执行</font>";
+	}else if(status=='2'){
+		return "<font color='#4DB361' > 执行中</font>";
+	}else if(status=='3'){
+		return "<font color='#CC3333' > 报错</font>";
+	}else if(status=='4'){
+		return "<font color='#4DB361' > 完成</font>";
+	}
+}
+
+function translateType(type){
+	if(type=='001'){
+		return "<font color='#333' > 专利关键字提取</font>";
+	}else if(type=='002'){
+		return "<font color='#333' > 论文关键词提取</font>";
+	}else if(type=='003'){
+		return "<font color='#333' > 科研项目关键词提取</font>";
+	}else if(type=='004'){
+		return "<font color='#333' > 词性还原</font>";
+	}else if(type=='005'){
+		return "<font color='#333' > 论文学科提取</font>";
+	}else if(type=='006'){
+		return "<font color='#333' > 英文期刊论文国家提取</font>";
+	}
+}
+
+
+function parseUrl() {
+	var url = location.href;
+	var i = url.indexOf('?');
+	if (i == -1)
+		return;
+	var querystr = url.substr(i + 1);
+	var arr1 = querystr.split('&');
+	var arr2 = new Object();
+	for (i in arr1) {
+		var ta = arr1[i].split('=');
+		arr2[ta[0]] = ta[1];
+	}
+	return arr2;
+}

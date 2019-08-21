@@ -1,0 +1,41 @@
+package com.liming.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.liming.domain.ApscResearchProjectData;
+import com.liming.mapper.ApscResearchProjectDataMapper;
+import com.liming.service.ApscResearchProjectDataService;
+
+@Service
+@Transactional
+public class ApscResearchProjectDataServiceImpl implements ApscResearchProjectDataService {
+	
+	@Autowired
+	private ApscResearchProjectDataMapper mapper;
+	
+	@Override
+	public List<ApscResearchProjectData> getResearchProjectDataList(Integer integer) {
+		
+		return mapper.getResearchProjectDataList(integer);
+	}
+	@Override
+	public void delete(ApscResearchProjectData arpd) {
+		// TODO Auto-generated method stub
+		mapper.deleteByPrimaryKey(arpd);
+	}
+	@Override
+	public void insertList(List<ApscResearchProjectData> list) {
+		// TODO Auto-generated method stub
+		mapper.insertProjectDataList(list);
+	}
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

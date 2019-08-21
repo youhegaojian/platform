@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liming.mapper.ApscResearchProjectDataMapper">
+  <resultMap id="BaseResultMap" type="com.liming.domain.ApscResearchProjectData">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="appr_no" jdbcType="VARCHAR" property="apprNo" />
+    <result column="pro_name" jdbcType="VARCHAR" property="proName" />
+    <result column="pro_type" jdbcType="VARCHAR" property="proType" />
+    <result column="app_code" jdbcType="VARCHAR" property="appCode" />
+    <result column="app_name" jdbcType="VARCHAR" property="appName" />
+    <result column="pro_leader" jdbcType="VARCHAR" property="proLeader" />
+    <result column="leader_profession" jdbcType="VARCHAR" property="leaderProfession" />
+    <result column="support_inst" jdbcType="VARCHAR" property="supportInst" />
+    <result column="begin_date" jdbcType="VARCHAR" property="beginDate" />
+    <result column="begin_year" jdbcType="VARCHAR" property="beginYear" />
+    <result column="end_date" jdbcType="VARCHAR" property="endDate" />
+    <result column="end_year" jdbcType="VARCHAR" property="endYear" />
+    <result column="grants" jdbcType="VARCHAR" property="grants" />
+    <result column="format_grants" jdbcType="VARCHAR" property="formatGrants" />
+    <result column="ab_cn" jdbcType="VARCHAR" property="abCn" />
+    <result column="ab_en" jdbcType="VARCHAR" property="abEn" />
+    <result column="final_ab" jdbcType="VARCHAR" property="finalAb" />
+    <result column="ori_link" jdbcType="VARCHAR" property="oriLink" />
+    <result column="txtname" jdbcType="VARCHAR" property="txtname" />
+    <result column="fund_inst" jdbcType="VARCHAR" property="fundInst" />
+    <result column="project_country" jdbcType="VARCHAR" property="projectCountry" />
+    <result column="data_type" jdbcType="CHAR" property="dataType" />
+    <result column="datasource" jdbcType="VARCHAR" property="datasource" />
+    <result column="app_id_one" jdbcType="VARCHAR" property="appIdOne" />
+    <result column="app_id_two" jdbcType="VARCHAR" property="appIdTwo" />
+    <result column="app_id_three" jdbcType="VARCHAR" property="appIdThree" />
+    <result column="app_name_one" jdbcType="VARCHAR" property="appNameOne" />
+    <result column="app_name_two" jdbcType="VARCHAR" property="appNameTwo" />
+    <result column="app_name_three" jdbcType="VARCHAR" property="appNameThree" />
+    <result column="title_keywords" jdbcType="VARCHAR" property="titleKeywords" />
+    <result column="abstract_keywords" jdbcType="VARCHAR" property="abstractKeywords" />
+    <result column="keywords_cn" jdbcType="LONGVARCHAR" property="keywordsCn" />
+    <result column="keywords_en" jdbcType="LONGVARCHAR" property="keywordsEn" />
+  </resultMap>
+  <select id="getResearchProjectDataList" resultMap="BaseResultMap" parameterType="int">
+  	SELECT 
+  		* 
+  	from 
+  		apsc_research_project_data 
+	where 
+		title_keywords is null 
+	and 
+		abstract_keywords is null 
+
+  </select>
+  
+
+  
+</mapper>

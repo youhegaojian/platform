@@ -1,0 +1,16 @@
+package com.liming.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.liming.domain.ApscAnalysisPatent;
+import com.liming.utils.MyMapper;
+
+public interface ApscAnalysisPatentMapper extends MyMapper<ApscAnalysisPatent> {
+	
+	List<ApscAnalysisPatent> getPatentList(@Param(value = "taskId") String taskId);
+
+	void insertPatentList(List<ApscAnalysisPatent> patentlist);
+	
+}

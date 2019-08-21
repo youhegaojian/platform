@@ -1,0 +1,245 @@
+package com.liming.keyword;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.liming.domain.ApscAnalysisPatent;
+import com.liming.domain.ApscKgoLink;
+import com.liming.domain.ApscTaskDetailSchedule;
+import com.liming.domain.ApscTaskSchedule;
+import com.liming.domain.ConfDomain;
+import com.liming.service.ApscAnalysisPatentService;
+import com.liming.service.ApscKgoLinkService;
+import com.liming.service.ApscTaskDetailScheduleService;
+import com.liming.service.ApscTaskScheduleService;
+import com.liming.utils.Constants;
+import com.liming.utils.DateUtils;
+import com.liming.utils.SpringUtils;
+import com.liming.utils.TextRankProcess;
+
+/**
+ * 专利 标题和摘要关键字分析 获取任务表任务号（根据时间条件） ->遍历任务号 ->获取对应数据（根据任务号） -> 进行关键字提取
+ * 
+ * @author lcb
+ */ 
+public class InsertKeywordOfPatent {
+
+	private ApscAnalysisPatentService patentService = SpringUtils.getBean(ApscAnalysisPatentService.class);
+	
+	private ApscTaskScheduleService taskScheduleService = SpringUtils.getBean(ApscTaskScheduleService.class);
+	
+	private ApscTaskDetailScheduleService taskDetailScheduleService = SpringUtils.getBean(ApscTaskDetailScheduleService.class);
+	
+	private ApscKgoLinkService apscKgoLinkService = SpringUtils.getBean(ApscKgoLinkService.class);
+	
+	private ApscKgoLink apscKgoLink=null;
+	
+	private ApscTaskSchedule apscTaskSchedule = null;
+	
+	private ApscTaskDetailSchedule apscTaskDetailSchedule = null;
+	
+	TextRankProcess trprocess_tit_cn = null;
+	
+	TextRankProcess trprocess_tit_en = null;
+	
+	
+	public InsertKeywordOfPatent(){}
+	
+	public InsertKeywordOfPatent(ApscTaskSchedule taskSchedule) {
+		apscTaskSchedule = taskSchedule;
+		trprocess_tit_cn = new TextRankProcess(Constants.LANGUAGE.CN, 2, 6, 10);
+		trprocess_tit_en = new TextRankProcess(Constants.LANGUAGE.EN, 2, 5, 10);   
+		apscTaskDetailSchedule = new ApscTaskDetailSchedule(apscTaskSchedule.getTaskId(), apscTaskSchedule.getBeginTime(), "001");
+		apscKgoLink=new ApscKgoLink();
+	}
+	
+	public boolean insertKeyword(ApscTaskSchedule apscTaskSchedule) throws IOException {
+		try {
+			// 查出基金表数据
+			System.out.println("进入insertkeyword------------------------------------");
+			ConfDomain ConfDomain=new ConfDomain();
+			String date=ConfDomain.getPatent_date();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+			apscKgoLink.setDownloadTime(df.parse(date));
+			//前端获取taskid,作为kgo_link的id 查询条件
+			apscKgoLink.setId(apscTaskSchedule.getTaskid());
+			
+			List<ApscKgoLink> kgoLists=apscKgoLinkService.getPatentList(apscKgoLink);
+			System.out.println(kgoLists.size()+"        +++=====   insertKeyword");
+			
+			for (int i = 0; i < kgoLists.size(); i++) {
+				String id = kgoLists.get(i).getId();
+				String pl_type=kgoLists.get(i).getPlType();
+
+				List<ApscAnalysisPatent> patentListByTaskId = patentService.getPatentList(id);
+				//修改state的值为 2 正在计算
+				setTaskState("2");
+
+				if (patentListByTaskId.size() > 0) {
+					//patentListByTaskId长度>0，往作业调度明细表中插一条数据，若=0，没有意义
+					apscTaskDetailSchedule.setSumRec(patentListByTaskId.size());
+					apscTaskDetailSchedule.setFileId(id);
+					apscTaskDetailSchedule.setTabName("apsc_analysis_patent");
+					apscTaskDetailSchedule.setUserId(kgoLists.get(i).getUserId());
+					apscTaskDetailSchedule.setBeginTime(DateUtils.getCurrDateTimeStr());
+					taskDetailScheduleService.insert(apscTaskDetailSchedule);
+					
+					System.out.println("apscTaskDetailSchedule++++++++++++++++++++++++++++++++++++");
+										
+					if (patentListByTaskId != null && patentListByTaskId.size()>0) {
+						int length = patentListByTaskId.size();
+						int offset = 1000;
+						int n = length/offset;
+						int y = length%offset;
+						if(y!=0) {
+							n=n+1;
+						}
+						if(length > offset) {
+							List<ApscAnalysisPatent> _list = null;
+							for(int j=0; j<n; j++) {
+								int end = ((j + 1) * offset) > length ? length : ((j + 1) * offset);
+								_list = patentListByTaskId.subList(j * offset, end);
+								add(_list, apscTaskDetailSchedule, pl_type, end);
+								System.out.println("---------插入 >> "+j*offset+"----"+end+"<< ------------");
+							}
+						}else {
+							add(patentListByTaskId, apscTaskDetailSchedule, pl_type, length);
+							System.out.println("---------插入 >> "+0+"----"+length+"<< ------------");
+						}
+					}
+					
+					apscTaskDetailSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+					taskDetailScheduleService.update(apscTaskDetailSchedule);
+				}				
+			}
+			
+			setTaskState("4");
+
+			return true;
+		} catch (Exception e) {
+			setTaskState("3");
+			
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	
+	public void setTaskState(String state) {
+		apscTaskSchedule.setEndTime(DateUtils.getCurrDateTimeStr());
+		apscTaskSchedule.setState(state);
+		apscTaskSchedule.setTaskId(apscTaskDetailSchedule.getTaskId());
+		taskScheduleService.update(apscTaskSchedule);
+	}
+	
+	
+	public void add(List<ApscAnalysisPatent> list,ApscTaskDetailSchedule apscTaskDetailSchedule, String pl_type, int length
+			 ) throws IOException {
+		List<ApscAnalysisPatent> patentlist=new ArrayList<>();
+		// 递归算法:先查询出limit条数据，进行更新；再查询limit条数据更新，若查询出来集合为空，则结束递归算法，否则继续查询
+		if (list.size() > 0) {
+
+			// 更新数据
+			for (ApscAnalysisPatent patent : list) {
+				if (patent.getDescKeywords() == null) {
+					patent.setDescKeywords("");
+				}
+				String title = patent.getTitle() == null ? "" : patent.getTitle();// 调用取值方法,得到的数据赋给其他字段
+				String abstract_ = patent.getAbstract() == null ? "" : patent.getAbstract();
+				String desc_keywords = patent.getDescKeywords();
+				if (abstract_.length() > 4096) {
+					abstract_ = abstract_.substring(0, 4096);
+				}
+				// 获取英文摘要关键字
+				String title2 = "";
+				String abstract_2 = "";
+				// 生成停止词
+				String[] dearray = desc_keywords.split(";");
+				Set<String> stopwords = new HashSet<>();
+				for (String string : dearray) {
+					stopwords.add(string.toLowerCase());
+				}
+    	        List<String> documents_tit = new ArrayList<>();//存放被提取的对象
+		        documents_tit.add(title);
+	   	        List<String> documents_ab = new ArrayList<>();//存放被提取的对象
+	   	        documents_ab.add(abstract_);
+				List<Set<String>> final_keywords_tit_cn = null;
+				// 获取标题-中文关键字--必须先中文后英文
+				if (!title.trim().equals("")) {
+					
+	    				final_keywords_tit_cn = trprocess_tit_cn.calculateTextRank2(documents_tit,stopwords);
+	    				for(String b : final_keywords_tit_cn.get(0)) {
+			   	        	title2+=b+",";
+			   	        }
+	    				if (!title2.equals("")) {
+							title2=title2.substring(0, title2.length()-1);
+	    				}
+    				}
+				// 获取标题-英文关键字
+				if (!title.trim().equals("")) {
+    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_tit,stopwords);
+    				for(String b : final_keywords_tit_cn.get(0)) {
+		   	        	title2+=b+",";
+		   	        }
+    				if (!title2.equals("")) {
+						title2=title2.substring(0, title2.length()-1);
+    				}
+				}
+				if (title2.length() > 1024) {
+					title2 = title2.substring(0, 1024);
+					title2 = title2.substring(0, title2.lastIndexOf("|"));
+				}
+				// 去除标题中存在的关键字
+				String a = title2.replace("|", ";");
+				String[] aarray = a.split(";");
+				for (String string : aarray) {
+					stopwords.add(string.toLowerCase());
+				}
+				// 获取摘要-中文关键字--必须先中文后英文
+				if (!abstract_.trim().equals("")) {
+    				final_keywords_tit_cn = trprocess_tit_cn.calculateTextRank2(documents_ab,stopwords);
+    				for(String b : final_keywords_tit_cn.get(0)) {
+    					abstract_2+=b+",";
+		   	        }
+    				if (!abstract_2.equals("")) {
+    					abstract_2=abstract_2.substring(0, abstract_2.length()-1);
+    				}
+				}
+				// 获取摘要-英文关键字
+				if (!abstract_.trim().equals("")) {
+					
+    				final_keywords_tit_cn = trprocess_tit_en.calculateTextRank2(documents_ab,stopwords);
+    				for(String b : final_keywords_tit_cn.get(0)) {
+    					abstract_2+=b+",";
+		   	        }
+    				if (!abstract_2.equals("")) {
+    					abstract_2=abstract_2.substring(0, abstract_2.length()-1);
+    				}
+				}
+				if (abstract_2.length() > 2048) {
+					abstract_2 = abstract_2.substring(0, 2048);
+					abstract_2 = abstract_2.substring(0, abstract_2.lastIndexOf("|"));
+				}
+				patent.setTitleKeywords(title2);
+				patent.setAbstractKeywords(abstract_2);
+				patentlist.add(patent);
+			}
+			
+		// 插入数据库			
+			patentService.insertPatentList(patentlist);
+	
+			apscTaskDetailSchedule.setFinishRec(length);
+			taskDetailScheduleService.update(apscTaskDetailSchedule);			
+		}
+	}
+}

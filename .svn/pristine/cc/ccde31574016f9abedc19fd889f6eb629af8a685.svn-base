@@ -1,0 +1,115 @@
+package com.example.demo.domain;
+
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.github.pagehelper.PageInfo;
+
+
+/**
+* Copyright: Copyright (c) 2019 liming
+* 
+* @ClassName: JsonUtils.java
+ * @Description: 自定义响应数据结构
+ * 				这个类是提供给门户，ios，安卓，微信商城用的
+ * 				门户接受此类数据后需要使用本类的方法转换成对于的数据类型格式（类，或者list）
+ * 				其他自行处理
+ * 				200：表示成功
+ * 				500：表示错误，错误信息在msg字段中
+ * 				501：bean验证错误，不管多少个错误都以map形式返回
+ * 				502：拦截器拦截到用户token出错
+ * 				555：异常抛出信息
+ *	在layui中需要这四个参数
+ */
+public class JSONDomain {
+	
+    // 响应业务状态
+    private Integer code;
+    // 响应消息
+    private String msg;
+    // 响应中的数据
+    private Object data;
+    // 响应中的数据量
+    private Integer count = 0;
+    /**
+     * 将pageInfo中的数据封装到自定义数据类型中，返回自定义数据类型
+     * @param pageInfo
+     * @return  
+     */
+    public static JSONDomain ok(PageInfo<Map> pageInfo) {
+//    	记录数量
+    	Integer count = (int) pageInfo.getTotal();
+//    	记录数据
+    	List<Map> list = pageInfo.getList();
+        return new JSONDomain(list,count);
+    }
+
+    public static JSONDomain ok(String msg) {
+		JSONDomain dom = new JSONDomain(null,0);
+    	dom.setMsg(msg);
+    	return dom;
+    }
+
+	public static JSONDomain ok(String msg,int code) {
+		JSONDomain dom = new JSONDomain(null,0);
+		dom.setMsg(msg);
+		dom.setCode(code);
+		return dom;
+	}
+
+    public JSONDomain(Object data,Integer count) {
+        this.code = 0;
+        this.msg = "OK";
+        this.data = data;
+        this.count = count;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+	/**
+	 * @return the code
+	 */
+	public Integer getCode() {
+		return code;
+	}
+
+	/**
+	 * @param code the code to set
+	 */
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+
+	/**
+	 * @return the count
+	 */
+	public Integer getCount() {
+		return count;
+	}
+
+	/**
+	 * @param count the count to set
+	 */
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	
+	
+}

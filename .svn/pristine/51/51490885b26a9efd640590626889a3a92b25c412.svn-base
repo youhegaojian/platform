@@ -1,0 +1,276 @@
+package com.liming.domain;
+
+import javax.persistence.*;
+
+@Table(name = "apsc_task_detail_schedule")
+public class ApscTaskDetailSchedule {
+
+	public ApscTaskDetailSchedule(String taskId, String beginTime, String type) {
+		super();
+		this.taskId = taskId;
+		this.fileId = "";
+		this.type = type;
+		this.beginTime = beginTime;
+		this.endTime = "";
+		this.finishRec = 0;
+		this.tabName = "apsc_task_detail_schedule";
+	}
+
+	public ApscTaskDetailSchedule() {
+	}
+
+	/**
+	 * 调度任务id
+	 */
+	@Column(name = "task_id")
+	@Id
+	private String taskId;
+
+	/**
+	 * 分析任务id
+	 */
+	@Column(name = "file_id")
+	@Id
+	private String fileId;
+
+	/**
+	 * 任务类型
+	 */
+	private String type;
+
+	/**
+	 * 任务开始时间
+	 */
+	@Column(name = "begin_time")
+	private String beginTime;
+
+	/**
+	 * 任务结束时间
+	 */
+	@Column(name = "end_time")
+	private String endTime;
+
+	/**
+	 * 总记录数
+	 */
+	@Column(name = "sum_rec")
+	private Integer sumRec;
+
+	/**
+	 * 已完成记录数
+	 */
+	@Column(name = "finish_rec")
+	private Integer finishRec;
+
+	@Column(name = "tab_name")
+	@Id
+	private String tabName;
+
+	/**
+	 * 用户名
+	 */
+	@Column(name = "user_id")
+	private String userId;
+
+	@Column(name = "count")
+	private Integer count;
+
+	@Column(name = "time")
+	private String time;
+
+	@Column(name = "tableType")
+	private String tableType;
+
+	@Column(name = "filename")
+	private String filename;
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getTableType() {
+		return tableType;
+	}
+
+	public void setTableType(String tableType) {
+		this.tableType = tableType;
+	}
+
+	/**
+	 * 获取调度任务id
+	 *
+	 * @return task_id - 调度任务id
+	 */
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	/**
+	 * 设置调度任务id
+	 *
+	 * @param taskId 调度任务id
+	 */
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
+
+	/**
+	 * 获取分析任务id
+	 *
+	 * @return file_id - 分析任务id
+	 */
+	public String getFileId() {
+		return fileId;
+	}
+
+	/**
+	 * 设置分析任务id
+	 *
+	 * @param fileId 分析任务id
+	 */
+	public void setFileId(String fileId) {
+		this.fileId = fileId;
+	}
+
+	/**
+	 * 获取任务类型
+	 *
+	 * @return type - 任务类型
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * 设置任务类型
+	 *
+	 * @param type 任务类型
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	/**
+	 * 获取任务开始时间
+	 *
+	 * @return begin_time - 任务开始时间
+	 */
+	public String getBeginTime() {
+		return beginTime;
+	}
+
+	/**
+	 * 设置任务开始时间
+	 *
+	 * @param beginTime 任务开始时间
+	 */
+	public void setBeginTime(String beginTime) {
+		this.beginTime = beginTime;
+	}
+
+	/**
+	 * 获取任务结束时间
+	 *
+	 * @return end_time - 任务结束时间
+	 */
+	public String getEndTime() {
+		return endTime;
+	}
+
+	/**
+	 * 设置任务结束时间
+	 *
+	 * @param endTime 任务结束时间
+	 */
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	/**
+	 * 获取总记录数
+	 *
+	 * @return sum_rec - 总记录数
+	 */
+	public Integer getSumRec() {
+		return sumRec;
+	}
+
+	/**
+	 * 设置总记录数
+	 *
+	 * @param sumRec 总记录数
+	 */
+	public void setSumRec(Integer sumRec) {
+		this.sumRec = sumRec;
+	}
+
+	/**
+	 * 获取已完成记录数
+	 *
+	 * @return finish_rec - 已完成记录数
+	 */
+	public Integer getFinishRec() {
+		return finishRec;
+	}
+
+	/**
+	 * 设置已完成记录数
+	 *
+	 * @param finishRec 已完成记录数
+	 */
+	public void setFinishRec(Integer finishRec) {
+		this.finishRec = finishRec;
+	}
+
+	/**
+	 * @return tab_name
+	 */
+	public String getTabName() {
+		return tabName;
+	}
+
+	/**
+	 * @param tabName
+	 */
+	public void setTabName(String tabName) {
+		this.tabName = tabName;
+	}
+
+	/**
+	 * 获取用户名
+	 *
+	 * @return user_id - 用户名
+	 */
+	public String getUserId() {
+		return userId;
+	}
+
+	/**
+	 * 设置用户名
+	 *
+	 * @param userId 用户名
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+}

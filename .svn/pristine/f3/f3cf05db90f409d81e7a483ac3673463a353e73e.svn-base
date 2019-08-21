@@ -1,0 +1,58 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>调度平台</title>
+	<link th:href="@{/static/layui/css/layui.css}" rel="stylesheet" >
+  	<link th:href="@{/static/font-awesome/css/font-awesome.min.css}" rel="stylesheet" >
+  
+  	<script th:src="@{/static/jquery/jquery.js}" type="text/javascript" ></script>
+  	<script th:src="@{/static/layui/layui.js}" type="text/javascript" ></script>
+  	<script th:src="@{/static/js/sche/sche_list.js}" type="text/javascript"></script>
+  
+  <style>
+    .div_country_detail_class{
+    	padding:10px;
+    }
+    
+    .layui-table td {
+	    font-family: sans-serif;
+	    font-size: 14px;
+	}
+    
+    .layui-progress-bar {
+    	text-align:center;
+    }
+    
+  </style>
+</head>
+ <div class="div_country_detail_class">
+ 	<table id="demo" lay-filter="test"></table>
+ </div>
+  
+</html>  
+  
+<script type="text/html" id="barDemo"> 
+  <a lay-event="immiexecute" title="恢复执行">
+    <i class="fa fa-play" style="color:#00FA9A;"></i> 恢复执行 </a>
+  <a lay-event="stop" title="停止">
+    <i class="fa fa-stop"  style="color:red;"></i>停止 </a>
+  <a lay-event="pause" title="暂停">
+    <i class="fa fa-pause"  style="color:blue;"></i> 暂停 </a>
+</script>
+
+
+<div id="div_country_detail" class="div_country_detail_class"
+	style="display: none;">
+	<div>
+		<table id="country_detail" class="layui-table"
+			lay-filter="country_detail"></table>
+	</div>
+</div>
+
+
+
+
+
+
+
