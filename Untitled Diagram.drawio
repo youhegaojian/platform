@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-02-23T02:03:17.822Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.43" etag="gpUPVlNDZ_zAJcRo57gM" version="16.6.2" type="github">
+<mxfile host="app.diagrams.net" modified="2022-02-23T02:54:25.287Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.43" etag="Zpf5fOI2MZ9-wT_LyjfQ" version="16.6.2" type="github">
   <diagram id="GcnIIn9zu56xixgi2HDi" name="Page-1">
     <mxGraphModel dx="868" dy="492" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -64,7 +64,7 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="530" y="245" />
-              <mxPoint x="530" y="215" />
+              <mxPoint x="530" y="225" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -108,14 +108,32 @@
         <mxCell id="AFKyj2wZlmawvFiLAMe_-27" value="1. 数组结构&lt;br&gt;2.下标查询快&lt;br&gt;3.指定下标的新增和删除，涉及到后面所有的数据的移动，效率低；如果只是尾插，并不存在效率低的问题" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;align=left;" vertex="1" parent="1">
           <mxGeometry x="730" y="90" width="270" height="90" as="geometry" />
         </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-30" target="AFKyj2wZlmawvFiLAMe_-37">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-30" value="HashSet" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
           <mxGeometry x="560" y="210" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-32" target="AFKyj2wZlmawvFiLAMe_-39">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-32" value="TreeSet" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
           <mxGeometry x="560" y="280" width="120" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-42" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-34" target="AFKyj2wZlmawvFiLAMe_-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-34" value="LinkedHashSet" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
-          <mxGeometry x="560" y="340" width="120" height="30" as="geometry" />
+          <mxGeometry x="560" y="347.5" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-37" value="1. hashCode算法计算下标，不允许重复&lt;br&gt;2. 无序" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="730" y="195" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-39" value="1. 树结构存储&lt;br&gt;&lt;div style=&quot;&quot;&gt;&lt;span&gt;2. 有序&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="730" y="265" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-41" value="1. 链表+HashSet实现&lt;br&gt;2. 有序" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="730" y="340" width="270" height="45" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
