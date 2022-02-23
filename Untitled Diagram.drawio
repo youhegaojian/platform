@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-02-23T01:48:46.454Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.43" etag="FScpyv4FOWC2g_Oe5dZy" version="16.6.2" type="github">
+<mxfile host="app.diagrams.net" modified="2022-02-23T02:03:17.822Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.43" etag="gpUPVlNDZ_zAJcRo57gM" version="16.6.2" type="github">
   <diagram id="GcnIIn9zu56xixgi2HDi" name="Page-1">
     <mxGraphModel dx="868" dy="492" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -22,11 +22,11 @@
         <mxCell id="AFKyj2wZlmawvFiLAMe_-1" value="Java" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="20" y="270" width="70" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="AFKyj2wZlmawvFiLAMe_-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-2" target="AFKyj2wZlmawvFiLAMe_-15">
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-2" target="AFKyj2wZlmawvFiLAMe_-15">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="360" y="120" />
-              <mxPoint x="360" y="120" />
+              <mxPoint x="380" y="120" />
+              <mxPoint x="380" y="245" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -40,25 +40,82 @@
           <mxGeometry x="220" y="100" width="120" height="40" as="geometry" />
         </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-3" value="Java IO" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="220" y="190" width="120" height="60" as="geometry" />
+          <mxGeometry x="220" y="530" width="120" height="30" as="geometry" />
         </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-4" value="Java 多线程" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="220" y="270" width="120" height="60" as="geometry" />
+          <mxGeometry x="220" y="610" width="120" height="30" as="geometry" />
         </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-5" value="Java 垃圾回收" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="220" y="370" width="120" height="60" as="geometry" />
+          <mxGeometry x="220" y="680" width="120" height="30" as="geometry" />
         </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-6" value="Java 异常处理" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="220" y="460" width="120" height="60" as="geometry" />
+          <mxGeometry x="220" y="780" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-13" target="AFKyj2wZlmawvFiLAMe_-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-13" target="AFKyj2wZlmawvFiLAMe_-23">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-13" value="List" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="420" y="50" width="70" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-15" target="AFKyj2wZlmawvFiLAMe_-30">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="530" y="245" />
+              <mxPoint x="530" y="215" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-15" target="AFKyj2wZlmawvFiLAMe_-32">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="530" y="245" />
+              <mxPoint x="530" y="295" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-15" target="AFKyj2wZlmawvFiLAMe_-34">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="530" y="245" />
+              <mxPoint x="530" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-15" value="Set" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="420" y="100" width="70" height="30" as="geometry" />
+          <mxGeometry x="420" y="230" width="70" height="30" as="geometry" />
         </mxCell>
         <mxCell id="AFKyj2wZlmawvFiLAMe_-17" value="Map" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="420" y="150" width="70" height="30" as="geometry" />
+          <mxGeometry x="420" y="440" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-21" target="AFKyj2wZlmawvFiLAMe_-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-21" value="LinkedList" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="35" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AFKyj2wZlmawvFiLAMe_-23" target="AFKyj2wZlmawvFiLAMe_-27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-23" value="ArrayList" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="120" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-25" value="1.链表结构&lt;br&gt;2.擅长增删，下标查询需遍历全表，查询效率低&lt;br&gt;3.实现Deque,可以作为消息队列使用" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="730" y="11.559999999999999" width="270" height="71.87" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-27" value="1. 数组结构&lt;br&gt;2.下标查询快&lt;br&gt;3.指定下标的新增和删除，涉及到后面所有的数据的移动，效率低；如果只是尾插，并不存在效率低的问题" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="730" y="90" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-30" value="HashSet" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="210" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-32" value="TreeSet" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="280" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AFKyj2wZlmawvFiLAMe_-34" value="LinkedHashSet" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="340" width="120" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
